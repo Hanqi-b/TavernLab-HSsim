@@ -1,0 +1,12 @@
+__pycache__
+build
+fireplace.egg-info
+coverage.xml
+venv
+
+*.pyc
+.tox
+.vscode
+.env
+.coverage
+.idea

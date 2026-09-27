@@ -1,205 +1,139 @@
-# <img src="/logo.png" height="32" width="32"/> Fireplace
-[![](https://img.shields.io/badge/python-3.10+-blue.svg)](https://peps.python.org/pep-0619/)
-[![](https://img.shields.io/github/license/jleclanche/fireplace.svg)](https://github.com/jleclanche/fireplace/blob/master/LICENSE.md)
-[![](https://github.com/jleclanche/fireplace/actions/workflows/build.yml/badge.svg)](https://github.com/jleclanche/fireplace/actions/workflows/build.yml)
-[![codecov](https://codecov.io/github/jleclanche/fireplace/graph/badge.svg?token=FXDTJSKZL9)](https://codecov.io/github/jleclanche/fireplace)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+# TavernLab
 
-A Hearthstone simulator and implementation, written in Python.
+[中文](#中文) · [English](#english)
 
+## 项目介绍 / Introduction
 
-## Cards Implementation
+本项目是在 [HearthSim Fireplace](https://github.com/jleclanche/fireplace) 基础上继续开发的开源《炉石传说》本地模拟与 AI 实验项目。底层游戏规则、卡牌实体和大量基础模拟代码继承自 Fireplace；在此基础上，本项目增加了本机浏览器 GUI、竞技场、收藏与卡组管理、本地账号、多种 Agent/AI、对局日志与回放等功能。
 
-Now updated to [Patch 17.6.0.53261](https://hearthstone.wiki.gg/wiki/Patch_17.6.0.53261)
-* **100%** Basic (153 of 153 cards)
-* **100%** Classic (240 of 240 cards)
-* **100%** Hall of Fame (35 of 35 cards)
-* **100%** Curse of Naxxramas (30 of 30 cards)
-* **100%** Goblins vs Gnomes (123 of 123 cards)
-* **100%** Blackrock Mountain (31 of 31 cards)
-* **100%** The Grand Tournament (132 of 132 cards)
-* **100%** Hero Skins (33 of 33 cards)
-* **100%** The League of Explorers (45 of 45 cards)
-* **100%** Whispers of the Old Gods (134 of 134 cards)
-* **100%** One Night in Karazhan (45 of 45 cards)
-* **100%** Mean Streets of Gadgetzan (132 of 132 cards)
-* **100%** Journey to Un'Goro (135 of 135 cards)
-* **100%** Knights of the Frozen Throne (135 of 135 cards)
-* **100%** Kobolds & Catacombs (135 of 135 cards)
-* **100%** The Witchwood (129 of 129 cards)
-* **100%** The Boomsday Project (136 of 136 cards)
-* **100%** Rastakhan's Rumble (135 of 135 cards)
-* **100%** Rise of Shadows (136 of 136 cards)
-* **100%** Saviours of Uldum (135 of 135 cards)
-* **100%** Descent of Dragons (140 of 140 cards)
-* **100%** Galakrond's Awakening (35 of 35 cards)
-* **100%** Ashes of Outlands (135 of 135 cards)
-* **100%** Scholomance Academy (1 of 1 card)
-* **100%** Demon Hunter Initiate (20 of 20 cards)
+项目目前主要面向本地模拟、历史版本体验和 AI/Agent 实验，不连接 Battle.net，也不以替代当前官方《炉石传说》客户端为目标。
 
-## Requirements
+This project is an open-source local Hearthstone simulator and AI experimentation platform developed on top of [HearthSim Fireplace](https://github.com/jleclanche/fireplace). Its core game rules, card entities, and a substantial part of the underlying simulation code are inherited from Fireplace. This project extends that foundation with a local browser GUI, Arena, collection and deck management, local accounts, multiple AI/agent controllers, game logging, and replay support.
 
-* Python 3.10+
+The project is primarily intended for local simulation, historical Hearthstone environments, and AI/agent experimentation. It does not connect to Battle.net and is not intended to replace the current official Hearthstone client.
 
+## 截图 / Screenshots
 
-## Installation
+以下截图来自本项目实际运行的本机界面，使用临时演示账号。界面内仍有部分 Fireplace 名称，Python 包与启动命令也继续使用 <code>fireplace</code>。
 
-> **Note**: This repository uses Git LFS (Large File Storage). Please install Git LFS before cloning: https://git-lfs.com
+These screenshots come from the running local application with a temporary demo account. Some interface labels and the Python package/commands still use <code>fireplace</code>.
 
-* `pip install .`
+| 开始界面 / Start screen | 对战 / Battle |
+| --- | --- |
+| ![TavernLab 开始界面 / start screen](docs/screenshots/lobby.webp) | ![本机对战 / local battle](docs/screenshots/battle.webp) |
+| 竞技场 / Arena | 收藏与组卡 / Collection and deck building |
+| ![竞技场 / Arena](docs/screenshots/arena.webp) | ![收藏与组卡 / Collection and deck building](docs/screenshots/collection.webp) |
 
+卡牌浏览 / Card catalog:
 
-## Documentation
+![卡牌详情 / Card detail](docs/screenshots/catalog.webp)
 
-The [Fireplace Wiki](https://github.com/jleclanche/fireplace/wiki) is the best
-source of documentation, along with the actual code.
+## 中文
 
-## Human game and decision log
+### 当前功能状态
 
-### Local browser game
+| 功能 | 状态 | 当前范围 |
+| --- | --- | --- |
+| 核心模拟与动作 API | 可用，持续完善 | 基于 Fireplace 的规则与实体；部分卡牌效果尚未完整实现。 |
+| 浏览器对战 | 可用 | 本机单人与默认 AI 对战，可用随机牌组或完整的自建卡组。 |
+| 竞技场 | 可用 | 选卡池、三选一选英雄、30 轮三选一选牌；7 胜或 3 负结束。 |
+| 卡牌目录与收藏 | 可用 | 浏览、搜索、筛选历史卡牌资料，并创建和保存卡组；不是官方账号的卡牌库存。 |
+| 本地账号 | 可用 | 用户名和密码登录；卡组、竞技场进度和活动对局按账号隔离。 |
+| Agent/AI | 部分可用 | 框架含默认策略、随机策略和终端人工 Agent；浏览器目前只提供默认 AI 对手。 |
+| 对局日志与回放 | 命令行可用 | 可记录对局；完整标准对局日志可在匹配的代码和卡牌数据版本下回放。 |
+| 局域网/在线 PvP | 未实现 | 当前服务器只监听本机回环地址。 |
 
-Install the package with `pip install .`, then start the local browser app:
+### 版本与卡牌支持范围
 
-```bash
-fireplace-web --seed 7
-```
+| 层次 | 当前范围 |
+| --- | --- |
+| 卡牌资料 | 仓库自带的 <code>CardDefs.xml</code> 是 build **53261**，对应历史 **Patch 17.6.0.53261**，不是当前官方卡池。目录中有 **2,507** 条可收集记录；全部 XML 范围有 **9,344** 条记录（包含衍生与不可收集实体）。 |
+| 扩展包 | 资料覆盖基础、经典及多个历史扩展包，主要到**外域的灰烬**；通灵学园只有 **1** 条可收集记录，不能视为完整支持该扩展包。 |
+| 卡牌效果 | 目录中的“有 Python 定义”只表示找到了对应或复用的代码定义，**不保证**效果完整、可正常加入对局或与官方规则完全一致；部分卡牌目前是白板。 |
+| 竞技场卡池 | 基础与经典固定加入；另从当前列出的 **14 个大包、5 个小包**中使用 **16 点**选择扩展包（大包 3 点、小包 1 点）。当前提供 9 个经典职业英雄。 |
 
-Open [http://127.0.0.1:8765/](http://127.0.0.1:8765/) on the same computer.
-The equivalent source-checkout command is `python3 examples/play_web.py --seed 7`;
-`python3 -m fireplace.web_gui` also works. Use `--port 8766` to choose another
-port. The server binds to `127.0.0.1`. The start screen has three main entries:
-**Battle**, **Arena**, and **Collection**. In Collection (`/collection`), choose
-one of the nine classic heroes, build and save a local deck, then select a
-completed 30-card deck in Battle. Unfinished decks can be saved for later;
-ordinary cards allow two copies and legendary cards one. Create a local account
-with a username and password before playing. Each account has its own decks,
-Arena run, and active match. Passwords are stored as salted scrypt hashes in
-`~/.local/state/fireplace/accounts.sqlite3`; login uses an HttpOnly session
-cookie. Account decks and Arena runs live under
-`~/.local/state/fireplace/users/<account-id>/`. Set `FIREPLACE_ACCOUNT_STATE`
-and `FIREPLACE_ACCOUNT_DATA_ROOT` to change these locations. The Account page
-can import pre-account `decks.json` and `arena-run.json` once into the signed-in
-account; it leaves the old files in place. Collection links to the full card
-catalog at `/cards`.
-The server still listens only on this computer. A later LAN deployment needs
-TLS before transmitting account passwords over the network.
-Open `/cards` to search the local `CardDefs.xml` catalog by Chinese
-or English name or card ID. Filter by card set and class (including neutral).
-The ten Basic starting heroes have their own catalog category. Playable hero
-cards, such as Death Knight cards and Dr. Boom, stay in their expansion sets;
-hero skins retain their own set in **All XML data**. A badge says
-whether a matching or reused Python definition was found. This describes
-source code presence, not whether the card is playable or its effect is complete.
-The catalog also lets you
-open a card for its details, and switch between Chinese and English. The
-default view shows collectible cards except hero skins; **All XML data** also
-shows tokens, skins and other non-collectible records. The catalog shows card
-data and does not claim that every card ability is implemented in the game.
-Card images use the local server and the same external asset cache described
-below; unavailable images show a placeholder.
+旧版 Fireplace README 的卡牌完成度百分比保存在[历史文档](LEGACY_FIREPLACE_README.md)，不代表 TavernLab 当前的可玩效果覆盖率。
 
-Choose **Arena** on the start screen, or open `/arena`, for a local run against
-the Heuristic AI. Basic and Classic cards are always included and cost no
-expansion points. Select other expansions worth 16
-points, with large sets costing three points and small sets one point (normally
-five large plus one small). Pick one of three offered classic heroes, then pick
-one card from each of 30 three-card offers. The draft includes collectible
-expansion hero cards and may include cards whose scripted effect is incomplete.
-The deck stays fixed across matches; the run ends at seven wins or three losses.
-The current draft and record are saved under that account's data directory.
-If the server stops during an
-unfinished battle, reopen Arena to retry that battle without counting a loss.
+### 项目边界与声明
 
-Enter a local nickname, choose Chinese
-or English, then start a match against the Heuristic AI. The random-deck option
-draws random classes and 30-card decks; a completed saved deck uses its chosen
-hero and cards. The nickname and language preference are
-saved only in this browser; the login account is separate from this displayed
-nickname. Language
-can be changed on the start screen and stays fixed during a match. After Game
-Over, return to the start screen to change settings or play again without
-restarting the server. `--seed` makes the first game's random setup
-reproducible. Press Ctrl+C in
-the terminal to stop the server.
+TavernLab 是**免费、开源、非官方**的本地研究项目，源码按 [AGPL-3.0-or-later](LICENSE) 发布。项目继承并注明了上游 Fireplace；它与 Blizzard Entertainment 或 Battle.net 没有隶属关系，也未获其赞助或认可。《炉石传说》名称、图像及相关素材的权利归各自权利人所有。
 
-The browser receives only the human player's Observation, current legal Action
-values and a filtered public event log. Click cards, characters and offered
-choices to play through Mulligan, the main phase, Discover and Game Over. A
-stale action refreshes the page's game state and must be selected again.
-The battlefield shows both hero portraits and minion rows, with a larger hand
-along its lower edge. Click a playable card, attacker or hero power, then choose
-any highlighted target, branch or minion slot. On desktop, hover or focus a
-card to enlarge it. On narrow screens, use its inspect button for full card
-details while the hand remains scrollable. The public match log,
-convenience action buttons and a complete legal-action fallback are below the
-battlefield, so they do not cover play. The narrow layout keeps the hand in a
-horizontal strip. The scene is a local static image; no gameplay information is
-embedded in it.
-Localized card text comes from `CardDefs.xml` in the selected match language.
-Card images are fetched by the local server as renders, art or tiles and cached
-outside the repository in
-`$XDG_CACHE_HOME/card_assets` (or `~/.cache/card_assets`). A missing image or
-unavailable asset package falls back to a CSS card placeholder. The browser
-does not request external card-image URLs. The first uncached image may take
-time to arrive; gameplay remains responsive while it loads.
+项目不提供 Battle.net 登录、官方客户端兼容、局域网服务或在线匹配。当前的账号隔离只适用于这台本机服务器；卡牌资料范围和效果实现情况也不应被理解为现行官方《炉石传说》的完整复刻。
 
-For browser acceptance testing, install Node.js, Playwright and Chrome, then
-run `node tests/web_gui_browser_smoke.cjs` from the repository root. Set
-`FIREPLACE_GUI_PYTHON` to the Python interpreter with Fireplace installed and
-`CHROME_PATH` if Chrome is not at `/opt/google/chrome/chrome`. The script plays
-a deterministic real-engine match through the GUI, including a stale action,
-and writes desktop, narrow-window and Game Over screenshots under
-`/tmp/fireplace-web-gui-artifacts` by default.
-Run `node tests/web_gui_catalog_browser.cjs` with the same environment to check
-the catalog's filters, search, detail view, image loading and narrow layout.
-Run `node tests/web_gui_full_match.cjs` with the same environment variables to
-play complete browser matches against Heuristic in Chinese and English on one
-local server. It uses battlefield clicks and the end-turn button
-across multiple turns, returns to the start screen after each result, and checks
-that an action from the earlier session is rejected. Run
-`node tests/web_gui_locale_browser.cjs` for a short offline browser check that
-card names, rules text, and renders follow the selected language.
+### 安装与启动
 
-### Terminal game
+需要 **Python 3.10+** 和 [Git LFS](https://git-lfs.com/)；<code>CardDefs.xml</code> 使用 Git LFS。以下命令适用于 Linux 和 macOS：
 
-Run a terminal game against the Heuristic AI from a source checkout:
+~~~bash
+git lfs install
+git clone https://github.com/Hanqi-b/TavernLab.git
+cd TavernLab
+python3 -m venv venv
+source venv/bin/activate
+python -m pip install -e .
+python -m fireplace.web_gui
+~~~
 
-```bash
-python3 examples/human_vs_heuristic.py --seed 7 --log games/match.json
-```
+在本机打开 [http://127.0.0.1:8765/](http://127.0.0.1:8765/)，注册本地账号后进入对战、竞技场或收藏。按 <code>Ctrl+C</code> 停止服务。可用 <code>--port 8766</code> 更改端口，或用 <code>--seed 7</code> 固定随机种子；安装后也可运行 <code>fireplace-web</code>。账号数据默认保存在 <code>~/.local/state/fireplace/</code>。
 
-The heuristic chooses among the legal actions. It
-uses only the acting player's visible observation, so it cannot inspect the
-opponent's hidden hand or deck. It is a simple baseline, not a card-effect
-simulator.
+终端对战及回放：
 
-The optional log contains accepted player decisions, the initial decks, a
-pre-start RNG snapshot, and the result. It is saved after each decision, so an
-interrupted game leaves a partial log. It may reveal both players' private
-cards and choices; keep the file private.
+~~~bash
+python examples/human_vs_heuristic.py --seed 7 --log games/match.json
+python examples/replay_log.py games/match.json
+~~~
 
-Replay and verify a completed standard game with the same Python, Fireplace,
-and card-data versions:
+## English
 
-```bash
-python3 examples/replay_log.py games/match.json
-```
+### Current feature status
 
-Replay starts at the beginning, applies the recorded decisions, and compares
-the final normalized game state. Logs attached after a game starts and older
-decision logs without a pre-start RNG snapshot cannot be replayed. UUIDs and
-wall-clock timestamps are excluded from the comparison.
+| Feature | Status | Current scope |
+| --- | --- | --- |
+| Simulation core and Action API | Available, evolving | Built on Fireplace rules and entities; some card effects remain incomplete. |
+| Browser battles | Available | Local single-player matches against the default AI, using random or completed custom decks. |
+| Arena | Available | Choose a pool, pick one of three heroes, draft 30 cards from three-card offers, and finish at seven wins or three losses. |
+| Card catalog and Collection | Available | Browse, search, and filter historical card data; build and save decks. This is not an official account card inventory. |
+| Local accounts | Available | Username/password sign-in; decks, Arena progress, and active matches are separated by account. |
+| Agents/AI | Partly available | The framework has a heuristic policy, random policy, and terminal human agent; the browser currently offers only the default AI opponent. |
+| Game logs and replay | Available in the CLI | Record games and replay complete standard logs with matching code and card-data versions. |
+| LAN/online PvP | Not implemented | The server binds to the local loopback address only. |
 
+### Version and card scope
 
-## License
+| Layer | Current scope |
+| --- | --- |
+| Card data | Bundled <code>CardDefs.xml</code> is build **53261**, corresponding to historical **Patch 17.6.0.53261**, not today's official card pool. The catalog has **2,507** collectible records and **9,344** XML records in total, including generated and non-collectible entities. |
+| Expansions | Data includes Basic, Classic, and historical sets mainly through **Ashes of Outland**. There is only **one** collectible Scholomance Academy record, so that set is not fully covered. |
+| Card effects | A “Python definition” badge means a matching or reused definition was found. It **does not guarantee** a complete effect, normal playability, or exact official behavior. Some cards currently have no scripted effect. |
+| Arena pool | Basic and Classic are always included. The selectable list has **14 large sets and 5 small sets** with a **16-point** budget (large: 3; small: 1). Nine classic heroes are available. |
 
-[![AGPLv3](https://www.gnu.org/graphics/agplv3-88x31.png)](http://choosealicense.com/licenses/agpl-3.0/)
+The old Fireplace README's completion percentages are preserved in a [historical document](LEGACY_FIREPLACE_README.md). They do not measure TavernLab's current playable effect coverage.
 
-Fireplace is licensed under the terms of the
-[Affero GPLv3](https://www.gnu.org/licenses/agpl-3.0.en.html) or any later version.
+### Scope and disclaimer
 
+TavernLab is a **free, open-source, unofficial** local research project distributed under [AGPL-3.0-or-later](LICENSE). It builds on and credits upstream Fireplace. It is not affiliated with, sponsored by, or endorsed by Blizzard Entertainment or Battle.net. Hearthstone names, images, and related assets remain the property of their respective rights holders.
 
-## Community
+The project does not offer Battle.net login, official-client compatibility, LAN hosting, or online matchmaking. Account separation currently applies only to the local server. Its card data and effect coverage should not be read as a complete recreation of the current official Hearthstone game.
 
-Fireplace is a [HearthSim](http://hearthsim.info/) project.
-Join the community: <https://hearthsim.info/join/>
+### Install and run
+
+You need **Python 3.10+** and [Git LFS](https://git-lfs.com/); <code>CardDefs.xml</code> is stored with Git LFS. On Linux or macOS:
+
+~~~bash
+git lfs install
+git clone https://github.com/Hanqi-b/TavernLab.git
+cd TavernLab
+python3 -m venv venv
+source venv/bin/activate
+python -m pip install -e .
+python -m fireplace.web_gui
+~~~
+
+Open [http://127.0.0.1:8765/](http://127.0.0.1:8765/) on the same computer. Register a local account, then choose Battle, Arena, or Collection. Press <code>Ctrl+C</code> to stop the server. Use <code>--port 8766</code> for another port or <code>--seed 7</code> for reproducible random setup; <code>fireplace-web</code> is also available after installation. Account data is stored under <code>~/.local/state/fireplace/</code> by default.
+
+Terminal play and replay:
+
+~~~bash
+python examples/human_vs_heuristic.py --seed 7 --log games/match.json
+python examples/replay_log.py games/match.json
+~~~

@@ -3,6 +3,7 @@
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/downloads/)
 [![License: AGPL-3.0-or-later](https://img.shields.io/badge/License-AGPL--3.0--or--later-blue)](LICENSE)
 [![Release](https://img.shields.io/github/v/release/Hanqi-b/TavernLab-HSsim?include_prereleases&label=release)](https://github.com/Hanqi-b/TavernLab-HSsim/releases)
+[![Tests](https://github.com/Hanqi-b/TavernLab-HSsim/actions/workflows/build.yml/badge.svg)](https://github.com/Hanqi-b/TavernLab-HSsim/actions/workflows/build.yml)
 
 [中文](#中文) · [English](#english)
 

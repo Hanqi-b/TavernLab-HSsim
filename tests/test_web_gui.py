@@ -351,7 +351,7 @@ def test_opponent_spell_event_is_public_after_spell_enters_graveyard(web_game):
 
 
 def test_opponent_minion_event_is_public_after_immediate_death(web_game):
-    app, _human, opponent, base = web_game()
+    app, _human, opponent, base = web_game(locale="enUS")
     state = ready(base)
     opponent.max_mana = 10
     dying_minion = opponent.give("CS2_231")

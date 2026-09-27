@@ -180,6 +180,8 @@ async function finishFixtureMatch(page) {
   state = await mulliganResponse.json();
   assert.equal(mulliganResponse.status(), 200, `fixture Mulligan failed: ${JSON.stringify(state)}`);
   assert.equal(state.observation.phase, "MAIN");
+  await page.locator("#end-turn-button").waitFor({ state: "visible", timeout });
+  assert.equal(await page.locator("#end-turn-button").innerText(), state.locale === "enUS" ? "End turn" : "结束回合");
 
   const fireball = state.observation.self.hand.find((card) => card.card_id === "CS2_029");
   assert(fireball, "fixture should provide Fireball for a quick terminal action");

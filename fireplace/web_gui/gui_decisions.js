@@ -207,6 +207,7 @@ export function createDecisions(deps) {
     dom.setHidden(elements["action-instructions"], true);
 
     if (actionIndex.endTurn.length === 1) {
+      dom.setText(elements["end-turn-button"], locale.tr("endTurn"));
       dom.setHidden(elements["end-turn-button"], false);
     }
     if (selection.sourceId === null) {

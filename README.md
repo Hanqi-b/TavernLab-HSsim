@@ -14,9 +14,11 @@ The project is primarily intended for local simulation, historical Hearthstone e
 
 ## 截图 / Screenshots
 
-以下截图来自本项目实际运行的本机界面，使用临时演示账号。界面内仍有部分 Fireplace 名称，Python 包与启动命令也继续使用 <code>fireplace</code>。
+以下中英文截图来自本项目实际运行的本机界面，使用临时演示账号。界面内仍有部分 Fireplace 名称，Python 包与启动命令也继续使用 <code>fireplace</code>。
 
-These screenshots come from the running local application with a temporary demo account. Some interface labels and the Python package/commands still use <code>fireplace</code>.
+These Chinese and English screenshots come from the running local application with a temporary demo account. Some interface labels and the Python package/commands still use <code>fireplace</code>.
+
+### 中文界面 / Chinese UI
 
 | 开始界面 / Start screen | 对战 / Battle |
 | --- | --- |
@@ -27,6 +29,18 @@ These screenshots come from the running local application with a temporary demo 
 卡牌浏览 / Card catalog:
 
 ![卡牌详情 / Card detail](docs/screenshots/catalog.webp)
+
+### English UI / 英文界面
+
+| Start screen | Battle |
+| --- | --- |
+| ![English start screen](docs/screenshots/lobby-en.webp) | ![English local battle](docs/screenshots/battle-en.webp) |
+| Arena | Collection and deck building |
+| ![English Arena](docs/screenshots/arena-en.webp) | ![English collection and deck building](docs/screenshots/collection-en.webp) |
+
+Card catalog:
+
+![English card detail](docs/screenshots/catalog-en.webp)
 
 ## 中文
 

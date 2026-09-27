@@ -4,8 +4,7 @@
 在用户请求某一张卡牌时，通过 HearthstoneJSON 的官方图片地址按需下载到
 用户缓存目录。
 
-`card_assets` 模块需要 Python 3.7 或更新版本；它不改变原有 Fireplace 模块
-的安装版本要求。
+`card_assets` 模块与 TavernLab-HSsim 一样需要 Python 3.10 或更新版本。
 
 ## 图片服务
 

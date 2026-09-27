@@ -90,7 +90,9 @@ CREATE INDEX IF NOT EXISTS sessions_expiry_idx ON sessions(expires_at);
 def default_state_path() -> Path:
     """Return the account database path used by a local server."""
 
-    configured = os.environ.get("FIREPLACE_ACCOUNT_STATE")
+    configured = os.environ.get("TAVERNLAB_ACCOUNT_STATE") or os.environ.get(
+        "FIREPLACE_ACCOUNT_STATE"
+    )
     if configured:
         return Path(configured).expanduser()
     state_home = os.environ.get("XDG_STATE_HOME")

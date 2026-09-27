@@ -41,6 +41,27 @@ def account_server(tmp_path, *, legacy_decks=None, legacy_arena=None):
         server.server_close()
 
 
+def test_account_data_root_honors_tavernlab_alias_and_legacy_fallback(
+    monkeypatch, tmp_path
+):
+    accounts = AccountStore(tmp_path / "accounts.sqlite3")
+    tavernlab_root = tmp_path / "tavernlab-users"
+    fireplace_root = tmp_path / "fireplace-users"
+    monkeypatch.setenv("TAVERNLAB_ACCOUNT_DATA_ROOT", str(tavernlab_root))
+    monkeypatch.setenv("FIREPLACE_ACCOUNT_DATA_ROOT", str(fireplace_root))
+
+    registry = AccountGameRegistry(accounts=accounts, catalog=object())
+    assert registry.data_root == tavernlab_root
+
+    monkeypatch.delenv("TAVERNLAB_ACCOUNT_DATA_ROOT")
+    registry = AccountGameRegistry(accounts=accounts, catalog=object())
+    assert registry.data_root == fireplace_root
+
+    monkeypatch.delenv("FIREPLACE_ACCOUNT_DATA_ROOT")
+    registry = AccountGameRegistry(accounts=accounts, catalog=object())
+    assert registry.data_root == tmp_path / "users"
+
+
 class Browser:
     def __init__(self, base: str):
         self.base = base

@@ -112,11 +112,19 @@ def test_database_contains_hashes_but_no_passwords_or_raw_tokens(tmp_path: Path)
 
 
 def test_default_state_path_honors_account_override(monkeypatch, tmp_path: Path):
-    override = tmp_path / "custom" / "accounts.sqlite3"
-    monkeypatch.setenv("FIREPLACE_ACCOUNT_STATE", str(override))
-    assert default_state_path() == override
+    tavernlab_override = tmp_path / "tavernlab" / "accounts.sqlite3"
+    fireplace_override = tmp_path / "fireplace" / "accounts.sqlite3"
+    monkeypatch.setenv("TAVERNLAB_ACCOUNT_STATE", str(tavernlab_override))
+    monkeypatch.setenv("FIREPLACE_ACCOUNT_STATE", str(fireplace_override))
+    assert default_state_path() == tavernlab_override
 
+    monkeypatch.delenv("TAVERNLAB_ACCOUNT_STATE")
+    assert default_state_path() == fireplace_override
     monkeypatch.delenv("FIREPLACE_ACCOUNT_STATE")
+    monkeypatch.delenv("XDG_STATE_HOME", raising=False)
+    assert default_state_path() == (
+        Path.home() / ".local" / "state" / "fireplace" / "accounts.sqlite3"
+    )
     monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path / "state"))
     assert default_state_path() == tmp_path / "state" / "fireplace" / "accounts.sqlite3"
 

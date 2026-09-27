@@ -45,7 +45,9 @@ class DeckStoreCorrupt(ValueError):
 def default_state_path() -> Path:
     """Return the user-local deck save path, honoring the test override."""
 
-    configured = os.environ.get("FIREPLACE_DECK_STATE")
+    configured = os.environ.get("TAVERNLAB_DECK_STATE") or os.environ.get(
+        "FIREPLACE_DECK_STATE"
+    )
     if configured:
         return Path(configured).expanduser()
     state_home = os.environ.get("XDG_STATE_HOME")

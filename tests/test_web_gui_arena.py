@@ -3,16 +3,35 @@
 from __future__ import annotations
 
 import threading
+from pathlib import Path
 from urllib.request import urlopen
 
 import pytest
 
-from fireplace.arena.store import ArenaStore
+from fireplace.arena.store import ArenaStore, default_state_path
 from fireplace.web_gui.server import WebGameManager, make_server
 from tests.web_gui_support import finish_lobby_match, request
 
 
 SETS = ["GVG", "TGT", "OG", "GANGS", "UNGORO", "NAXX"]
+
+
+def test_default_state_path_honors_tavernlab_override_and_legacy_fallback(
+    monkeypatch, tmp_path
+):
+    tavernlab_override = tmp_path / "tavernlab" / "arena-run.json"
+    fireplace_override = tmp_path / "fireplace" / "arena-run.json"
+    monkeypatch.setenv("TAVERNLAB_ARENA_STATE", str(tavernlab_override))
+    monkeypatch.setenv("FIREPLACE_ARENA_STATE", str(fireplace_override))
+    assert default_state_path() == tavernlab_override
+
+    monkeypatch.delenv("TAVERNLAB_ARENA_STATE")
+    assert default_state_path() == fireplace_override
+    monkeypatch.delenv("FIREPLACE_ARENA_STATE")
+    monkeypatch.delenv("XDG_STATE_HOME", raising=False)
+    assert default_state_path() == Path.home() / ".local" / "state" / "fireplace" / "arena-run.json"
+    monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path / "state"))
+    assert default_state_path() == tmp_path / "state" / "fireplace" / "arena-run.json"
 
 
 @pytest.fixture

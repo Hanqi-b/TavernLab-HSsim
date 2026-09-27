@@ -18,9 +18,9 @@ The project is primarily intended for local simulation, historical Hearthstone e
 
 ## 截图 / Screenshots
 
-以下中英文截图来自本项目实际运行的本机界面，使用临时演示账号。界面内仍有部分 Fireplace 名称，Python 包与启动命令也继续使用 <code>fireplace</code>。
+以下中英文截图来自本项目实际运行的本机界面，使用临时演示账号。界面内仍有部分 Fireplace 名称，Python 包名继续使用 <code>fireplace</code>。
 
-These Chinese and English screenshots come from the running local application with a temporary demo account. Some interface labels and the Python package/commands still use <code>fireplace</code>.
+These Chinese and English screenshots come from the running local application with a temporary demo account. Some interface labels and the Python package name still use <code>fireplace</code>.
 
 ### 中文界面 / Chinese UI
 
@@ -92,7 +92,9 @@ python -m pip install -e .
 python -m fireplace.web_gui
 ~~~
 
-在本机打开 [http://127.0.0.1:8765/](http://127.0.0.1:8765/)，注册本地账号后进入对战、竞技场或收藏。按 <code>Ctrl+C</code> 停止服务。可用 <code>--port 8766</code> 更改端口，或用 <code>--seed 7</code> 固定随机种子；安装后也可运行 <code>fireplace-web</code>。账号数据默认保存在 <code>~/.local/state/fireplace/</code>。
+在本机打开 [http://127.0.0.1:8765/](http://127.0.0.1:8765/)，注册本地账号后进入对战、竞技场或收藏。按 <code>Ctrl+C</code> 停止服务。可用 <code>--port 8766</code> 更改端口，或用 <code>--seed 7</code> 固定随机种子；安装后也可运行 <code>tavernlab-web</code>，原 <code>fireplace-web</code> 命令继续可用。账号数据默认保存在 <code>~/.local/state/fireplace/</code>；新的 <code>TAVERNLAB_ACCOUNT_STATE</code>、<code>TAVERNLAB_ACCOUNT_DATA_ROOT</code>、<code>TAVERNLAB_DECK_STATE</code> 和 <code>TAVERNLAB_ARENA_STATE</code> 可分别覆盖存储位置，旧 <code>FIREPLACE_*</code> 环境变量仍然有效。
+
+下载 [v0.1.0-alpha 完整源码 ZIP](https://github.com/Hanqi-b/TavernLab-HSsim/releases/download/v0.1.0-alpha/TavernLab-HSsim-v0.1.0-alpha-full-source.zip) 时无需 Git LFS；此文件包含完整的 <code>CardDefs.xml</code>。GitHub 自动生成的 Source code ZIP/TAR 可能只有 LFS 指针，请使用上述完整包或通过 Git LFS 克隆。
 
 终端对战及回放：
 
@@ -147,7 +149,9 @@ python -m pip install -e .
 python -m fireplace.web_gui
 ~~~
 
-Open [http://127.0.0.1:8765/](http://127.0.0.1:8765/) on the same computer. Register a local account, then choose Battle, Arena, or Collection. Press <code>Ctrl+C</code> to stop the server. Use <code>--port 8766</code> for another port or <code>--seed 7</code> for reproducible random setup; <code>fireplace-web</code> is also available after installation. Account data is stored under <code>~/.local/state/fireplace/</code> by default.
+Open [http://127.0.0.1:8765/](http://127.0.0.1:8765/) on the same computer. Register a local account, then choose Battle, Arena, or Collection. Press <code>Ctrl+C</code> to stop the server. Use <code>--port 8766</code> for another port or <code>--seed 7</code> for reproducible random setup; <code>tavernlab-web</code> is also available after installation, and <code>fireplace-web</code> remains supported. Account data is stored under <code>~/.local/state/fireplace/</code> by default. The <code>TAVERNLAB_ACCOUNT_STATE</code>, <code>TAVERNLAB_ACCOUNT_DATA_ROOT</code>, <code>TAVERNLAB_DECK_STATE</code>, and <code>TAVERNLAB_ARENA_STATE</code> variables can override storage paths; the older <code>FIREPLACE_*</code> variables still work.
+
+The [v0.1.0-alpha full-source ZIP](https://github.com/Hanqi-b/TavernLab-HSsim/releases/download/v0.1.0-alpha/TavernLab-HSsim-v0.1.0-alpha-full-source.zip) includes the complete <code>CardDefs.xml</code> and does not require Git LFS. GitHub's automatically generated Source code ZIP/TAR may contain only the LFS pointer; use the full-source asset or clone with Git LFS.
 
 Terminal play and replay:
 

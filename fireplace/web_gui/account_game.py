@@ -45,7 +45,9 @@ class AccountGameRegistry:
         legacy_arena: Path | None = None,
     ) -> None:
         self.accounts = accounts
-        configured_root = os.environ.get("FIREPLACE_ACCOUNT_DATA_ROOT")
+        configured_root = os.environ.get("TAVERNLAB_ACCOUNT_DATA_ROOT") or os.environ.get(
+            "FIREPLACE_ACCOUNT_DATA_ROOT"
+        )
         if data_root is not None:
             self.data_root = Path(data_root)
         elif configured_root:

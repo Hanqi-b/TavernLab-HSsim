@@ -1,4 +1,4 @@
-"""Run account-separated local Fireplace games in a browser.
+"""Run account-separated local TavernLab-HSsim games in a browser.
 
 The entry point binds to loopback and can keep one human-vs-agent match per
 signed-in account through the standard-library HTTP server.

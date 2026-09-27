@@ -22,7 +22,9 @@ class ArenaStoreCorrupt(ValueError):
 
 
 def default_state_path() -> Path:
-    configured = os.environ.get("FIREPLACE_ARENA_STATE")
+    configured = os.environ.get("TAVERNLAB_ARENA_STATE") or os.environ.get(
+        "FIREPLACE_ARENA_STATE"
+    )
     if configured:
         return Path(configured).expanduser()
     state_home = os.environ.get("XDG_STATE_HOME")

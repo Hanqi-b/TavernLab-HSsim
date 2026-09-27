@@ -1,4 +1,8 @@
-# TavernLab
+# TavernLab-HSsim
+
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/downloads/)
+[![License: AGPL-3.0-or-later](https://img.shields.io/badge/License-AGPL--3.0--or--later-blue)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/Hanqi-b/TavernLab-HSsim?include_prereleases&label=release)](https://github.com/Hanqi-b/TavernLab-HSsim/releases)
 
 [中文](#中文) · [English](#english)
 
@@ -22,7 +26,7 @@ These Chinese and English screenshots come from the running local application wi
 
 | 开始界面 / Start screen | 对战 / Battle |
 | --- | --- |
-| ![TavernLab 开始界面 / start screen](docs/screenshots/lobby.webp) | ![本机对战 / local battle](docs/screenshots/battle.webp) |
+| ![TavernLab-HSsim 开始界面 / start screen](docs/screenshots/lobby.webp) | ![本机对战 / local battle](docs/screenshots/battle.webp) |
 | 竞技场 / Arena | 收藏与组卡 / Collection and deck building |
 | ![竞技场 / Arena](docs/screenshots/arena.webp) | ![收藏与组卡 / Collection and deck building](docs/screenshots/collection.webp) |
 
@@ -66,11 +70,11 @@ Card catalog:
 | 卡牌效果 | 目录中的“有 Python 定义”只表示找到了对应或复用的代码定义，**不保证**效果完整、可正常加入对局或与官方规则完全一致；部分卡牌目前是白板。 |
 | 竞技场卡池 | 基础与经典固定加入；另从当前列出的 **14 个大包、5 个小包**中使用 **16 点**选择扩展包（大包 3 点、小包 1 点）。当前提供 9 个经典职业英雄。 |
 
-旧版 Fireplace README 的卡牌完成度百分比保存在[历史文档](LEGACY_FIREPLACE_README.md)，不代表 TavernLab 当前的可玩效果覆盖率。
+旧版 Fireplace README 的卡牌完成度百分比保存在[历史文档](LEGACY_FIREPLACE_README.md)，不代表 TavernLab-HSsim 当前的可玩效果覆盖率。
 
 ### 项目边界与声明
 
-TavernLab 是**免费、开源、非官方**的本地研究项目，源码按 [AGPL-3.0-or-later](LICENSE) 发布。项目继承并注明了上游 Fireplace；它与 Blizzard Entertainment 或 Battle.net 没有隶属关系，也未获其赞助或认可。《炉石传说》名称、图像及相关素材的权利归各自权利人所有。
+TavernLab-HSsim 是**免费、开源、非官方**的本地研究项目，源码按 [AGPL-3.0-or-later](LICENSE) 发布。项目继承并注明了上游 Fireplace；它与 Blizzard Entertainment 或 Battle.net 没有隶属关系，也未获其赞助或认可。《炉石传说》名称、图像及相关素材的权利归各自权利人所有。
 
 项目不提供 Battle.net 登录、官方客户端兼容、局域网服务或在线匹配。当前的账号隔离只适用于这台本机服务器；卡牌资料范围和效果实现情况也不应被理解为现行官方《炉石传说》的完整复刻。
 
@@ -80,8 +84,8 @@ TavernLab 是**免费、开源、非官方**的本地研究项目，源码按 [A
 
 ~~~bash
 git lfs install
-git clone https://github.com/Hanqi-b/TavernLab.git
-cd TavernLab
+git clone https://github.com/Hanqi-b/TavernLab-HSsim.git
+cd TavernLab-HSsim
 python3 -m venv venv
 source venv/bin/activate
 python -m pip install -e .
@@ -121,11 +125,11 @@ python examples/replay_log.py games/match.json
 | Card effects | A “Python definition” badge means a matching or reused definition was found. It **does not guarantee** a complete effect, normal playability, or exact official behavior. Some cards currently have no scripted effect. |
 | Arena pool | Basic and Classic are always included. The selectable list has **14 large sets and 5 small sets** with a **16-point** budget (large: 3; small: 1). Nine classic heroes are available. |
 
-The old Fireplace README's completion percentages are preserved in a [historical document](LEGACY_FIREPLACE_README.md). They do not measure TavernLab's current playable effect coverage.
+The old Fireplace README's completion percentages are preserved in a [historical document](LEGACY_FIREPLACE_README.md). They do not measure TavernLab-HSsim's current playable effect coverage.
 
 ### Scope and disclaimer
 
-TavernLab is a **free, open-source, unofficial** local research project distributed under [AGPL-3.0-or-later](LICENSE). It builds on and credits upstream Fireplace. It is not affiliated with, sponsored by, or endorsed by Blizzard Entertainment or Battle.net. Hearthstone names, images, and related assets remain the property of their respective rights holders.
+TavernLab-HSsim is a **free, open-source, unofficial** local research project distributed under [AGPL-3.0-or-later](LICENSE). It builds on and credits upstream Fireplace. It is not affiliated with, sponsored by, or endorsed by Blizzard Entertainment or Battle.net. Hearthstone names, images, and related assets remain the property of their respective rights holders.
 
 The project does not offer Battle.net login, official-client compatibility, LAN hosting, or online matchmaking. Account separation currently applies only to the local server. Its card data and effect coverage should not be read as a complete recreation of the current official Hearthstone game.
 
@@ -135,8 +139,8 @@ You need **Python 3.10+** and [Git LFS](https://git-lfs.com/); <code>CardDefs.xm
 
 ~~~bash
 git lfs install
-git clone https://github.com/Hanqi-b/TavernLab.git
-cd TavernLab
+git clone https://github.com/Hanqi-b/TavernLab-HSsim.git
+cd TavernLab-HSsim
 python3 -m venv venv
 source venv/bin/activate
 python -m pip install -e .

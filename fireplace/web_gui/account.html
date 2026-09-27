@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="dark">
+    <meta name="description" content="Fireplace 账号登录与注册">
+    <title>Fireplace · 账号</title>
+    <link rel="stylesheet" href="style-base.css">
+    <link rel="stylesheet" href="style-account.css">
+    <script type="module" src="account_app.js"></script>
+  </head>
+  <body class="account-page">
+    <main class="account-shell" id="account-app">
+      <div class="account-backdrop" aria-hidden="true"></div>
+
+      <header class="account-header">
+        <a class="account-back-link" href="/" data-copy="back">
+          <span aria-hidden="true">←</span><span>返回开始界面</span>
+        </a>
+        <fieldset class="account-language" aria-labelledby="account-language-label">
+          <legend id="account-language-label" data-copy="language">界面语言</legend>
+          <div class="segmented-control" role="group" aria-labelledby="account-language-label">
+            <button class="segment-button is-selected" type="button" data-locale="zhCN" aria-pressed="true">中文</button>
+            <button class="segment-button" type="button" data-locale="enUS" aria-pressed="false">English</button>
+          </div>
+        </fieldset>
+      </header>
+
+      <section class="account-card" aria-labelledby="account-title">
+        <div class="account-brand">
+          <p class="eyebrow">FIREPLACE / ACCOUNT</p>
+          <h1 id="account-title" data-copy="title">账号</h1>
+          <p class="account-subtitle" data-copy="subtitle">登录后访问你的卡组、竞技场和对战。</p>
+        </div>
+
+        <div class="account-tabs" role="tablist" aria-label="账号操作">
+          <button class="account-tab is-selected" id="login-tab" type="button" role="tab" aria-selected="true" aria-controls="account-form" data-mode="login" data-copy="loginTab">登录</button>
+          <button class="account-tab" id="register-tab" type="button" role="tab" aria-selected="false" aria-controls="account-form" data-mode="register" data-copy="registerTab">注册</button>
+        </div>
+
+        <p class="account-status" id="account-status" role="status" aria-live="polite"></p>
+        <div class="account-error" id="account-error" role="alert" hidden></div>
+
+        <form class="account-form" id="account-form" novalidate>
+          <div class="account-field">
+            <label for="account-username" data-copy="username">用户名</label>
+            <input id="account-username" name="username" type="text" inputmode="text" autocomplete="username" minlength="1" maxlength="64" required>
+            <small data-copy="usernameHint">使用 1 到 64 个字符。</small>
+          </div>
+          <div class="account-field">
+            <label for="account-password" data-copy="password">密码</label>
+            <input id="account-password" name="password" type="password" autocomplete="current-password" minlength="8" maxlength="256" required>
+            <small data-copy="passwordHint">至少 8 个字符。</small>
+          </div>
+          <div class="account-field" id="account-confirm-field" hidden>
+            <label for="account-confirm-password" data-copy="confirmPassword">确认密码</label>
+            <input id="account-confirm-password" name="confirm_password" type="password" autocomplete="new-password" minlength="8" maxlength="256">
+          </div>
+          <button class="primary-button account-submit" id="account-submit" type="submit" data-copy="loginSubmit">登录</button>
+        </form>
+
+        <section class="account-session-panel" id="account-session-panel" hidden aria-labelledby="account-session-title">
+          <p class="eyebrow">SIGNED IN</p>
+          <h2 id="account-session-title" data-copy="signedIn">已登录</h2>
+          <p class="account-session-user"><span data-copy="currentUser">当前账号</span>：<strong id="account-session-username"></strong></p>
+          <div class="account-session-actions">
+            <a class="primary-button" id="account-continue" href="/" data-copy="continue">继续</a>
+            <button class="secondary-button" id="account-import-legacy" type="button" data-copy="importLegacy" hidden>导入旧数据</button>
+            <button class="secondary-button" id="account-logout" type="button" data-copy="logout">退出登录</button>
+          </div>
+          <p class="account-import-hint" id="account-import-hint" data-copy="importLegacyHint" hidden>检测到账号创建前的本机卡组或竞技场数据。</p>
+        </section>
+      </section>
+
+      <p class="account-footer" data-copy="footer">账号数据保存在本机服务器中。</p>
+    </main>
+  </body>
+</html>

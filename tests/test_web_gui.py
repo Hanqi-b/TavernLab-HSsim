@@ -6,7 +6,6 @@ import threading
 import time
 from http.client import HTTPConnection
 from types import SimpleNamespace
-from urllib.error import HTTPError
 from urllib.parse import urlsplit
 from urllib.request import Request, urlopen
 
@@ -15,98 +14,13 @@ from hearthstone.enums import CardClass
 
 import card_assets
 from card_assets import AssetResolver
-from fireplace import cards
 from fireplace.agents import HeuristicAgent
 from fireplace.agent_api import Action
 from fireplace.controller import GameSession
-from fireplace.game import Game
-from fireplace.player import Player
-from fireplace.web_gui import server as web_server
+from fireplace.web_gui import assets as web_assets
 from fireplace.web_gui.factory import build_game
-from fireplace.web_gui.server import WebGame, WebGameManager, make_server
-
-
-cards.db.initialize()
-
-
-@pytest.fixture
-def web_game():
-    servers = []
-
-    def create(*, hero=CardClass.MAGE.default_hero, seed=3, asset_resolver=None,
-               deck_size=10, locale="zhCN"):
-        human = Player("Human", ["CS2_231"] * deck_size, hero)
-        opponent = Player("Computer", ["CS2_231"] * deck_size, hero)
-        game = Game((human, opponent), seed=seed)
-        app = WebGame(
-            GameSession(game, {}), human,
-            HeuristicAgent(),
-            asset_resolver=asset_resolver,
-            locale=locale,
-        )
-        server = make_server(app, host="127.0.0.1", port=0)
-        thread = threading.Thread(target=server.serve_forever, daemon=True)
-        thread.start()
-        servers.append((server, thread))
-        return app, human, opponent, f"http://127.0.0.1:{server.server_port}"
-
-    yield create
-    for server, thread in servers:
-        server.shutdown()
-        thread.join(timeout=5)
-        server.server_close()
-
-
-def request(base, path="/api/state", payload=None, headers=None):
-    data = None if payload is None else json.dumps(payload).encode()
-    request_headers = {"Content-Type": "application/json"} if data is not None else {}
-    request_headers.update(headers or {})
-    req = Request(
-        base + path,
-        data=data,
-        headers=request_headers,
-    )
-    try:
-        with urlopen(req, timeout=10) as response:
-            return response.status, json.load(response)
-    except HTTPError as error:
-        return error.code, json.load(error)
-
-
-def submit(base, state, action):
-    return request(
-        base, "/api/action", {"session_id": state["session_id"], "revision": state["revision"], "action": action}
-    )
-
-
-def wait_asset(base, path, timeout=10):
-    deadline = time.monotonic() + timeout
-    while True:
-        with urlopen(base + path, timeout=timeout) as response:
-            status = response.status
-            media_type = response.headers.get("Content-Type")
-            data = response.read()
-        if status != 202:
-            return status, media_type, data
-        if time.monotonic() >= deadline:
-            raise AssertionError("asset never became ready")
-        time.sleep(0.05)
-
-
-def action(state, kind, **fields):
-    return next(
-        item
-        for item in state["legal_actions"]
-        if item["type"] == kind and all(item.get(key) == value for key, value in fields.items())
-    )
-
-
-def ready(base):
-    status, state = request(base)
-    assert status == 200 and state["observation"]["phase"] == "MULLIGAN"
-    status, state = submit(base, state, action(state, "MULLIGAN", mulligan_entity_ids=[]))
-    assert status == 200 and state["observation"]["phase"] == "MAIN"
-    return state
+from fireplace.web_gui.server import WebGame, make_server
+from tests.web_gui_support import action, ready, request, submit, wait_asset, web_game
 
 
 def test_branch_attack_and_end_turn(web_game):
@@ -148,7 +62,7 @@ def test_branch_attack_and_end_turn(web_game):
 
 
 def test_real_snapshot_hides_opponent_hand_and_uses_placeholder(web_game, monkeypatch):
-    monkeypatch.setattr(web_server, "_AssetResolver", None)
+    monkeypatch.setattr(web_assets, "_default_resolver_factory", lambda: None)
     app, human, opponent, base = web_game()
     status, state = request(base)
     assert status == 200
@@ -175,8 +89,10 @@ def test_real_snapshot_hides_opponent_hand_and_uses_placeholder(web_game, monkey
     with urlopen(base + "/modifier_view.js", timeout=10) as response:
         assert response.status == 200
         assert b"FireplaceModifierView" in response.read()
-    with urlopen(base + "/style.css", timeout=10) as response:
-        assert b"placeholder" in response.read().lower()
+        with urlopen(base + "/style.css", timeout=10) as response:
+            assert b"style-base.css" in response.read()
+        with urlopen(base + "/style-base.css", timeout=10) as response:
+            assert b"placeholder" in response.read().lower()
     with urlopen(base + "/board-scene.webp", timeout=10) as response:
         assert response.status == 200
         assert response.headers.get_content_type() == "image/webp"
@@ -351,6 +267,7 @@ def test_opponent_secret_stays_hidden_in_snapshot_log_and_assets(web_game):
     status, state = submit(base, state, action(state, "END_TURN"))
     assert status == 200
     assert state["observation"]["opponent"]["secrets_count"] == 1
+    assert state["observation"]["opponent"]["secret_classes"] == [["MAGE"]]
     assert "secrets" not in state["observation"]["opponent"]
     assert "EX1_287" not in json.dumps(state)
     hidden_play = next(
@@ -393,9 +310,81 @@ def test_opponent_quests_become_visible_above_hero_without_revealing_secret(web_
     assert [card["kind"] for card in opponent_state["quests"]] == ["quest", "sidequest"]
     assert [card["progress_total"] for card in opponent_state["quests"]] == [5, 10]
     assert opponent_state["secrets_count"] == 1
+    assert opponent_state["secret_classes"] == [["MAGE"]]
     assert "EX1_287" not in json.dumps(state)
     assert all(card["entity_id"] != secret.entity_id for card in opponent_state["quests"])
     assert any(event.get("source_entity_id") == quest.entity_id for event in state["events"])
+
+
+def test_opponent_spell_event_is_public_after_spell_enters_graveyard(web_game):
+    app, human, opponent, base = web_game()
+    state = ready(base)
+    opponent.max_mana = 10
+    spell = opponent.give("CS2_029")
+
+    class SpellAgent:
+        def choose_action(self, observation, actions):
+            del observation
+            return next(
+                item for item in actions
+                if item.type == "PLAY_CARD"
+                and item.source_entity_id == spell.entity_id
+                and item.target_entity_id == human.hero.entity_id
+            ) if any(
+                item.type == "PLAY_CARD"
+                and item.source_entity_id == spell.entity_id
+                and item.target_entity_id == human.hero.entity_id
+                for item in actions
+            ) else next(item for item in actions if item.type == "END_TURN")
+
+    app.opponent_agent = SpellAgent()
+    status, state = submit(base, state, action(state, "END_TURN"))
+    assert status == 200
+    spell_event = next(
+        event for event in state["events"]
+        if event["actor"] == "opponent"
+        and event["type"] == "PLAY_CARD"
+        and event.get("source_entity_id") == spell.entity_id
+    )
+    assert spell_event["source_name"]
+    assert "CS2_029" not in json.dumps(state, ensure_ascii=False)
+
+
+def test_opponent_minion_event_is_public_after_immediate_death(web_game):
+    app, _human, opponent, base = web_game()
+    state = ready(base)
+    opponent.max_mana = 10
+    dying_minion = opponent.give("CS2_231")
+    # A hand card can be accepted by the engine and die as soon as it enters
+    # play.  The event projector must capture its identity before execution.
+    dying_minion.damage = dying_minion.max_health
+
+    class DyingMinionAgent:
+        played = False
+
+        def choose_action(self, observation, actions):
+            del observation
+            if not self.played:
+                self.played = True
+                return next(
+                    item for item in actions
+                    if item.type == "PLAY_CARD"
+                    and item.source_entity_id == dying_minion.entity_id
+                )
+            return next(item for item in actions if item.type == "END_TURN")
+
+    app.opponent_agent = DyingMinionAgent()
+    status, state = submit(base, state, action(state, "END_TURN"))
+    assert status == 200
+    assert dying_minion in opponent.graveyard
+    minion_event = next(
+        event for event in state["events"]
+        if event["actor"] == "opponent"
+        and event["type"] == "PLAY_CARD"
+        and event.get("source_entity_id") == dying_minion.entity_id
+    )
+    assert minion_event["source_name"] == "Wisp"
+    assert "_source_card_id" not in json.dumps(state)
 
 
 def test_delayed_locale_description_updates_historical_event_without_private_ids(
@@ -753,7 +742,7 @@ def test_complete_match_through_http_actions(web_game):
 
 
 def test_real_draft_reaches_game_over_through_value_actions(monkeypatch):
-    monkeypatch.setattr(web_server, "_AssetResolver", None)
+    monkeypatch.setattr(web_assets, "_default_resolver_factory", lambda: None)
     game, human, opponent = build_game(seed=2, opponent_name="Heuristic")
     ai = HeuristicAgent()
     human_agent = HeuristicAgent()
@@ -779,209 +768,3 @@ def test_real_draft_reaches_game_over_through_value_actions(monkeypatch):
         assert len(state["events"]) > 40
     finally:
         app.close()
-
-
-@pytest.fixture
-def lobby_server():
-    servers = []
-
-    def create(*, seed=11, opponent="heuristic", asset_resolver=None):
-        app = WebGameManager(
-            seed=seed, opponent=opponent, asset_resolver=asset_resolver
-        )
-        server = make_server(app, host="127.0.0.1", port=0)
-        thread = threading.Thread(target=server.serve_forever, daemon=True)
-        thread.start()
-        servers.append((server, thread, app))
-        return app, f"http://127.0.0.1:{server.server_port}"
-
-    yield create
-    for server, thread, _app in servers:
-        server.shutdown()
-        thread.join(timeout=5)
-        server.server_close()
-
-
-def _finish_lobby_match(app, base, state=None):
-    if state is None:
-        status, state = request(base)
-        assert status == 200 and state["mode"] == "lobby"
-        status, state = request(
-            base,
-            "/api/start",
-            {"nickname": "Alice", "locale": "enUS"},
-        )
-        assert status == 200 and state["mode"] == "match"
-    status, state = submit(base, state, action(state, "MULLIGAN", mulligan_entity_ids=[]))
-    assert status == 200 and state["observation"]["phase"] == "MAIN"
-    active = app.active
-    assert active is not None
-    active.human.max_mana = 10
-    opponent = next(player for player in active.session.game.players if player is not active.human)
-    opponent.hero.damage = opponent.hero.max_health - 1
-    fireball = active.human.give("CS2_029")
-    _, state = request(base)
-    status, state = submit(
-        base,
-        state,
-        action(
-            state,
-            "PLAY_CARD",
-            source_entity_id=fireball.entity_id,
-            target_entity_id=opponent.hero.entity_id,
-        ),
-    )
-    assert status == 200 and state["outcome"] is not None
-    return state
-
-
-def test_lobby_start_locale_nickname_and_terminal_return(lobby_server):
-    app, base = lobby_server()
-    status, lobby = request(base)
-    assert status == 200
-    assert lobby == {"mode": "lobby", "opponent": "heuristic"}
-
-    status, started = request(
-        base,
-        "/api/start",
-        {"nickname": "  Alice  ", "locale": "enUS"},
-    )
-    assert status == 200
-    assert started["mode"] == "match"
-    assert started["locale"] == "enUS"
-    assert started["nickname"] == "Alice"
-    assert started["observation"]["phase"] == "MULLIGAN"
-
-    status, rejected = request(
-        base,
-        "/api/start",
-        {"nickname": "Second", "locale": "zhCN"},
-    )
-    assert status == 409 and rejected["session_id"] == started["session_id"]
-
-    terminal = _finish_lobby_match(app, base, state=started)
-    status, lobby = request(
-        base,
-        "/api/return",
-        {"session_id": terminal["session_id"], "revision": terminal["revision"]},
-    )
-    assert status == 200 and lobby["mode"] == "lobby"
-
-
-def test_lobby_rejects_removed_random_policy(lobby_server):
-    with pytest.raises(ValueError, match="heuristic"):
-        WebGameManager(opponent="random")
-    app, base = lobby_server()
-    status, rejected = request(
-        base,
-        "/api/start",
-        {"nickname": "Alice", "opponent": "random", "locale": "zhCN"},
-    )
-    assert status == 400
-    assert rejected["mode"] == "lobby"
-    assert app.active is None
-
-
-def test_lobby_rejects_stale_actions_after_return_and_new_match(lobby_server):
-    app, base = lobby_server(seed=21)
-    first_terminal = _finish_lobby_match(app, base)
-    old_action = action(first_terminal, "END_TURN") if first_terminal["legal_actions"] else {
-        "schema_version": 1,
-        "type": "END_TURN",
-    }
-    status, lobby = request(
-        base,
-        "/api/return",
-        {"session_id": first_terminal["session_id"], "revision": first_terminal["revision"]},
-    )
-    assert status == 200 and lobby["mode"] == "lobby"
-
-    status, stale = request(
-        base,
-        "/api/action",
-        {
-            "session_id": first_terminal["session_id"],
-            "revision": first_terminal["revision"],
-            "action": old_action,
-        },
-    )
-    assert status == 409 and stale["mode"] == "lobby"
-
-    status, second = request(
-        base,
-        "/api/start",
-        {"nickname": "Bob", "locale": "zhCN"},
-    )
-    assert status == 200 and second["session_id"] != first_terminal["session_id"]
-    status, stale = request(
-        base,
-        "/api/action",
-        {
-            "session_id": first_terminal["session_id"],
-            "revision": first_terminal["revision"],
-            "action": old_action,
-        },
-    )
-    assert status == 409
-    assert stale["session_id"] == second["session_id"]
-
-
-def test_lobby_start_and_return_keep_local_http_guards(lobby_server):
-    _app, base = lobby_server()
-    status, rejected = request(
-        base,
-        "/api/start",
-        {"nickname": "Alice", "locale": "zhCN"},
-        {"Origin": "http://attacker.example"},
-    )
-    assert status == 403 and rejected["mode"] == "lobby"
-    status, rejected = request(
-        base,
-        "/api/start",
-        {"nickname": "Alice", "locale": "zhCN"},
-        {"Content-Type": "text/plain"},
-    )
-    assert status == 415 and rejected["mode"] == "lobby"
-
-
-def test_return_to_lobby_does_not_wait_for_slow_asset_resolver(lobby_server):
-    resolving = threading.Event()
-    release = threading.Event()
-
-    class SlowResolver:
-        def describe(self, card_id, *, locale):
-            del card_id, locale
-            return None
-
-        def resolve(self, card_id, *, kind, locale):
-            del card_id, kind, locale
-            resolving.set()
-            release.wait(timeout=10)
-            return None
-
-    app, base = lobby_server(asset_resolver=SlowResolver())
-    terminal = _finish_lobby_match(app, base)
-    card_id = terminal["observation"]["self"]["hand"][0]["card_id"]
-    try:
-        with urlopen(base + "/assets/render/" + card_id, timeout=3) as response:
-            assert response.status == 202
-            response.read()
-        assert resolving.wait(timeout=3)
-
-        started = time.monotonic()
-        status, lobby = request(
-            base,
-            "/api/return",
-            {"session_id": terminal["session_id"], "revision": terminal["revision"]},
-        )
-        elapsed = time.monotonic() - started
-        assert status == 200 and lobby["mode"] == "lobby"
-        assert elapsed < 1.0
-
-        started = time.monotonic()
-        status, current = request(base)
-        elapsed = time.monotonic() - started
-        assert status == 200 and current["mode"] == "lobby"
-        assert elapsed < 1.0
-    finally:
-        release.set()

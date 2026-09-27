@@ -1,0 +1,297 @@
+/* The hand is intentionally larger than the old panel layout.  Render assets
+   already include the card frame/text; the accessible name and detail button
+   remain in the DOM while the image carries the visual card face. */
+.hand-section {
+  position: absolute;
+  z-index: 12;
+  right: 5%;
+  bottom: -3.1%;
+  left: 5%;
+  height: 18%;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+.hand-section .section-heading {
+  position: absolute;
+  z-index: 5;
+  bottom: 15%;
+  left: -17%;
+  justify-content: flex-start;
+  gap: 10px;
+  width: 20%;
+  min-width: 126px;
+  border: 1px solid rgb(201 155 83 / 76%);
+  border-radius: 10px;
+  padding: 7px 10px;
+  background: rgb(28 26 35 / 93%);
+  box-shadow: 0 4px 10px rgb(0 0 0 / 55%);
+  pointer-events: auto;
+  text-shadow: 0 2px 2px #000;
+}
+
+.hand-section .section-heading .eyebrow {
+  display: none;
+}
+
+.hand-section .section-heading h2 {
+  margin: 0;
+  color: var(--gold-light);
+  font-family: "Noto Serif CJK SC", "Noto Serif SC", Georgia, serif;
+  font-size: clamp(.62rem, .9vw, .82rem);
+  white-space: nowrap;
+}
+
+.hand-section .section-heading .muted {
+  display: block;
+  color: var(--parchment);
+  font-size: clamp(.54rem, .74vw, .68rem);
+  line-height: 1.35;
+  white-space: nowrap;
+}
+
+.hand {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: visible;
+  margin: 0;
+  padding: 0 1.4%;
+  pointer-events: auto;
+  filter: drop-shadow(0 9px 9px rgb(0 0 0 / 75%));
+}
+
+.hand:empty::before {
+  align-self: center;
+  flex: 1 0 100%;
+  color: var(--parchment);
+  content: "没有手牌";
+  font-size: .78rem;
+  text-align: center;
+  text-shadow: 0 2px #000;
+}
+
+html[lang="en"] .hand:empty::before {
+  content: "No cards in hand";
+}
+
+.hand-card {
+  flex: 0 0 clamp(80px, 10vw, 168px);
+  width: clamp(80px, 10vw, 168px);
+  max-width: 168px;
+  min-width: 58px;
+  height: 135%;
+  min-height: 0;
+  margin-left: -2.4%;
+  border: 0;
+  border-radius: 14px;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  transform-origin: 50% 110%;
+  transition: transform 170ms ease, filter 170ms ease;
+}
+
+.hand-card:first-child {
+  margin-left: 0;
+}
+
+.hand-card .card-art {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  border: 0;
+  border-radius: 13px;
+  background: transparent;
+}
+
+.hand-card .card-art::after {
+  display: none;
+}
+
+.hand-card .card-art img {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  object-fit: contain;
+}
+
+/* Live hand values sit above the full-card render so the server's current
+   numbers stay readable even when the downloaded art still shows printed
+   values.  The opaque discs also make the same values work on placeholders. */
+.card-live-stats {
+  position: absolute;
+  z-index: 4;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.card-live-stat {
+  position: absolute;
+  display: grid;
+  width: clamp(22px, 2.15vw, 36px);
+  height: clamp(22px, 2.15vw, 36px);
+  place-items: center;
+  border: 2px solid rgb(255 232 170 / 72%);
+  border-radius: 50%;
+  padding: 0 2px;
+  background: rgb(18 26 44 / 97%);
+  color: #fff;
+  font-size: clamp(.72rem, 1.45vw, 1.14rem);
+  font-weight: 950;
+  line-height: 1;
+  text-shadow: 0 2px 3px #000;
+}
+
+.card-live-stat-cost {
+  top: 17%;
+  left: 16%;
+  transform: translate(-50%, -50%);
+}
+
+.card-live-stat-attack {
+  top: 83%;
+  left: 16%;
+  transform: translate(-50%, -50%);
+}
+
+.card-live-stat-health,
+.card-live-stat-durability {
+  top: 83%;
+  left: 84%;
+  transform: translate(-50%, -50%);
+}
+
+.card-live-stat.cost-lower,
+.card-live-stat.stat-higher {
+  border-color: rgb(139 229 154 / 92%);
+  color: #a1efa8;
+}
+
+.card-live-stat.cost-higher {
+  border-color: rgb(226 107 87 / 94%);
+  color: #ff8f7c;
+}
+
+.card-live-stat.stat-lower,
+.card-live-stat.unchanged {
+  color: #fff;
+}
+
+.hand-card .card-content {
+  display: none;
+}
+
+.hand-card:has(.asset-placeholder) {
+  border: 3px ridge #c89c59;
+  background: linear-gradient(155deg, #433d54, #211f2d);
+}
+
+.hand-card:has(.asset-placeholder) .card-art {
+  border-radius: 10px;
+  background: radial-gradient(circle at 50% 36%, #4b7193, #26344f 54%, #171d30);
+}
+
+.hand-card:has(.asset-placeholder) .card-content {
+  position: absolute;
+  z-index: 3;
+  right: 4px;
+  bottom: 6px;
+  left: 4px;
+  display: block;
+  max-height: 45%;
+  overflow: hidden;
+  border: 1px solid rgb(201 155 83 / 65%);
+  border-radius: 6px;
+  padding: 4px;
+  background: rgb(25 22 32 / 92%);
+  color: var(--parchment);
+  font-size: clamp(.53rem, .72vw, .68rem);
+  line-height: 1.25;
+  text-align: center;
+}
+
+.hand-card:has(.asset-placeholder) .card-name {
+  margin: 0;
+  font-weight: 850;
+}
+
+.hand-card:has(.asset-placeholder) .card-text {
+  margin: 3px 0 0;
+}
+
+.board-card:has(.asset-placeholder) .card-name {
+  display: block;
+  overflow: hidden;
+  border-radius: 5px;
+  padding: 2px 3px;
+  background: rgb(24 22 32 / 92%);
+  font-size: clamp(.47rem, .64vw, .62rem);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hand-card .card-inspect {
+  top: 10%;
+  right: 6%;
+  width: clamp(20px, 1.9vw, 28px);
+  height: clamp(20px, 1.9vw, 28px);
+  opacity: .82;
+}
+
+.hand-card:hover,
+.hand-card:focus-visible,
+.hand-card:focus-within {
+  z-index: 40;
+  filter: drop-shadow(0 0 9px rgb(244 211 149 / 55%));
+  transform: translateY(-23%) scale(1.13) rotate(0deg);
+}
+
+.hand-card.sourceable {
+  filter: drop-shadow(0 0 7px rgb(120 219 116 / 90%)) drop-shadow(0 6px 7px rgb(0 0 0 / 70%));
+}
+
+.hand-card.playable.powered-up {
+  filter: drop-shadow(0 0 9px rgb(244 186 89 / 96%)) drop-shadow(0 6px 7px rgb(0 0 0 / 70%));
+}
+
+.hand-card.mulligan-selected {
+  filter: drop-shadow(0 0 8px rgb(244 186 89 / 90%));
+  transform: translateY(-10%) scale(1.04);
+}
+
+.hand-card.mulligan-selected::after {
+  position: absolute;
+  z-index: 8;
+  top: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 2px solid #ffe2a5;
+  border-radius: 999px;
+  padding: 3px 11px;
+  background: rgb(95 43 23 / 96%);
+  box-shadow: 0 3px 10px #000;
+  color: #fff0ca;
+  content: "替换";
+  font-size: .75rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+html[lang="en"] .hand-card.mulligan-selected::after {
+  content: "Replace";
+}
+
+.hand-card.targetable {
+  filter: drop-shadow(0 0 8px rgb(244 186 89 / 90%));
+}

@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from fireplace import cards
 from fireplace.game import Game
+from fireplace.match_factory import build_random_game
 from fireplace.player import Player
-from fireplace.utils import random_class, random_draft
+from fireplace.random_setup import random_class, random_draft
 
 
 def build_game(
@@ -21,21 +21,33 @@ def build_game(
     modules from an installed application.
     """
 
-    cards.db.initialize()
+    return build_random_game(
+        seed,
+        player_names=(nickname, opponent_name),
+    )
 
-    # Empty decks are placeholders while Game owns the seeded RNG.  They are
-    # filled before GameSession.start() calls game.start().
-    human = Player(nickname, [], "HERO_01")
+
+def build_saved_deck_game(
+    *,
+    seed: int | None,
+    nickname: str,
+    opponent_name: str,
+    hero_id: str,
+    card_ids: list[str],
+) -> tuple[Game, Player, Player]:
+    """Use a validated saved deck for the human and draft an AI opponent."""
+
+    from fireplace import cards
+
+    if not cards.db.initialized:
+        cards.db.initialize()
+    human = Player(nickname, list(card_ids), hero_id)
     opponent = Player(opponent_name, [], "HERO_01")
     game = Game((human, opponent), seed=seed)
-
-    human_class = random_class(game)
     opponent_class = random_class(game)
-    human.starting_hero = human_class.default_hero
     opponent.starting_hero = opponent_class.default_hero
-    human.starting_deck = random_draft(human_class, game=game)
     opponent.starting_deck = random_draft(opponent_class, game=game)
     return game, human, opponent
 
 
-__all__ = ["build_game"]
+__all__ = ["build_game", "build_saved_deck_game"]

@@ -67,10 +67,55 @@ fireplace-web --seed 7
 Open [http://127.0.0.1:8765/](http://127.0.0.1:8765/) on the same computer.
 The equivalent source-checkout command is `python3 examples/play_web.py --seed 7`;
 `python3 -m fireplace.web_gui` also works. Use `--port 8766` to choose another
-port. The server binds to `127.0.0.1`. Enter a local nickname, choose Chinese
-or English, then start a match against the Heuristic AI. Each match
-draws random classes and 30-card decks. The nickname and language preference are
-saved only in this browser; there is no password or network account. Language
+port. The server binds to `127.0.0.1`. The start screen has three main entries:
+**Battle**, **Arena**, and **Collection**. In Collection (`/collection`), choose
+one of the nine classic heroes, build and save a local deck, then select a
+completed 30-card deck in Battle. Unfinished decks can be saved for later;
+ordinary cards allow two copies and legendary cards one. Create a local account
+with a username and password before playing. Each account has its own decks,
+Arena run, and active match. Passwords are stored as salted scrypt hashes in
+`~/.local/state/fireplace/accounts.sqlite3`; login uses an HttpOnly session
+cookie. Account decks and Arena runs live under
+`~/.local/state/fireplace/users/<account-id>/`. Set `FIREPLACE_ACCOUNT_STATE`
+and `FIREPLACE_ACCOUNT_DATA_ROOT` to change these locations. The Account page
+can import pre-account `decks.json` and `arena-run.json` once into the signed-in
+account; it leaves the old files in place. Collection links to the full card
+catalog at `/cards`.
+The server still listens only on this computer. A later LAN deployment needs
+TLS before transmitting account passwords over the network.
+Open `/cards` to search the local `CardDefs.xml` catalog by Chinese
+or English name or card ID. Filter by card set and class (including neutral).
+The ten Basic starting heroes have their own catalog category. Playable hero
+cards, such as Death Knight cards and Dr. Boom, stay in their expansion sets;
+hero skins retain their own set in **All XML data**. A badge says
+whether a matching or reused Python definition was found. This describes
+source code presence, not whether the card is playable or its effect is complete.
+The catalog also lets you
+open a card for its details, and switch between Chinese and English. The
+default view shows collectible cards except hero skins; **All XML data** also
+shows tokens, skins and other non-collectible records. The catalog shows card
+data and does not claim that every card ability is implemented in the game.
+Card images use the local server and the same external asset cache described
+below; unavailable images show a placeholder.
+
+Choose **Arena** on the start screen, or open `/arena`, for a local run against
+the Heuristic AI. Basic and Classic cards are always included and cost no
+expansion points. Select other expansions worth 16
+points, with large sets costing three points and small sets one point (normally
+five large plus one small). Pick one of three offered classic heroes, then pick
+one card from each of 30 three-card offers. The draft includes collectible
+expansion hero cards and may include cards whose scripted effect is incomplete.
+The deck stays fixed across matches; the run ends at seven wins or three losses.
+The current draft and record are saved under that account's data directory.
+If the server stops during an
+unfinished battle, reopen Arena to retry that battle without counting a loss.
+
+Enter a local nickname, choose Chinese
+or English, then start a match against the Heuristic AI. The random-deck option
+draws random classes and 30-card decks; a completed saved deck uses its chosen
+hero and cards. The nickname and language preference are
+saved only in this browser; the login account is separate from this displayed
+nickname. Language
 can be changed on the start screen and stays fixed during a match. After Game
 Over, return to the start screen to change settings or play again without
 restarting the server. `--seed` makes the first game's random setup
@@ -105,6 +150,8 @@ run `node tests/web_gui_browser_smoke.cjs` from the repository root. Set
 a deterministic real-engine match through the GUI, including a stale action,
 and writes desktop, narrow-window and Game Over screenshots under
 `/tmp/fireplace-web-gui-artifacts` by default.
+Run `node tests/web_gui_catalog_browser.cjs` with the same environment to check
+the catalog's filters, search, detail view, image loading and narrow layout.
 Run `node tests/web_gui_full_match.cjs` with the same environment variables to
 play complete browser matches against Heuristic in Chinese and English on one
 local server. It uses battlefield clicks and the end-turn button

@@ -20,33 +20,23 @@ if __package__ in (None, ""):
 
 from hearthstone.enums import PlayState
 
-from fireplace import cards
 from fireplace.action_log import ActionLog
 from fireplace.agents import HeuristicAgent, HumanTUIAgent, UserQuit
 from fireplace.controller import GameSession
 from fireplace.game import Game
+from fireplace.match_factory import build_random_game
 from fireplace.player import Player
-from fireplace.utils import random_class, random_draft
 
 
 def build_game(
     seed: int | None = None, opponent_name: str = "Heuristic"
 ) -> tuple[Game, Player, Player]:
-    """Create two random classes/decks using the game's seeded RNG."""
+    """Create the terminal match through the shared random game factory."""
 
-    # Empty starting decks are only placeholders while the Game owns the RNG;
-    # they are filled before ``GameSession.start`` calls ``game.start()``.
-    human = Player("Human", [], "HERO_01")
-    opponent = Player(opponent_name, [], "HERO_01")
-    game = Game((human, opponent), seed=seed)
-
-    human_class = random_class(game)
-    opponent_class = random_class(game)
-    human.starting_hero = human_class.default_hero
-    opponent.starting_hero = opponent_class.default_hero
-    human.starting_deck = random_draft(human_class, game=game)
-    opponent.starting_deck = random_draft(opponent_class, game=game)
-    return game, human, opponent
+    return build_random_game(
+        seed,
+        player_names=("Human", opponent_name),
+    )
 
 
 def _winner_text(game: Game) -> str:
@@ -75,7 +65,6 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
-    cards.db.initialize()
     opponent_name = "Heuristic"
     game, human, opponent = build_game(args.seed, opponent_name)
     opponent_agent = HeuristicAgent()

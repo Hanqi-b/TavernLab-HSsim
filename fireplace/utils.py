@@ -5,18 +5,27 @@ from bisect import bisect
 from importlib import import_module
 from pkgutil import iter_modules
 from typing import List, TypeVar, overload
+from weakref import WeakKeyDictionary
 from xml.etree import ElementTree
 
-from hearthstone.enums import CardClass, CardType
+from hearthstone.enums import CardType
 
 from .logging import log
 from .entity import Entity
+from .random_setup import random_class, random_draft
 
 
 # Autogenerate the list of cardset modules
 _cards_module = os.path.join(os.path.dirname(__file__), "cards")
 CARD_SETS = [cs for _, cs, ispkg in iter_modules([_cards_module]) if ispkg]
 T = TypeVar("T")
+
+
+# ``play_turn(game)`` predates GameSession and is commonly called once per
+# loop iteration by batch scripts.  Keep only the policy's random stream in a
+# weak compatibility registry; the GameSession itself remains an explicit,
+# short-lived owner for each call and never gets attached to ``Game``.
+_legacy_random_agents = WeakKeyDictionary()
 
 
 class CardList(list[T], Entity):
@@ -86,51 +95,6 @@ class CardList(list[T], Entity):
         )
 
 
-def random_draft(card_class: CardClass, exclude=[], include=[], game=None):
-    """
-    Return a deck of 30 random cards for the \a card_class
-    """
-    import random
-    from . import cards
-    from .deck import Deck
-
-    deck = list(include)
-    collection = []
-    # hero = card_class.default_hero
-
-    for card in cards.db.keys():
-        if card in exclude:
-            continue
-        cls = cards.db[card]
-        if not cls.collectible:
-            continue
-        if cls.type == CardType.HERO:
-            # Heroes are collectible...
-            continue
-        if cls.card_class and cls.card_class not in [card_class, CardClass.NEUTRAL]:
-            # Play with more possibilities
-            continue
-        collection.append(cls)
-
-    while len(deck) < Deck.MAX_CARDS:
-        if game:
-            card = game.random.choice(collection)
-        else:
-            card = random.choice(collection)
-        if deck.count(card.id) < card.max_count_in_deck:
-            deck.append(card.id)
-
-    return deck
-
-
-def random_class(game=None):
-    if game:
-        return CardClass(game.random.randint(2, 10))
-    import random
-
-    return CardClass(random.randint(2, 10))
-
-
 def entity_to_xml(entity):
     e = ElementTree.Element("Entity")
     for tag, value in entity.tags.items():
@@ -197,59 +161,64 @@ def weighted_card_choice(source, weights: List[int], card_sets: List[str], count
 
 
 def setup_game(seed=None, start=True):
-    from .game import Game
-    from .player import Player
+    """Build the historical random batch game entry point.
 
-    # Create the game first so every setup decision comes from the same
-    # per-game RNG that the engine uses after startup.
-    game = Game(seed=seed)
-    card_class1 = random_class(game)
-    card_class2 = random_class(game)
-    deck1 = random_draft(card_class1, game=game)
-    deck2 = random_draft(card_class2, game=game)
-    player1 = Player("Player1", deck1, card_class1.default_hero)
-    player2 = Player("Player2", deck2, card_class2.default_hero)
+    The actual construction lives in :mod:`fireplace.match_factory` so the
+    web and terminal entry points consume the same seeded setup stream.
+    """
+    from .match_factory import build_random_game
 
-    game.players = (player1, player2)
-    for player in game.players:
-        player.game = game
-    if start:
-        game.start()
-
+    game, _player1, _player2 = build_random_game(
+        seed, player_names=("Player1", "Player2"), start=start
+    )
     return game
 
 
-def play_turn(game):
-    # Keep the old batch-simulation entry point, but make its decisions cross
-    # the same validated boundary used by the interactive application.
+def play_turn(game, session=None):
+    """Play decisions until the current player changes.
+
+    ``session`` is optional for compatibility with the historical helper.
+    Long-running callers should keep and pass one explicitly so the policy
+    state and action-log ownership remain outside the engine ``Game`` object.
+    """
     from .agents import RandomAgent
-    from .controller import GameSession, decision_player
 
-    session = getattr(game, "_random_session", None)
+    temporary_session = session is None
     if session is None:
-        # Keep policy choices on their own stream.  Replaying recorded
-        # actions skips those policy draws, so sharing ``game.random`` would
-        # shift every later engine decision.
-        agent = RandomAgent(seed=getattr(game, "seed", None))
-        session = GameSession(game, {player: agent for player in game.players})
-        game._random_session = session
+        from .controller import GameSession
 
-    starting_player = game.current_player
-    while game.current_player is starting_player or any(
-        player.choice for player in game.players
-    ):
-        player = decision_player(game)
-        action = session.agents[player].choose_action(
-            session.observation(player), session.legal_actions(player)
-        )
-        session.execute(player, action)
+        # Keep policy choices on their own stream. Replaying recorded actions
+        # skips those policy draws, so sharing ``game.random`` would shift
+        # every later engine decision.
+        agent = _legacy_random_agents.get(game)
+        if agent is None:
+            agent = RandomAgent(seed=getattr(game, "seed", None))
+            _legacy_random_agents[game] = agent
+        session = GameSession(game, {player: agent for player in game.players})
+    elif session.game is not game:
+        raise ValueError("session belongs to a different game")
+
+    try:
+        session.run_turn()
+    finally:
+        if temporary_session:
+            session.close()
+            if game.ended:
+                _legacy_random_agents.pop(game, None)
     return game
 
 
 def play_full_game(seed=None, action_log=None):
+    """Run a seeded random match until its terminal action.
+
+    The terminal action is recorded and then raises ``GameOver`` for
+    compatibility with the historical batch entry point.  The return below
+    remains a defensive fallback for an engine that reaches a completed state
+    without raising that signal.
+    """
     from .agents import RandomAgent
     from .action_log import ActionLog
-    from .controller import GameSession, decision_player
+    from .controller import GameSession
 
     game = setup_game(seed=seed, start=False)
     # The game RNG is reserved for setup and engine effects.  The policy gets
@@ -262,16 +231,10 @@ def play_full_game(seed=None, action_log=None):
     session = GameSession(
         game, {player: agent for player in game.players}, action_log=action_log
     )
-    game._random_session = session
-    session.start()
-    while any(player.choice for player in game.players):
-        player = decision_player(game)
-        action = agent.choose_action(
-            session.observation(player), session.legal_actions(player)
-        )
-        session.execute(player, action)
-
-    while True:
-        play_turn(game)
+    try:
+        while not game.ended:
+            session.run_turn()
+    finally:
+        session.close()
 
     return game

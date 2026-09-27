@@ -1,14 +1,14 @@
-"""Run a local single-player Fireplace game in a browser.
+"""Run account-separated local Fireplace games in a browser.
 
-The entry point is intentionally local-only: it binds to loopback and serves
-one human-vs-agent session through the standard-library HTTP server.
+The entry point binds to loopback and can keep one human-vs-agent match per
+signed-in account through the standard-library HTTP server.
 """
 
 from __future__ import annotations
 
 import argparse
 
-from .server import WebGameManager, make_server
+from .server import make_server
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -17,13 +17,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--port", type=int, default=8765, help="local HTTP port")
     args = parser.parse_args(argv)
 
-    # The browser now opens at a lobby.  Game construction is delayed until
-    # the user submits a nickname and locale to /api/start.  The local web
-    # opponent is always the heuristic policy.
-    web_game = WebGameManager(seed=args.seed)
-    # Deliberately use the fixed loopback address.  This tool is a local
-    # browser UI and must not expose a live game on the network.
-    server = make_server(web_game, host="127.0.0.1", port=args.port)
+    # Game construction is delayed until an authenticated user starts a match.
+    # The local web opponent is always the heuristic policy.
+    # Account sessions and each account's Arena/deck/match manager are
+    # created lazily by the server.  Keep loopback binding until a separate
+    # TLS-enabled LAN deployment path is added.
+    server = make_server(host="127.0.0.1", port=args.port, seed=args.seed)
     print(f"Open http://127.0.0.1:{server.server_port}/", flush=True)
     try:
         server.serve_forever()

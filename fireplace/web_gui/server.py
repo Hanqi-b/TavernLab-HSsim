@@ -10,53 +10,29 @@ looked up by the request handler.
 from __future__ import annotations
 
 import copy
-import ipaddress
-import json
 import threading
 import uuid
 from collections.abc import Mapping
 from concurrent.futures import TimeoutError as FutureTimeout
-from http import HTTPStatus
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from pathlib import Path
 from typing import Any
-from urllib.parse import unquote, urlsplit
 
-from ..agent_api import Action
+from ..agent_api import Action, CONCEDE
 from ..controller import ActionError, GameSession, decision_player
 from ..exceptions import GameOver
 from .assets import AssetService
-
-try:  # Optional parallel asset package.  The UI works without it.
-    from card_assets import AssetResolver as _AssetResolver
-except Exception:  # pragma: no cover - import depends on an optional package
-    _AssetResolver = None
+from .contracts import ASSET_PENDING, WebActionError, WebLifecycleError
+from .public_events import (
+    decorate_visible_cards,
+    localize_events,
+    project_action,
+    visible_card_ids,
+)
 
 
 _ASSET_KINDS = frozenset({"render", "art", "tile"})
 _LOCALES = frozenset({"zhCN", "enUS"})
 _OPPONENTS = frozenset({"heuristic"})
-_ASSET_PENDING = object()
-_JSON_ERROR = object()
-_STATIC_MIME_TYPES = {
-    "index.html": "text/html; charset=utf-8",
-    "app.js": "text/javascript; charset=utf-8",
-    "action_model.js": "text/javascript; charset=utf-8",
-    "i18n.js": "text/javascript; charset=utf-8",
-    "status_view.js": "text/javascript; charset=utf-8",
-    "modifier_view.js": "text/javascript; charset=utf-8",
-    "style.css": "text/css; charset=utf-8",
-    "board-scene.webp": "image/webp",
-}
-_MAX_REQUEST_BYTES = 1 << 20
-
-
-def _field(value: object, name: str, default: Any = None) -> Any:
-    """Read a scalar field from a mapping or a small asset value object."""
-
-    if isinstance(value, Mapping):
-        return value.get(name, default)
-    return getattr(value, name, default)
+_ASSET_PENDING = ASSET_PENDING
 
 
 def _game_ended(game: object) -> bool:
@@ -92,123 +68,6 @@ def _outcome(game: object, human: object) -> dict[str, str | bool | None] | None
             human_won = player is human
             break
     return {"winner": winner, "human_won": human_won if winner else None}
-
-
-def _description_value(description: object, name: str) -> Any:
-    value = _field(description, name)
-    if value is None:
-        return None
-    if isinstance(value, (str, int, float, bool)):
-        return value
-    return str(value)
-
-
-def _decorate_visible_cards(value: object, descriptions: Mapping[str, object]) -> None:
-    """Enrich visible observation card mappings with optional card text.
-
-    ``Observation`` has already removed hidden opponent card identities.  This
-    walk therefore only sees fields that are safe to expose to the human
-    player.  It never follows or serializes a Fireplace object.
-    """
-
-    if isinstance(value, dict):
-        card_id = value.get("card_id")
-        if isinstance(card_id, str) and card_id:
-            description = descriptions.get(card_id)
-            if description is not None:
-                name = _description_value(description, "name")
-                text = _description_value(description, "text")
-                locale = _description_value(description, "locale")
-                if name:
-                    value["name"] = str(name)
-                if text is not None:
-                    value["text"] = str(text)
-                if locale:
-                    value["locale"] = str(locale)
-        for child in value.values():
-            _decorate_visible_cards(child, descriptions)
-    elif isinstance(value, list):
-        for child in value:
-            _decorate_visible_cards(child, descriptions)
-
-
-def _visible_card_ids(value: object) -> set[str]:
-    """Collect card ids from a filtered observation, never from the game."""
-
-    result: set[str] = set()
-
-    def visit(item: object) -> None:
-        if isinstance(item, Mapping):
-            card_id = item.get("card_id")
-            if isinstance(card_id, str) and card_id:
-                result.add(card_id)
-            for child in item.values():
-                visit(child)
-        elif isinstance(item, (list, tuple)):
-            for child in item:
-                visit(child)
-
-    visit(value)
-    return result
-
-
-def _visible_entity_details(
-    observation: Mapping[str, Any],
-) -> dict[int, dict[str, str]]:
-    """Index safe names and card IDs visible to this viewer.
-
-    Event text must never be derived from the opponent's private action log or
-    from engine entities.  In particular an opponent's hand card is absent
-    from this observation until the engine exposes it publicly.
-    """
-
-    result: dict[int, dict[str, str]] = {}
-
-    def visit(item: object) -> None:
-        if isinstance(item, Mapping):
-            entity_id = item.get("entity_id")
-            name = item.get("name")
-            if type(entity_id) is int and isinstance(name, str) and name:
-                detail = {"name": name}
-                card_id = item.get("card_id")
-                if isinstance(card_id, str) and card_id:
-                    detail["card_id"] = card_id
-                result[entity_id] = detail
-            for child in item.values():
-                visit(child)
-        elif isinstance(item, (list, tuple)):
-            for child in item:
-                visit(child)
-
-    visit(observation)
-    return result
-
-
-def _visible_entity_names(observation: Mapping[str, Any]) -> dict[int, str]:
-    """Index names that this viewer could see before a decision."""
-
-    return {
-        entity_id: detail["name"]
-        for entity_id, detail in _visible_entity_details(observation).items()
-    }
-
-
-class WebActionError(ValueError):
-    """An HTTP action failure with its current, privacy-filtered snapshot."""
-
-    def __init__(self, message: str, status_code: int, snapshot: dict[str, Any]):
-        super().__init__(message)
-        self.status_code = int(status_code)
-        self.snapshot = snapshot
-
-
-class WebLifecycleError(ValueError):
-    """An HTTP failure while changing between lobby and match modes."""
-
-    def __init__(self, message: str, status_code: int, snapshot: dict[str, Any]):
-        super().__init__(message)
-        self.status_code = int(status_code)
-        self.snapshot = snapshot
 
 
 def _validate_locale(value: object) -> str:
@@ -249,8 +108,11 @@ class WebGame:
         opponent_agent: object,
         *,
         asset_resolver: object | None = None,
+        asset_service: AssetService | None = None,
         locale: str = "zhCN",
     ) -> None:
+        if asset_resolver is not None and asset_service is not None:
+            raise ValueError("asset_resolver and asset_service are mutually exclusive")
         self.locale = _validate_locale(locale)
         self.session = session
         self.human = human
@@ -261,20 +123,16 @@ class WebGame:
         self._started = False
         self._events: list[dict[str, Any]] = []
         self._event_seq = 0
-        self.asset_resolver = (
-            asset_resolver if asset_resolver is not None else self._load_resolver()
+        self.asset_resolver = asset_resolver
+        self._owns_assets = asset_service is None
+        # AssetService owns optional resolver construction and keeps it lazy.
+        # Passing a custom resolver remains useful for deterministic tests and
+        # embedded callers; omitting one uses the package's default factory.
+        self.assets = asset_service or (
+            AssetService() if asset_resolver is None
+            else AssetService(resolver=asset_resolver)
         )
-        self.assets = AssetService(resolver=self.asset_resolver)
         self.start()
-
-    @staticmethod
-    def _load_resolver() -> object | None:
-        if _AssetResolver is None:
-            return None
-        try:
-            return _AssetResolver(cache_dir=None)
-        except Exception:
-            return None
 
     @property
     def lock(self) -> threading.RLock:
@@ -290,7 +148,14 @@ class WebGame:
     def close(self, *, wait: bool = True) -> None:
         """Release optional asset workers when the local server closes."""
 
-        self.assets.close(wait=wait)
+        try:
+            if self._owns_assets:
+                self.assets.close(wait=wait)
+        finally:
+            # The session registers an engine observer for entity-id lookup.
+            # Detach it when a lobby match is discarded so repeated matches do
+            # not retain the old game through the observer graph.
+            self.session.close()
 
     def start(self) -> dict[str, Any]:
         """Start the session once and advance the AI to the human decision."""
@@ -315,10 +180,10 @@ class WebGame:
         """Decorate one already filtered observation in the match locale."""
 
         localized = copy.deepcopy(observation)
-        visible_ids = _visible_card_ids(localized)
+        visible_ids = visible_card_ids(localized)
         descriptions = self.assets.describe_visible(visible_ids, locale=self.locale)
         if descriptions:
-            _decorate_visible_cards(localized, descriptions)
+            decorate_visible_cards(localized, descriptions)
         return localized
 
     def _public_events_locked(self) -> list[dict[str, Any]]:
@@ -341,19 +206,7 @@ class WebGame:
             descriptions = self.assets.describe_visible(card_ids, locale=self.locale)
         else:
             descriptions = {}
-
-        for event in events:
-            source_card_id = event.pop("_source_card_id", None)
-            target_card_id = event.pop("_target_card_id", None)
-            if source_card_id in descriptions:
-                name = _description_value(descriptions[source_card_id], "name")
-                if name:
-                    event["source_name"] = str(name)
-            if target_card_id in descriptions:
-                name = _description_value(descriptions[target_card_id], "name")
-                if name:
-                    event["target_name"] = str(name)
-        return events
+        return localize_events(events, descriptions)
 
     def _snapshot_locked(self) -> dict[str, Any]:
         observation = self._localized_observation_locked(
@@ -376,70 +229,29 @@ class WebGame:
     def _public_event_locked(
         self, player: object, action: Action, observation: Mapping[str, Any]
     ) -> dict[str, Any]:
-        """Project an accepted action into a small, privacy-filtered log row."""
+        """Project an accepted action under the centralized privacy policy."""
 
-        observation = self._localized_observation_locked(observation)
-        actor = "self" if player is self.human else "opponent"
-        details = _visible_entity_details(observation)
-        names = {entity_id: detail["name"] for entity_id, detail in details.items()}
-        event: dict[str, Any] = {
-            "seq": self._event_seq + 1,
-            "turn": observation.get("turn"),
-            "actor": actor,
-            "type": action.type,
-        }
-        # A card in the opponent's hand and a pending opponent choice are
-        # private.  Only a human-owned card, or an already public attacker or
-        # hero power, may have its source name shown here.
-        if actor == "self" or action.type in ("ATTACK", "USE_HERO_POWER"):
-            source = names.get(action.source_entity_id)
-            if source:
-                event["source_name"] = source
-                event["source_entity_id"] = action.source_entity_id
-                source_card_id = details[action.source_entity_id].get("card_id")
-                if source_card_id:
-                    event["_source_card_id"] = source_card_id
-        if action.type in ("PLAY_CARD", "ATTACK", "USE_HERO_POWER"):
-            target = names.get(action.target_entity_id)
-            if target:
-                event["target_name"] = target
-                event["target_entity_id"] = action.target_entity_id
-                target_card_id = details[action.target_entity_id].get("card_id")
-                if target_card_id:
-                    event["_target_card_id"] = target_card_id
-        if actor == "self" and action.type == "PLAY_CARD" and action.position is not None:
-            event["position"] = action.position
-        if actor == "self" and action.type == "CHOOSE":
-            choice = names.get(action.choice_entity_id)
-            if choice:
-                event["source_name"] = choice
-                choice_card_id = details[action.choice_entity_id].get("card_id")
-                if choice_card_id:
-                    event["_source_card_id"] = choice_card_id
-        return event
+        source = None
+        if action.type == "PLAY_CARD" and action.source_entity_id is not None:
+            try:
+                source = self.session.index.get(action.source_entity_id)
+            except ActionError:
+                # The action was already checked against legal actions.  This
+                # defensive fallback keeps projection harmless for lightweight
+                # test sessions whose index does not retain hand cards.
+                source = None
+        return project_action(
+            player,
+            self.human,
+            action,
+            self._localized_observation_locked(observation),
+            seq=self._event_seq + 1,
+            source=source,
+        )
 
     def _append_event_locked(self, event: dict[str, Any]) -> None:
         self._event_seq += 1
         self._events.append(event)
-
-    def _reveal_played_public_card_locked(
-        self, event: dict[str, Any], action: Action
-    ) -> None:
-        """Name an opponent play only if that entity became publicly visible."""
-
-        if event["actor"] != "opponent" or action.type != "PLAY_CARD":
-            return
-        observation = self._localized_observation_locked(
-            self.session.observation(self.human)
-        )
-        details = _visible_entity_details(observation)
-        detail = details.get(action.source_entity_id)
-        if detail:
-            event["source_name"] = detail["name"]
-            event["source_entity_id"] = action.source_entity_id
-            card_id = detail.get("card_id")
-            if card_id:
-                event["_source_card_id"] = card_id
 
     def snapshot(self) -> dict[str, Any]:
         """Return the current browser payload as ordinary JSON-safe values."""
@@ -454,6 +266,22 @@ class WebGame:
             payload = self._snapshot_locked()
             payload["error"] = str(message)
             return payload
+
+    def start_match(self, payload: object) -> dict[str, Any]:
+        """Satisfy the shared backend contract for single-match servers."""
+
+        del payload
+        raise WebLifecycleError(
+            "match lifecycle is unavailable for this server", 409, self.snapshot()
+        )
+
+    def return_to_lobby(self, payload: object) -> dict[str, Any]:
+        """Satisfy the shared backend contract for single-match servers."""
+
+        del payload
+        raise WebLifecycleError(
+            "match lifecycle is unavailable for this server", 409, self.snapshot()
+        )
 
     def _advance_ai_locked(self) -> None:
         """Run the supplied agent until human input or terminal state."""
@@ -480,13 +308,11 @@ class WebGame:
             try:
                 self.session.execute(player, action)
             except GameOver:
-                self._reveal_played_public_card_locked(event, action)
                 self._append_event_locked(event)
                 self._revision += 1
                 return
             except ActionError as exc:
                 raise RuntimeError("Opponent action was rejected: %s" % exc) from exc
-            self._reveal_played_public_card_locked(event, action)
             self._append_event_locked(event)
             self._revision += 1
 
@@ -550,6 +376,54 @@ class WebGame:
             self._advance_ai_locked()
             return self._snapshot_locked()
 
+    def concede(self, payload: object) -> dict[str, Any]:
+        """Concede the active match through the human player's engine API.
+
+        Surrender is deliberately kept outside ``legal_actions``.  It is a
+        browser control, and exposing it as a normal agent action would also
+        make it available to the opponent agent.  The session still executes
+        the explicit action so the terminal result remains replayable.
+        """
+
+        with self._lock:
+            current = self._snapshot_locked()
+            if not isinstance(payload, Mapping):
+                raise WebActionError("request body must be a JSON object", 400, current)
+
+            if payload.get("session_id") != self._session_id:
+                current["error"] = "stale session"
+                raise WebActionError(current["error"], 409, current)
+
+            revision = payload.get("revision")
+            if type(revision) is not int:
+                current["error"] = "revision must be an integer"
+                raise WebActionError(current["error"], 400, current)
+            if revision != self._revision:
+                current["error"] = "stale revision"
+                raise WebActionError(current["error"], 409, current)
+            if current.get("outcome") is not None:
+                current["error"] = "match is over"
+                raise WebActionError(current["error"], 409, current)
+
+            try:
+                self.session.execute(self.human, Action(type=CONCEDE))
+            except GameOver:
+                # GameSession records the explicit action and finalizes the
+                # action log before propagating the engine's terminal signal.
+                pass
+            except ActionError as exc:
+                current = self._snapshot_locked()
+                current["error"] = str(exc)
+                raise WebActionError(str(exc), 409, current) from exc
+
+            if not _game_ended(self.session.game):
+                current = self._snapshot_locked()
+                current["error"] = "could not concede the match"
+                raise WebActionError(current["error"], 409, current)
+
+            self._revision += 1
+            return self._snapshot_locked()
+
     def asset(self, kind: str, card_id: str) -> tuple[bytes, str, bool] | object | None:
         """Resolve one visible card asset to bytes and a content type.
 
@@ -562,7 +436,7 @@ class WebGame:
         if kind not in _ASSET_KINDS or not isinstance(card_id, str):
             return None
         with self._lock:
-            if card_id not in _visible_card_ids(self.session.observation(self.human)):
+            if card_id not in visible_card_ids(self.session.observation(self.human)):
                 return None
         # A cache miss may download an image for up to two locale timeouts.
         # Respond immediately so image requests cannot monopolize the
@@ -594,14 +468,25 @@ class WebGameManager:
         seed: int | None = None,
         opponent: str = "heuristic",
         asset_resolver: object | None = None,
+        arena_store: object | None = None,
+        deck_store: object | None = None,
+        catalog: object | None = None,
     ) -> None:
         if seed is not None and type(seed) is not int:
             raise ValueError("seed must be an integer or None")
         self._base_seed = seed
         self._opponent_default = _validate_opponent(opponent)
         self._asset_resolver = asset_resolver
+        self._arena_store = arena_store
+        self._deck_store = deck_store
+        self._catalog = catalog
+        self._deck_service = None
+        self._asset_service: AssetService | None = None
         self._match_count = 0
         self._active: WebGame | None = None
+        self._active_arena_match_id: str | None = None
+        self._arena_result_recorded = False
+        self._arena_service = None
         self._lock = threading.RLock()
 
     @property
@@ -645,6 +530,133 @@ class WebGameManager:
             return None
         return self._base_seed + self._match_count
 
+    def _asset_service_locked(self) -> AssetService:
+        """Return the one asset service shared by all manager matches."""
+
+        if self._asset_service is None:
+            self._asset_service = (
+                AssetService()
+                if self._asset_resolver is None
+                else AssetService(resolver=self._asset_resolver)
+            )
+        return self._asset_service
+
+    def _arena_locked(self):
+        if self._arena_service is None:
+            from fireplace.arena.store import ArenaStoreConflict, ArenaStoreCorrupt
+            from .arena_service import ArenaService
+
+            try:
+                self._arena_service = ArenaService(store=self._arena_store, catalog=self._catalog)
+            except (ArenaStoreConflict, ArenaStoreCorrupt) as exc:
+                raise WebLifecycleError(str(exc), 409, self._lobby_snapshot_locked()) from exc
+        return self._arena_service
+
+    def _decks_locked(self):
+        if self._deck_service is None:
+            from .decks import DeckService
+
+            self._deck_service = DeckService(store=self._deck_store, catalog=self._catalog)
+        return self._deck_service
+
+    def decks_state(self, *, locale: str = "zhCN") -> dict[str, Any]:
+        with self._lock:
+            try:
+                return self._decks_locked().list(locale=locale)
+            except OSError as exc:
+                raise WebLifecycleError("deck storage is unavailable", 503, self._lobby_snapshot_locked()) from exc
+
+    def decks_save(self, payload: object) -> dict[str, Any]:
+        with self._lock:
+            from .decks import DeckConflict
+
+            current = self._lobby_snapshot_locked()
+            if not isinstance(payload, Mapping):
+                raise WebLifecycleError("request body must be a JSON object", 400, current)
+            try:
+                return self._decks_locked().save(payload, locale=payload.get("locale", "zhCN"))
+            except DeckConflict as exc:
+                raise WebLifecycleError(str(exc), 409, current) from exc
+            except ValueError as exc:
+                raise WebLifecycleError(str(exc), 400, current) from exc
+            except OSError as exc:
+                raise WebLifecycleError("deck storage is unavailable", 503, current) from exc
+
+    def decks_delete(self, payload: object) -> dict[str, Any]:
+        with self._lock:
+            from .decks import DeckConflict
+
+            current = self._lobby_snapshot_locked()
+            if not isinstance(payload, Mapping):
+                raise WebLifecycleError("request body must be a JSON object", 400, current)
+            try:
+                return self._decks_locked().delete(payload, locale=payload.get("locale", "zhCN"))
+            except DeckConflict as exc:
+                raise WebLifecycleError(str(exc), 409, current) from exc
+            except ValueError as exc:
+                raise WebLifecycleError(str(exc), 400, current) from exc
+            except OSError as exc:
+                raise WebLifecycleError("deck storage is unavailable", 503, current) from exc
+
+    def arena_state(self, *, locale: str = "zhCN") -> dict[str, Any]:
+        with self._lock:
+            return self._arena_locked().state(locale=locale)
+
+    def arena_start(self, payload: object) -> dict[str, Any]:
+        with self._lock:
+            if self._active is not None:
+                raise WebLifecycleError("finish the active match first", 409, self.snapshot())
+            seed = self._base_seed
+            return self._arena_locked().start(payload, seed=seed)
+
+    def arena_choose_hero(self, payload: object) -> dict[str, Any]:
+        with self._lock:
+            return self._arena_locked().choose_hero(payload)
+
+    def arena_choose_card(self, payload: object) -> dict[str, Any]:
+        with self._lock:
+            return self._arena_locked().choose_card(payload)
+
+    def arena_start_battle(self, payload: object) -> dict[str, Any]:
+        with self._lock:
+            service = self._arena_locked()
+            run = service.ready_for_battle(payload)
+            if self._active is not None:
+                raise WebLifecycleError("finish the active match first", 409, service.state())
+
+            from fireplace.agents import HeuristicAgent
+            from .arena_factory import build_arena_game
+
+            game, human, _opponent = build_arena_game(
+                seed=run.seed + 100_000 + run.match_index,
+                nickname=run.nickname,
+                hero_id=run.hero_id,
+                deck=run.deck,
+                selected_sets=run.selected_sets,
+            )
+            active = WebGame(
+                GameSession(game, {}),
+                human,
+                HeuristicAgent(),
+                asset_service=self._asset_service_locked(),
+                locale=run.locale,
+            )
+            try:
+                state = service.mark_battle_started()
+            except Exception:
+                active.close(wait=False)
+                raise
+            self._active = active
+            self._active_arena_match_id = service.run.pending_match_id
+            self._arena_result_recorded = False
+            return state
+
+    def arena_reset(self, payload: object) -> dict[str, Any]:
+        with self._lock:
+            if self._active_arena_match_id is not None:
+                raise WebLifecycleError("finish the active match first", 409, self._arena_locked().state())
+            return self._arena_locked().reset(payload)
+
     def start_match(self, payload: object) -> dict[str, Any]:
         """Create a fresh random-class/random-deck match from lobby input."""
 
@@ -671,18 +683,36 @@ class WebGameManager:
             # the lobby factory until they actually request a new match.
             from fireplace.agents import HeuristicAgent
             from fireplace.controller import GameSession
-            from .factory import build_game
+            from .factory import build_game, build_saved_deck_game
 
             match_seed = self._next_seed_locked()
-            game, human, _opponent = build_game(
-                match_seed, "Heuristic", nickname=nickname
-            )
+            deck_id = payload.get("deck_id")
+            if deck_id is None or deck_id == "":
+                game, human, _opponent = build_game(
+                    match_seed, "Heuristic", nickname=nickname
+                )
+            else:
+                if not isinstance(deck_id, str):
+                    raise WebLifecycleError("deck_id must be a string", 400, current)
+                try:
+                    saved = self._decks_locked().get_complete(deck_id)
+                except ValueError as exc:
+                    raise WebLifecycleError(str(exc), 400, current) from exc
+                except OSError as exc:
+                    raise WebLifecycleError("deck storage is unavailable", 503, current) from exc
+                game, human, _opponent = build_saved_deck_game(
+                    seed=match_seed,
+                    nickname=nickname,
+                    opponent_name="Heuristic",
+                    hero_id=saved["hero_id"],
+                    card_ids=saved["card_ids"],
+                )
             opponent_agent = HeuristicAgent()
             active = WebGame(
                 GameSession(game, {}),
                 human,
                 opponent_agent,
-                asset_resolver=self._asset_resolver,
+                asset_service=self._asset_service_locked(),
                 locale=locale,
             )
             self._active = active
@@ -710,293 +740,92 @@ class WebGameManager:
             if current.get("outcome") is None:
                 raise WebLifecycleError("match is not over", 409, current)
 
+            arena_match_id = self._active_arena_match_id
+            self._settle_arena_result_locked(current)
             self._active = None
+            self._active_arena_match_id = None
+            self._arena_result_recorded = False
             lobby = self._lobby_snapshot_locked()
+            if arena_match_id is not None:
+                lobby["arena_redirect"] = True
 
         # A resolver may still be downloading an uncached image.  Detach the
-        # match first so state and a new start remain responsive, then cancel
-        # pending asset work without waiting for an already-running resolver.
+        # match first so state and a new start remain responsive.  The manager
+        # keeps its shared asset service alive for the next match; this also
+        # keeps resolver catalog initialization serialized across lifetimes.
         active.close(wait=False)
         return lobby
+
+    def _settle_arena_result_locked(self, state: Mapping[str, Any]) -> None:
+        """Persist one terminal Arena result while the manager lock is held."""
+
+        match_id = self._active_arena_match_id
+        if match_id is None or self._arena_result_recorded:
+            return
+        outcome = state.get("outcome")
+        if not isinstance(outcome, Mapping):
+            return
+        human_won = outcome.get("human_won")
+        if human_won is not True and human_won is not False and human_won is not None:
+            return
+        self._arena_locked().settle(match_id, human_won)
+        self._arena_result_recorded = True
 
     def handle_action(self, payload: object) -> dict[str, Any]:
         with self._lock:
             active = self._active
             if active is None:
                 raise WebActionError("no active match", 409, self._lobby_snapshot_locked())
-            return active.handle_action(payload)
+            state = active.handle_action(payload)
+            self._settle_arena_result_locked(state)
+            return state
+
+    def concede(self, payload: object) -> dict[str, Any]:
+        """Concede the active match and settle an Arena loss exactly once."""
+
+        with self._lock:
+            active = self._active
+            if active is None:
+                raise WebActionError("no active match", 409, self._lobby_snapshot_locked())
+            state = active.concede(payload)
+            self._settle_arena_result_locked(state)
+            return state
 
     def asset(self, kind: str, card_id: str) -> tuple[bytes, str, bool] | object | None:
         with self._lock:
             active = self._active
-            if active is None:
-                return None
-            return active.asset(kind, card_id)
+        if active is None:
+            return None
+        # ``WebGame.asset`` waits briefly for a completed cache lookup.  Do not
+        # hold the lobby lock during that wait: state/action requests and a
+        # terminal return must remain independent of artwork resolution.
+        return active.asset(kind, card_id)
 
     def close(self) -> None:
         with self._lock:
             active = self._active
             self._active = None
-        if active is not None:
-            active.close(wait=True)
-
-
-class WebGameHTTPServer(ThreadingHTTPServer):
-    """HTTP server carrying a single game or lobby manager instance."""
-
-    daemon_threads = True
-    allow_reuse_address = True
-
-    def __init__(
-        self,
-        server_address: tuple[str, int],
-        web_game: WebGame | WebGameManager,
-    ):
-        if server_address[0] not in {"127.0.0.1", "localhost"}:
-            raise ValueError("web GUI must bind to loopback")
-        self.web_game = web_game
-        super().__init__(server_address, _RequestHandler)
-
-    def server_close(self) -> None:
-        super().server_close()
-        self.web_game.close()
-
-
-def _json_bytes(payload: object) -> bytes:
-    return json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
-
-
-class _RequestHandler(BaseHTTPRequestHandler):
-    """Small HTTP adapter kept free of engine imports and object traversal."""
-
-    server_version = "FireplaceWeb/1.0"
-
-    @property
-    def web_game(self) -> WebGame:
-        return self.server.web_game  # type: ignore[attr-defined]
-
-    def _send_bytes(
-        self, status: int, data: bytes, content_type: str,
-        *, placeholder: bool | None = None,
-    ) -> None:
-        self.send_response(status)
-        self.send_header("Content-Type", content_type)
-        self.send_header("Content-Length", str(len(data)))
-        self.send_header("Cache-Control", "no-store")
-        if placeholder is not None:
-            self.send_header("X-Asset-Placeholder", "1" if placeholder else "0")
-        self.end_headers()
-        self.wfile.write(data)
-
-    def _send_json(self, status: int, payload: object) -> None:
+            self._active_arena_match_id = None
+            self._arena_result_recorded = False
+            assets = self._asset_service
+            self._asset_service = None
+            arena = self._arena_service
+            self._arena_service = None
         try:
-            data = _json_bytes(payload)
-        except (TypeError, ValueError):
-            status = int(HTTPStatus.INTERNAL_SERVER_ERROR)
-            data = _json_bytes({"error": "server produced a non-JSON response"})
-        self._send_bytes(status, data, "application/json; charset=utf-8")
-
-    def _not_found(self) -> None:
-        self._send_json(int(HTTPStatus.NOT_FOUND), {"error": "not found"})
-
-    def _local_host(self) -> str | None:
-        """Reject DNS rebinding names before serving private game state."""
-
-        host = self.headers.get("Host", "").lower()
-        port = self.server.server_port
-        allowed = {f"127.0.0.1:{port}", f"localhost:{port}"}
-        if port == 80:
-            allowed.update({"127.0.0.1", "localhost"})
-        return host if host in allowed else None
-
-    def _reject_untrusted_request(self) -> bool:
-        try:
-            local_peer = ipaddress.ip_address(self.client_address[0]).is_loopback
-        except ValueError:
-            local_peer = False
-        if local_peer and self._local_host() is not None:
-            return False
-        self._send_json(int(HTTPStatus.FORBIDDEN), {"error": "local host required"})
-        return True
-
-    def do_GET(self) -> None:  # noqa: N802 - stdlib handler API
-        if self._reject_untrusted_request():
-            return
-        parsed = urlsplit(self.path)
-        path = parsed.path
-        if path == "/api/state":
-            self._send_json(int(HTTPStatus.OK), self.web_game.snapshot())
-            return
-        if path == "/":
-            self._serve_static("index.html")
-            return
-        if path in {
-            "/app.js",
-            "/action_model.js",
-            "/i18n.js",
-            "/status_view.js",
-            "/modifier_view.js",
-            "/style.css",
-            "/board-scene.webp",
-        }:
-            self._serve_static(path[1:])
-            return
-        if path.startswith("/assets/"):
-            parts = path.split("/")
-            if len(parts) == 4:
-                kind = unquote(parts[2])
-                card_id = unquote(parts[3])
-                # Card ids in the asset contract are a single URL segment.
-                if "/" not in card_id and "\\" not in card_id:
-                    asset = self.web_game.asset(kind, card_id)
-                    if asset is _ASSET_PENDING:
-                        self._send_bytes(
-                            int(HTTPStatus.ACCEPTED), b"", "application/octet-stream"
-                        )
-                        return
-                    if asset is not None:
-                        self._send_bytes(
-                            int(HTTPStatus.OK), asset[0], asset[1],
-                            placeholder=asset[2],
-                        )
-                        return
-            self._not_found()
-            return
-        self._not_found()
-
-    def _serve_static(self, name: str) -> None:
-        root = Path(__file__).resolve().parent
-        path = root / name
-        if name not in _STATIC_MIME_TYPES or not path.is_file():
-            self._not_found()
-            return
-        try:
-            data = path.read_bytes()
-        except OSError:
-            self._not_found()
-            return
-        self._send_bytes(int(HTTPStatus.OK), data, _STATIC_MIME_TYPES[name])
-
-    def _check_origin(self) -> bool:
-        origin = self.headers.get("Origin")
-        local_host = self._local_host()
-        if origin is not None and origin != "http://" + str(local_host):
-            self._send_json(
-                int(HTTPStatus.FORBIDDEN),
-                self.web_game.error_payload("cross-origin request rejected"),
-            )
-            return False
-        return True
-
-    def _read_json(self) -> object:
-        content_type = self.headers.get("Content-Type", "").split(";", 1)[0].strip().lower()
-        if content_type != "application/json":
-            self._send_json(
-                int(HTTPStatus.UNSUPPORTED_MEDIA_TYPE),
-                self.web_game.error_payload("JSON content type required"),
-            )
-            return _JSON_ERROR
-        raw_length = self.headers.get("Content-Length")
-        try:
-            length = int(raw_length) if raw_length is not None else -1
-        except (TypeError, ValueError):
-            length = -1
-        if length < 0 or length > _MAX_REQUEST_BYTES:
-            self._send_json(
-                int(HTTPStatus.BAD_REQUEST),
-                self.web_game.error_payload("invalid request body length"),
-            )
-            return _JSON_ERROR
-        try:
-            body = self.rfile.read(length)
-            return json.loads(body.decode("utf-8"))
-        except (UnicodeDecodeError, json.JSONDecodeError, ValueError):
-            self._send_json(
-                int(HTTPStatus.BAD_REQUEST),
-                self.web_game.error_payload("request body must be valid JSON"),
-            )
-            return _JSON_ERROR
-
-    def do_POST(self) -> None:  # noqa: N802 - stdlib handler API
-        if self._reject_untrusted_request():
-            return
-        path = urlsplit(self.path).path
-        if path not in {"/api/action", "/api/start", "/api/return"}:
-            self._not_found()
-            return
-        if not self._check_origin():
-            return
-        payload = self._read_json()
-        if payload is _JSON_ERROR:
-            return
-        try:
-            if path == "/api/action":
-                response = self.web_game.handle_action(payload)
-            elif path == "/api/start":
-                start_match = getattr(self.web_game, "start_match", None)
-                if start_match is None:
-                    raise WebLifecycleError(
-                        "match lifecycle is unavailable for this server", 409,
-                        self.web_game.snapshot(),
-                    )
-                response = start_match(payload)
-            else:
-                return_to_lobby = getattr(self.web_game, "return_to_lobby", None)
-                if return_to_lobby is None:
-                    raise WebLifecycleError(
-                        "match lifecycle is unavailable for this server", 409,
-                        self.web_game.snapshot(),
-                    )
-                response = return_to_lobby(payload)
-        except (WebActionError, WebLifecycleError) as exc:
-            response = dict(exc.snapshot)
-            response["error"] = str(exc)
-            self._send_json(exc.status_code, response)
-            return
-        self._send_json(int(HTTPStatus.OK), response)
-
-    def log_message(self, format: str, *args: object) -> None:
-        # Keep normal BaseHTTPRequestHandler access logging.  This method is a
-        # narrow override so type checkers accept the object formatting.
-        super().log_message(format, *args)
+            if active is not None:
+                active.close(wait=False)
+        finally:
+            try:
+                if assets is not None:
+                    assets.close(wait=True)
+            finally:
+                if arena is not None:
+                    arena.close()
 
 
-def make_server(
-    web_game: WebGame | WebGameManager | None = None,
-    host: str = "127.0.0.1",
-    port: int = 8000,
-    *,
-    seed: int | None = None,
-    opponent: str = "heuristic",
-) -> WebGameHTTPServer:
-    """Create a local threaded HTTP server for a game or a fresh lobby."""
-
-    if web_game is None:
-        web_game = WebGameManager(seed=seed, opponent=opponent)
-
-    return WebGameHTTPServer((host, int(port)), web_game)
-
-
-create_server = make_server
-
-
-def serve(
-    web_game: WebGame | WebGameManager | None = None,
-    host: str = "127.0.0.1",
-    port: int = 8000,
-    *,
-    seed: int | None = None,
-    opponent: str = "heuristic",
-) -> None:
-    """Run a server until interrupted, closing its listening socket."""
-
-    server = make_server(
-        web_game, host=host, port=port, seed=seed, opponent=opponent
-    )
-    try:
-        server.serve_forever()
-    finally:
-        server.server_close()
+# Keep the historical import surface while keeping the HTTP adapter separate
+# from match and lobby orchestration.
+from .http_server import WebGameHTTPServer, create_server, make_server, serve
 
 
 __all__ = [

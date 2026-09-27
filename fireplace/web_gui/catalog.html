@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="dark">
+    <meta name="description" content="Fireplace 本地卡牌资料浏览器">
+    <title>Fireplace · 卡牌浏览</title>
+    <link rel="stylesheet" href="style-base.css">
+    <link rel="stylesheet" href="style-catalog.css">
+    <link rel="stylesheet" href="style-card-face.css">
+    <script src="i18n.js" defer></script>
+    <script type="module" src="catalog_app.js"></script>
+  </head>
+  <body class="catalog-page">
+    <main class="catalog-shell" id="catalog-app" data-testid="catalog-page">
+      <div class="catalog-backdrop" aria-hidden="true"></div>
+
+      <header class="catalog-header">
+        <div class="catalog-heading">
+          <a class="catalog-back-link" id="catalog-back" href="/" data-testid="catalog-back">
+            <span aria-hidden="true">←</span>
+            <span id="catalog-back-label">返回开始界面</span>
+          </a>
+          <p class="eyebrow" id="catalog-eyebrow">FIREPLACE / CARD CATALOG</p>
+          <h1 id="catalog-title">卡牌浏览</h1>
+          <p class="catalog-subtitle" id="catalog-subtitle">按系列、职业和名称查阅本地卡牌资料。</p>
+        </div>
+        <fieldset class="catalog-language" aria-labelledby="catalog-language-label">
+          <legend id="catalog-language-label">界面语言</legend>
+          <div class="segmented-control" role="group" aria-labelledby="catalog-language-label">
+            <button class="segment-button is-selected" id="catalog-locale-zhCN" type="button" data-locale="zhCN" aria-pressed="true">中文</button>
+            <button class="segment-button" id="catalog-locale-enUS" type="button" data-locale="enUS" aria-pressed="false">English</button>
+          </div>
+        </fieldset>
+      </header>
+
+      <section class="catalog-toolbar" aria-labelledby="catalog-filter-title">
+        <div class="catalog-toolbar-heading">
+          <p class="eyebrow" id="catalog-filter-eyebrow">FILTERS</p>
+          <h2 id="catalog-filter-title">搜索与筛选</h2>
+        </div>
+        <div class="catalog-search-row">
+          <div class="catalog-search-field">
+            <label for="catalog-search" id="catalog-search-label">搜索卡牌</label>
+            <div class="catalog-search-control">
+            <input id="catalog-search" data-testid="catalog-search" type="search" maxlength="100" autocomplete="off" spellcheck="false" placeholder="搜索中文名、英文名或卡牌 ID" aria-describedby="catalog-search-hint">
+              <button class="catalog-clear-button" id="catalog-clear-search" type="button" aria-label="清除搜索" hidden>×</button>
+            </div>
+            <p class="catalog-filter-hint" id="catalog-search-hint">支持中文名、英文名和卡牌 ID。</p>
+          </div>
+          <div class="catalog-filter-field">
+            <label for="catalog-set" id="catalog-set-label">系列 / 扩展包</label>
+            <select id="catalog-set" data-testid="catalog-set" autocomplete="off">
+              <option value="">全部系列</option>
+            </select>
+          </div>
+          <div class="catalog-filter-field">
+            <label for="catalog-class" id="catalog-class-label">职业</label>
+            <select id="catalog-class" data-testid="catalog-class" autocomplete="off">
+              <option value="">全部职业 / 中立</option>
+            </select>
+          </div>
+          <label class="catalog-scope-toggle" for="catalog-scope-all">
+            <input id="catalog-scope-all" data-testid="catalog-scope" type="checkbox">
+            <span class="catalog-toggle-mark" aria-hidden="true"></span>
+            <span>
+              <strong id="catalog-scope-label">资料范围</strong>
+              <small id="catalog-scope-copy">全部 XML 资料</small>
+            </span>
+          </label>
+        </div>
+      </section>
+
+      <section class="catalog-results" aria-labelledby="catalog-results-title">
+        <div class="catalog-results-heading">
+          <div>
+            <p class="eyebrow">COLLECTION</p>
+            <h2 id="catalog-results-title">卡牌资料</h2>
+          </div>
+          <div class="catalog-result-meta">
+            <span id="catalog-result-count" aria-live="polite">正在读取卡牌资料……</span>
+            <span class="catalog-status" id="catalog-status" role="status" aria-live="polite"></span>
+          </div>
+        </div>
+
+        <div class="catalog-error" id="catalog-error" role="alert" hidden>
+          <p id="catalog-error-message"></p>
+          <button class="secondary-button" id="catalog-retry" type="button">重新读取</button>
+        </div>
+
+        <div class="catalog-grid" id="catalog-grid" aria-live="polite" aria-busy="false"></div>
+
+        <div class="catalog-empty" id="catalog-empty" hidden>
+          <div class="catalog-empty-sigil" aria-hidden="true">◇</div>
+          <h3 id="catalog-empty-title">没有符合条件的卡牌。</h3>
+          <p id="catalog-empty-copy">尝试清除搜索词或放宽筛选条件。</p>
+        </div>
+
+        <nav class="catalog-pagination" id="catalog-pagination" aria-label="卡牌分页" hidden>
+          <button class="secondary-button" id="catalog-page-previous" data-testid="catalog-prev" type="button">上一页</button>
+          <span id="catalog-page-label" aria-live="polite">第 1 / 1 页</span>
+          <button class="secondary-button" id="catalog-page-next" data-testid="catalog-next" type="button">下一页</button>
+        </nav>
+      </section>
+    </main>
+
+    <dialog class="catalog-dialog" id="catalog-dialog" data-testid="catalog-detail" aria-labelledby="catalog-detail-name">
+      <div class="catalog-dialog-backdrop" data-dialog-close="true"></div>
+      <article class="catalog-dialog-panel">
+        <button class="catalog-dialog-close" id="catalog-dialog-close" type="button" aria-label="关闭卡牌详情">×</button>
+        <div class="catalog-detail-layout">
+          <div class="catalog-detail-art" id="catalog-detail-art">
+            <div class="catalog-image-placeholder" id="catalog-detail-placeholder">正在读取卡牌详情……</div>
+            <img id="catalog-detail-image" alt="卡牌图片" hidden>
+          </div>
+          <div class="catalog-detail-copy">
+            <p class="eyebrow" id="catalog-detail-eyebrow">CARD DETAIL</p>
+            <h2 id="catalog-detail-name">卡牌</h2>
+            <p class="catalog-detail-id" id="catalog-detail-id"></p>
+            <div class="catalog-detail-badges" id="catalog-detail-badges"></div>
+            <p class="catalog-script-note" id="catalog-script-note" hidden></p>
+            <dl class="catalog-detail-stats" id="catalog-detail-stats"></dl>
+            <section class="catalog-detail-rules" aria-labelledby="catalog-rules-title">
+              <h3 id="catalog-rules-title">卡牌文字</h3>
+              <p id="catalog-detail-text">暂无本地卡牌文字。</p>
+            </section>
+          </div>
+        </div>
+      </article>
+    </dialog>
+  </body>
+</html>

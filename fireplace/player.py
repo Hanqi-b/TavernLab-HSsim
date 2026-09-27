@@ -303,8 +303,13 @@ class Player(Entity, TargetableByAuras):
                 quests.append(card)
             else:
                 exclude_quests.append(card)
+        # Arena can draft more quests than the opening hand can hold.  Keep
+        # as many as fit in the left-most slots and leave the others in the
+        # deck instead of requesting a negative number of random cards.
+        opening_quests = quests[:hand_size]
         self.starting_hand = CardList["PlayableCard"](
-            quests + self.game.random.sample(exclude_quests, hand_size - len(quests))
+            opening_quests
+            + self.game.random.sample(exclude_quests, hand_size - len(opening_quests))
         )
         # It's faster to move cards directly to the hand instead of drawing
         for card in self.starting_hand:

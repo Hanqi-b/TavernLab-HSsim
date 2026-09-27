@@ -104,7 +104,7 @@ async function startMatch(page, locale, nickname, contract) {
     await enter.click();
   }
   await page.locator("#lobby-setup").waitFor({ state: "visible", timeout });
-  assert.equal(await page.locator("#opponent-heuristic-title").innerText(), locale === "enUS" ? "Smart AI" : "聪明 AI");
+  assert.equal(await page.locator("#opponent-heuristic-title").innerText(), locale === "enUS" ? "Default AI" : "默认AI");
   assert.equal(await page.locator("input[name=opponent]").count(), 0, "the lobby must not offer a policy selector");
 
   const imageResponsePromise = page.waitForResponse((response) => {
@@ -214,6 +214,17 @@ async function finishFixtureMatch(page) {
   try {
     const fixtureInfo = await server.ready;
     context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+    // This focused locale fixture uses a bare WebGameManager. Supply the
+    // authenticated account session now required by the shared GUI shell.
+    await context.route("**/api/account/session", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        authenticated: true,
+        account: { id: "locale-fixture", username: "Locale Fixture" },
+        legacy_available: false,
+      }),
+    }));
     const page = await context.newPage();
     page.setDefaultTimeout(timeout);
     // Keep this tab's match snapshot frozen so the later cross-tab stale
@@ -237,19 +248,23 @@ async function finishFixtureMatch(page) {
     await page.setViewportSize({ width: 390, height: 844 });
     const lobbyWidth = await page.evaluate(() => document.documentElement.scrollWidth);
     assert(lobbyWidth <= 390, `narrow lobby overflowed viewport: ${lobbyWidth}px`);
-    const enterBounds = await page.locator("#enter-lobby-button").boundingBox();
-    assert(enterBounds && enterBounds.width >= 44 && enterBounds.height >= 44,
-      `narrow lobby entry control is too small: ${JSON.stringify(enterBounds)}`);
+    const entryControl = page.locator(await page.locator("#enter-lobby-button").isVisible()
+      ? "#enter-lobby-button" : "#start-match-button");
+    const entryBounds = await entryControl.boundingBox();
+    assert(entryBounds && entryBounds.width >= 44 && entryBounds.height >= 44,
+      `narrow lobby entry control is too small: ${JSON.stringify(entryBounds)}`);
     await page.screenshot({ path: path.join(artifacts, "web-gui-lobby-mobile.png"), fullPage: true });
     await page.setViewportSize({ width: 1280, height: 900 });
 
     // Leave a concrete localized lobby screenshot for visual review.
     await page.locator("#locale-enUS").click();
     await page.locator("#nickname-input").fill("Locale Fixture Player");
-    await page.locator("#enter-lobby-button").click();
+    if (await page.locator("#enter-lobby-button").isVisible()) {
+      await page.locator("#enter-lobby-button").click();
+    }
     await page.locator("#lobby-setup").waitFor({ state: "visible", timeout });
     assert.equal(await page.locator("#start-match-button").innerText(), "Start match");
-    assert.equal(await page.locator("#opponent-heuristic-title").innerText(), "Smart AI");
+    assert.equal(await page.locator("#opponent-heuristic-title").innerText(), "Default AI");
     await page.screenshot({ path: path.join(artifacts, "web-gui-lobby-enUS.png"), fullPage: true });
 
     const chinese = await startMatch(page, "zhCN", "Locale Fixture Player", fixtureInfo.contracts.zhCN);

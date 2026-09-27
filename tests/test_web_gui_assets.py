@@ -34,6 +34,19 @@ def test_disabled_resolver_is_nonblocking_and_returns_no_asset():
         assert future.result() is None
 
 
+def test_default_resolver_factory_is_lazy_until_first_asset_request():
+    started = threading.Event()
+
+    def factory():
+        started.set()
+        return None
+
+    with AssetService(resolver_factory=factory) as service:
+        assert not started.is_set()
+        assert service.describe_visible(["CS2_231"]) == {}
+        assert started.wait(5)
+
+
 def test_description_failure_is_cached_without_repeated_worker_submission():
     class BrokenResolver:
         def __init__(self):

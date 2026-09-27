@@ -6,23 +6,58 @@
     <meta name="color-scheme" content="dark">
     <meta name="description" content="Fireplace 本机单人卡牌对战界面">
     <title>Fireplace · 本机对战</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style-base.css">
+    <link rel="stylesheet" href="style-board.css">
+    <link rel="stylesheet" href="style-cards.css">
+    <link rel="stylesheet" href="style-hand.css">
+    <link rel="stylesheet" href="style-decision.css">
+    <link rel="stylesheet" href="style-support.css">
+    <link rel="stylesheet" href="style-responsive.css">
+    <link rel="stylesheet" href="style-catalog.css">
     <script src="action_model.js" defer></script>
     <script src="i18n.js" defer></script>
     <script src="status_view.js" defer></script>
     <script src="modifier_view.js" defer></script>
-    <script src="app.js" defer></script>
+    <script type="module" src="app.js"></script>
   </head>
   <body>
     <main class="app-shell" id="app-shell">
       <section class="lobby-screen" id="lobby-screen" aria-labelledby="lobby-title" hidden>
         <div class="lobby-scene" aria-hidden="true"></div>
         <div class="lobby-card" data-testid="lobby">
+          <div class="account-toolbar lobby-account-toolbar" id="lobby-account-toolbar" hidden data-testid="account-toolbar">
+            <a class="account-label account-link" id="lobby-account-label" href="/account"></a>
+            <button class="account-import-button" id="lobby-account-import" type="button" hidden></button>
+            <button id="lobby-account-logout" type="button"></button>
+          </div>
           <div class="lobby-brand">
             <p class="eyebrow">FIREPLACE / LOCAL MATCH</p>
             <h1 id="lobby-title">本机卡牌对战</h1>
             <p id="lobby-subtitle">输入昵称，选择语言，与 AI 开始一局。</p>
           </div>
+          <nav class="lobby-navigation" id="lobby-mode-navigation" aria-label="游戏模式">
+            <button class="lobby-mode-card is-selected" id="battle-entry" type="button" data-testid="battle-entry" aria-controls="lobby-form" aria-expanded="true">
+              <span class="lobby-mode-icon" aria-hidden="true">⚔</span>
+              <span class="lobby-mode-copy">
+                <strong id="battle-entry-title">对战</strong>
+                <small id="battle-entry-description">选择设置，与 AI 开始一局。</small>
+              </span>
+            </button>
+            <a class="lobby-mode-card" id="arena-entry" href="/arena" data-testid="arena-entry">
+              <span class="lobby-mode-icon" aria-hidden="true">✦</span>
+              <span class="lobby-mode-copy">
+                <strong id="arena-entry-title">竞技场</strong>
+                <small id="arena-entry-description">选英雄，三选一组建竞技场牌组。</small>
+              </span>
+            </a>
+            <a class="lobby-mode-card" id="collection-entry" href="/collection" data-testid="collection-entry">
+              <span class="lobby-mode-icon" aria-hidden="true">▦</span>
+              <span class="lobby-mode-copy">
+                <strong id="collection-entry-title">收藏</strong>
+                <small id="collection-entry-description">查看卡牌并组建自己的牌组。</small>
+              </span>
+            </a>
+          </nav>
           <form class="lobby-form" id="lobby-form">
             <div class="lobby-field">
               <label for="nickname-input" id="nickname-label">昵称</label>
@@ -40,12 +75,19 @@
               </div>
             </fieldset>
             <div class="lobby-setup" id="lobby-setup" hidden>
+              <fieldset class="lobby-fieldset deck-choice-field" id="deck-choice-field">
+                <legend id="deck-label">对战牌组</legend>
+                <select id="deck-select" name="deck_id" data-testid="deck-select" aria-describedby="deck-hint">
+                  <option value="">随机牌组</option>
+                </select>
+                <p class="field-hint" id="deck-hint">没有完整自建牌组时，也可以使用随机牌组。</p>
+              </fieldset>
               <fieldset class="lobby-fieldset">
                 <legend id="opponent-label">对手 AI</legend>
                 <div class="opponent-choice" id="opponent-choice" aria-labelledby="opponent-label">
                   <div class="opponent-option is-selected" id="opponent-heuristic-option" data-testid="opponent-heuristic" role="status">
                     <span class="opponent-badge" aria-hidden="true">AI</span>
-                    <span class="option-copy"><strong id="opponent-heuristic-title">聪明 AI</strong><small id="opponent-heuristic-description">会根据场面选择更有利的行动。</small></span>
+                    <span class="option-copy"><strong id="opponent-heuristic-title">默认AI</strong><small id="opponent-heuristic-description">会根据场面选择更有利的行动。</small></span>
                     <span class="opponent-fixed" id="opponent-fixed">固定对手</span>
                   </div>
                 </div>
@@ -58,7 +100,7 @@
         <p class="lobby-footer" id="lobby-footer">本机对战 · 无需账号</p>
       </section>
 
-      <section class="game-shell" id="game" aria-labelledby="page-title" hidden>
+      <section class="game-shell" id="game" aria-labelledby="page-title" tabindex="-1" hidden>
       <section class="table" aria-label="战场">
         <div class="board-vignette" aria-hidden="true"></div>
 
@@ -67,6 +109,11 @@
             <p class="eyebrow">FIREPLACE / LOCAL MATCH</p>
             <h1 id="page-title">本机卡牌对战</h1>
             <p class="brand-caption">所有操作均由当前合法动作驱动</p>
+          </div>
+          <div class="account-toolbar match-account-toolbar" id="match-account-toolbar" hidden data-testid="match-account-toolbar">
+            <a class="account-label account-link" id="match-account-label" href="/account"></a>
+            <button class="account-import-button" id="match-account-import" type="button" hidden></button>
+            <button id="match-account-logout" type="button"></button>
           </div>
           <div class="match-status" aria-live="polite">
             <span class="status-pill" id="phase-value" data-testid="phase">加载中</span>
@@ -200,6 +247,20 @@
         </span>
       </footer>
       </section>
+
+    <div class="surrender-menu" id="surrender-menu" role="dialog" aria-modal="true"
+      aria-labelledby="surrender-title" aria-describedby="surrender-description" hidden>
+      <div class="surrender-backdrop" data-surrender-close="true"></div>
+      <section class="surrender-dialog">
+        <p class="eyebrow">MATCH MENU</p>
+        <h2 id="surrender-title">结束这局对战？</h2>
+        <p class="surrender-description" id="surrender-description">投降会立即结束当前对局并判定你输掉本局。竞技场模式也会记为一次失败。</p>
+        <div class="surrender-actions">
+          <button class="secondary-button" id="surrender-continue" type="button" data-testid="surrender-continue">继续对战</button>
+          <button class="secondary-button surrender-confirm" id="surrender-confirm" type="button" data-testid="surrender-confirm">确认投降</button>
+        </div>
+      </section>
+    </div>
 
     <div class="card-modal" id="card-modal" role="dialog" aria-modal="true" aria-labelledby="modal-card-name" hidden>
       <div class="card-modal-backdrop" data-modal-close="true"></div>

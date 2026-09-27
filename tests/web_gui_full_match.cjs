@@ -15,9 +15,16 @@ const python = process.env.FIREPLACE_GUI_PYTHON || process.env.PYTHON || "python
 const chrome = process.env.CHROME_PATH || "/opt/google/chrome/chrome";
 const artifacts = process.env.FIREPLACE_GUI_ARTIFACTS || path.join(os.tmpdir(), "fireplace-web-gui-artifacts");
 
-function startServer() {
+function startServer(dataRoot) {
   const child = spawn(python, ["-u", "-m", "fireplace.web_gui", "--seed", "2", "--port", "0"], {
-    cwd: root, env: { ...process.env, PYTHONUNBUFFERED: "1" }, stdio: ["ignore", "pipe", "pipe"],
+    cwd: root,
+    env: {
+      ...process.env,
+      PYTHONUNBUFFERED: "1",
+      FIREPLACE_ACCOUNT_STATE: path.join(dataRoot, "accounts.sqlite3"),
+      FIREPLACE_ACCOUNT_DATA_ROOT: path.join(dataRoot, "users"),
+    },
+    stdio: ["ignore", "pipe", "pipe"],
   });
   const tail = [];
   const remember = (line) => { tail.push(line); if (tail.length > 80) tail.shift(); };
@@ -123,7 +130,7 @@ async function startMatchFromLobby(page, { locale, nickname }) {
     await enterLobby.click();
   }
   await page.locator("#lobby-setup").waitFor({ state: "visible", timeout: 60000 });
-  assert.equal(await page.locator("#opponent-heuristic-title").innerText(), locale === "enUS" ? "Smart AI" : "聪明 AI");
+  assert.equal(await page.locator("#opponent-heuristic-title").innerText(), locale === "enUS" ? "Default AI" : "默认AI");
   assert.equal(await page.locator("input[name=opponent]").count(), 0, "the lobby must not offer a policy selector");
 
   const requestPromise = page.waitForRequest((request) =>
@@ -172,6 +179,49 @@ async function returnToLobby(page, state, locale, nickname) {
   assert.equal(await page.locator("#start-match-button").innerText(), locale === "enUS" ? "Start match" : "开始对战");
 }
 
+async function exerciseSurrender(page, { locale, nickname }) {
+  const started = await startMatchFromLobby(page, { locale, nickname });
+  const firstCard = page.locator('#hand [data-testid="hand-card"]').first();
+  await firstCard.waitFor({ state: "visible", timeout: 60000 });
+  await firstCard.click();
+  await page.keyboard.press("Escape");
+  await page.waitForFunction(() => !document.querySelector("#hand .mulligan-selected"), null, { timeout: 60000 });
+  await page.locator("#action-submit").focus();
+
+  await page.keyboard.press("Escape");
+  await page.locator("#surrender-menu").waitFor({ state: "visible", timeout: 60000 });
+  const description = await page.locator("#surrender-description").innerText();
+  assert.match(description, locale === "enUS" ? /Arena/ : /竞技场/);
+  await page.waitForTimeout(220);
+  await page.screenshot({ path: path.join(artifacts, "web-gui-surrender-menu-desktop.png"), fullPage: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.screenshot({ path: path.join(artifacts, "web-gui-surrender-menu-mobile.png"), fullPage: true });
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await page.locator("#surrender-continue").click();
+  await page.locator("#surrender-menu").waitFor({ state: "hidden", timeout: 60000 });
+  assert.equal(await page.evaluate(() => document.activeElement?.id), "action-submit",
+    "closing the surrender menu should restore the previous match control focus");
+
+  await page.keyboard.press("Escape");
+  const requestPromise = page.waitForRequest((request) =>
+    request.method() === "POST" && new URL(request.url()).pathname === "/api/concede", { timeout: 60000 });
+  const responsePromise = page.waitForResponse((response) =>
+    response.request().method() === "POST" && new URL(response.url()).pathname === "/api/concede", { timeout: 60000 });
+  await page.locator("#surrender-confirm").click();
+  const [request, response] = await Promise.all([requestPromise, responsePromise]);
+  const body = request.postDataJSON();
+  assert.equal(body.session_id, started.session_id);
+  assert.equal(body.revision, started.revision);
+  const terminal = await response.json();
+  assert.equal(response.status(), 200, `surrender failed: ${JSON.stringify(terminal)}`);
+  assert.equal(terminal.observation.phase, "GAME_OVER");
+  assert(terminal.outcome, "surrender must return a terminal outcome");
+  await page.locator("#surrender-menu").waitFor({ state: "hidden", timeout: 60000 });
+  await page.locator('[data-testid="game-over"]').waitFor({ state: "visible", timeout: 60000 });
+  await returnToLobby(page, terminal, locale, nickname);
+  return { sessionId: started.session_id, terminal };
+}
+
 async function playMatch(page, { locale, nickname, screenshot }) {
   let state = await startMatchFromLobby(page, { locale, nickname });
   const phases = new Set();
@@ -216,10 +266,12 @@ async function playMatch(page, { locale, nickname, screenshot }) {
 
 (async () => {
   fs.mkdirSync(artifacts, { recursive: true });
-  const browser = await chromium.launch({ headless: true, executablePath: chrome, args: ["--no-sandbox", "--disable-dev-shm-usage"] });
-  const server = startServer();
+  const dataRoot = fs.mkdtempSync(path.join(os.tmpdir(), "fireplace-web-gui-full-match-"));
+  let browser;
+  const server = startServer(dataRoot);
   let context;
   try {
+    browser = await chromium.launch({ headless: true, executablePath: chrome, args: ["--no-sandbox", "--disable-dev-shm-usage"] });
     const url = await server.ready;
     context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
     const page = await context.newPage();
@@ -228,11 +280,29 @@ async function playMatch(page, { locale, nickname, screenshot }) {
     // network imagery offline so it verifies decision flow without downloads.
     await page.route("**/assets/**", (route) => route.fulfill({ status: 404, body: "" }));
     await page.goto(url, { waitUntil: "domcontentloaded" });
+    await page.waitForURL((value) => new URL(value).pathname === "/account", { timeout: 60000 });
+    await page.locator("#register-tab").click();
+    await page.locator("#account-username").fill("Full Match Tester");
+    await page.locator("#account-password").fill("full-match-test-123");
+    await page.locator("#account-confirm-password").fill("full-match-test-123");
+    await page.locator("#account-submit").click();
+    await page.waitForURL((value) => new URL(value).pathname === "/", { timeout: 60000 });
     await page.locator("#lobby-screen").waitFor({ state: "visible", timeout: 60000 });
-    await page.locator("#lobby-login-actions").waitFor({ state: "visible", timeout: 60000 });
-    await page.locator("#lobby-setup").waitFor({ state: "hidden", timeout: 60000 });
+    await page.locator("#lobby-setup").waitFor({ state: "visible", timeout: 60000 });
     const initial = await page.evaluate(async () => (await fetch("/api/state", { cache: "no-store" })).json());
     assert.equal(initial.mode, "lobby", "the browser must begin in the nickname lobby");
+
+    if (process.env.FIREPLACE_GUI_SURRENDER_ONLY === "1") {
+      const surrendered = await exerciseSurrender(page, {
+        locale: "zhCN", nickname: "Surrender Fixture Player",
+      });
+      console.log(JSON.stringify({
+        result: "PASS",
+        surrender: { sessionId: surrendered.sessionId, outcome: surrendered.terminal.outcome },
+        artifacts,
+      }, null, 2));
+      return;
+    }
 
     const first = await playMatch(page, {
       locale: "zhCN", nickname: "Acceptance Player", screenshot: "web-gui-full-heuristic-zhCN.png",
@@ -242,6 +312,9 @@ async function playMatch(page, { locale, nickname, screenshot }) {
     // fresh Heuristic session after a completed match.
     const second = await playMatch(page, {
       locale: "enUS", nickname: "Acceptance Player", screenshot: "web-gui-full-heuristic-enUS.png",
+    });
+    const surrendered = await exerciseSurrender(page, {
+      locale: "zhCN", nickname: "Surrender Fixture Player",
     });
     const fresh = await page.evaluate(async () => (await fetch("/api/state", { cache: "no-store" })).json());
     assert.equal(fresh.mode, "lobby");
@@ -254,11 +327,12 @@ async function playMatch(page, { locale, nickname, screenshot }) {
     }, first.staleAction);
     assert.equal(staleResponse.status, 409, "actions from the completed match must remain stale after a new session");
     assert.equal(staleResponse.payload.mode, "lobby");
-    const results = [first.result, second.result];
+    const results = [{ surrendered: true, sessionId: surrendered.sessionId }, first.result, second.result];
     console.log(JSON.stringify({ result: "PASS", results, artifacts }, null, 2));
   } finally {
     if (context) await context.close();
     await stopServer(server.child);
-    await browser.close();
+    if (browser) await browser.close();
+    fs.rmSync(dataRoot, { recursive: true, force: true });
   }
 })().catch((error) => { console.error(error.stack || error); process.exitCode = 1; });

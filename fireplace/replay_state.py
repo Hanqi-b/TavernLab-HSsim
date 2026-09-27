@@ -53,6 +53,35 @@ _OPTIONAL_ATTRIBUTE_ERRORS = (
     ValueError,
 )
 
+# A standard-game replay depends on the engine, card scripts/data, and the
+# action serialization boundary.  Keep this list explicit so presentation
+# packages can evolve without invalidating every recorded game.  The card and
+# DSL directories are recursive because each card set is implemented as a
+# separate module and card scripts use the shared DSL at runtime.
+_REPLAY_SOURCE_FILES = (
+    "action_log.py",
+    "actions.py",
+    "agent_api.py",
+    "aura.py",
+    "card.py",
+    "controller.py",
+    "deck.py",
+    "entity.py",
+    "enums.py",
+    "events.py",
+    "exceptions.py",
+    "game.py",
+    "managers.py",
+    "player.py",
+    "replay.py",
+    "replay_state.py",
+    "rules.py",
+    "targeting.py",
+    "utils.py",
+)
+_REPLAY_SOURCE_DIRECTORIES = ("cards", "dsl")
+_REPLAY_SOURCE_DATA_FILES = ("cards/CardDefs.xml",)
+
 
 def _read(obj: Any, name: str, default: Any = _MISSING) -> Any:
     """Read an attribute which may not exist before game setup.
@@ -443,19 +472,38 @@ def _installed_version(distribution: str, module_name: str) -> str | None:
     return None if version is None else str(version)
 
 
-def code_signature() -> dict[str, Any]:
-    """Return source hash and runtime metadata for replay compatibility."""
+def _replay_source_files(source_root: Path) -> list[Path]:
+    """Return files that can change a standard game's replay result.
 
-    source_root = Path(__file__).resolve().parent
-    source_files = sorted(
-        (
-            path for path in source_root.rglob("*")
-            if path.is_file() and (path.suffix == ".py" or path.name == "CardDefs.xml")
-        ),
+    ``source_root`` is injectable so the hashing boundary can be tested with
+    a small fixture without mutating the checkout.  Missing paths are ignored
+    here because the helper is also useful with a minimal fixture; an actual
+    installed package contains all entries in the explicit source set.
+    """
+
+    source_files = [
+        source_root / relative_path
+        for relative_path in _REPLAY_SOURCE_FILES + _REPLAY_SOURCE_DATA_FILES
+        if (source_root / relative_path).is_file()
+    ]
+    for directory in _REPLAY_SOURCE_DIRECTORIES:
+        directory_root = source_root / directory
+        if not directory_root.is_dir():
+            continue
+        source_files.extend(
+            path
+            for path in directory_root.rglob("*.py")
+            if path.is_file()
+        )
+    return sorted(
+        source_files,
         key=lambda path: path.relative_to(source_root).as_posix(),
     )
+
+
+def _source_sha256(source_root: Path) -> str:
     digest = hashlib.sha256()
-    for path in source_files:
+    for path in _replay_source_files(source_root):
         relative = path.relative_to(source_root).as_posix()
         # Include path boundaries as well as contents so concatenation cannot
         # make two different file sets share one digest accidentally.
@@ -463,6 +511,21 @@ def code_signature() -> dict[str, Any]:
         digest.update(b"\0")
         digest.update(path.read_bytes())
         digest.update(b"\0")
+    return digest.hexdigest()
+
+
+def code_signature(source_root: Path | None = None) -> dict[str, Any]:
+    """Return source hash and runtime metadata for replay compatibility.
+
+    The optional ``source_root`` is intended for tests; normal callers use
+    the package containing this module.
+    """
+
+    source_root = (
+        Path(__file__).resolve().parent
+        if source_root is None
+        else Path(source_root).resolve()
+    )
 
     hearthstone_version = _installed_version("hearthstone", "hearthstone")
     hearthstone_data_version = _installed_version(
@@ -471,7 +534,7 @@ def code_signature() -> dict[str, Any]:
     python_version = "%d.%d" % (sys.version_info.major, sys.version_info.minor)
     return {
         "schema_version": SCHEMA_VERSION,
-        "source_sha256": digest.hexdigest(),
+        "source_sha256": _source_sha256(source_root),
         "python_version": python_version,
         "python_major": sys.version_info.major,
         "python_minor": sys.version_info.minor,

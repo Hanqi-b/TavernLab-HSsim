@@ -11,7 +11,7 @@ keeps the observation layer usable by controllers and by callers that only
 have a partially initialised game.
 """
 
-from hearthstone.enums import CardType
+from hearthstone.enums import CardClass, CardType
 
 
 def _get(obj, name, default=None):
@@ -311,6 +311,46 @@ def _secret_kind(card):
     return "secret"
 
 
+def _secret_class_names(card):
+    """Return only valid CardClass names for a concealed Secret.
+
+    The opponent may need to know which class a Secret belongs to for the
+    board UI, but none of the card's identity fields may cross this boundary.
+    ``classes`` covers multi-class cards; the ``card_class`` fallback keeps
+    lightweight cards and older engine objects useful.  Invalid, malformed,
+    or unknown values are omitted, leaving an empty list when no safe class
+    can be established.
+    """
+
+    def values(raw):
+        if raw is None:
+            return ()
+        if isinstance(raw, (str, bytes)) or not hasattr(raw, "__iter__"):
+            return (raw,)
+        return _cards(raw)
+
+    def names(raw):
+        result = []
+        for value in values(raw):
+            name = _enum_name(value)
+            if name is None:
+                try:
+                    name = CardClass(value).name
+                except (TypeError, ValueError):
+                    name = None
+            if name in CardClass.__members__ and name != "INVALID":
+                if name not in result:
+                    result.append(name)
+        return result
+
+    # Prefer the multi-class-aware property.  Falling back to card_class is
+    # safe because the result is still checked against CardClass.__members__.
+    class_names = names(_get(card, "classes"))
+    if class_names:
+        return class_names
+    return names(_get(card, "card_class"))
+
+
 def _quest_identity(card):
     result = _card_identity(card)
     result.update({
@@ -361,6 +401,9 @@ def _player_projection(player, viewer, include_private):
     else:
         result["hand_count"] = len(hand)
         result["secrets_count"] = len(concealed_secrets)
+        result["secret_classes"] = [
+            _secret_class_names(card) for card in concealed_secrets
+        ]
     return result
 
 
@@ -476,7 +519,8 @@ def build_observation(game, viewer, phase=None):
     board cards, weapons, and hero powers) carry their visible entity handle
     and card identity.  The viewer's hand, secrets, and pending choice are
     projected with the same explicit card whitelist; the opponent receives
-    only hand/secret counts and no hidden card handles or IDs.
+    only hand/secret counts and each Secret's class names, with no hidden
+    card handles or IDs.
 
     The returned schema is::
 
@@ -485,7 +529,12 @@ def build_observation(game, viewer, phase=None):
             "phase": "MAIN" | "MULLIGAN" | "CHOICE" | "GAME_OVER",
             "active_seat": int | None,
             "self": {..., "hand": [...], "secrets": [...]},
-            "opponent": {..., "hand_count": int, "secrets_count": int},
+            "opponent": {
+                "...",
+                "hand_count": int,
+                "secrets_count": int,
+                "secret_classes": [["MAGE"], ["HUNTER", "MAGE"]],
+            },
             "pending_choice": {"options": [...], ...} | None,
         }
 

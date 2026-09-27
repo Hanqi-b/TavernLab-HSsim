@@ -268,9 +268,27 @@ async function main() {
       args: ["--no-sandbox", "--disable-dev-shm-usage"],
     });
     const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+    // This fixture is an explicitly supplied WebGameManager, so it intentionally
+    // runs without account middleware. Keep the browser's account chrome in its
+    // signed-in state while exercising the legacy single-match API fixture.
+    await context.route("**/api/account/session", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json; charset=utf-8",
+      body: JSON.stringify({
+        authenticated: true,
+        account: { id: "fixture-account", username: "Fixture" },
+        legacy_available: false,
+      }),
+    }));
+    const pageErrors = [];
+    context.on("page", (openedPage) => {
+      openedPage.on("pageerror", (error) => {
+        pageErrors.push(error.stack || String(error));
+        console.error(`browser page error: ${error.stack || error}`);
+      });
+    });
     const page = await context.newPage();
     page.setDefaultTimeout(timeout);
-    page.on("pageerror", (error) => console.error(`browser page error: ${error.stack || error}`));
     const seenActions = [];
     page.on("request", (request) => {
       if (request.method() === "POST" && new URL(request.url()).pathname === "/api/action") {
@@ -282,6 +300,64 @@ async function main() {
     await waitForPhase(page, "换牌");
     const mulliganState = await stateFromPage(page);
     assert.equal(mulliganState.observation.phase, "MULLIGAN");
+
+    // Exercise the lobby entry cards and saved-deck selection independently
+    // from the live fixture match.  The fixture itself starts in a match, so
+    // this page uses only mocked JSON at the browser boundary.
+    const lobbyPage = await context.newPage();
+    lobbyPage.setDefaultTimeout(timeout);
+    let lobbyStartBody = null;
+    await lobbyPage.route("**/api/state", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json; charset=utf-8",
+      body: JSON.stringify({ mode: "lobby", opponent: "heuristic" }),
+    }));
+    await lobbyPage.route("**/api/decks*", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json; charset=utf-8",
+      body: JSON.stringify({
+        locale: "zhCN",
+        heroes: [],
+        decks: [
+          { id: "deck-alpha", name: "测试法师", hero_id: "HERO_08", hero: "吉安娜", card_ids: Array(30).fill("CS2_231"), cards: [], complete: true, revision: 2 },
+          { id: "deck-draft", name: "未完成草稿", hero_id: "HERO_08", hero: "吉安娜", card_ids: ["CS2_231"], cards: [], complete: false, revision: 1 },
+        ],
+      }),
+    }));
+    await lobbyPage.route("**/api/start", (route) => {
+      lobbyStartBody = route.request().postDataJSON();
+      route.fulfill({
+        status: 200,
+        contentType: "application/json; charset=utf-8",
+        body: JSON.stringify({ mode: "match", locale: "zhCN", snapshot: mulliganState }),
+      });
+    });
+    await lobbyPage.goto(`${endpoint.url}?deck=deck-alpha`, { waitUntil: "domcontentloaded" });
+    await lobbyPage.locator("#lobby-screen").waitFor({ state: "visible", timeout });
+    await lobbyPage.locator("#lobby-setup").waitFor({ state: "visible", timeout });
+    await lobbyPage.screenshot({ path: path.join(artifacts, "lobby-three-entries.png") });
+    await lobbyPage.waitForFunction(() => document.querySelectorAll("#deck-select option").length >= 2, null, { timeout });
+    assert.equal(await lobbyPage.locator("#deck-select").inputValue(), "deck-alpha");
+    assert.equal(await lobbyPage.locator("#deck-select option[value=deck-draft]").count(), 0,
+      "incomplete saved decks must not be offered for battle");
+    assert.equal(await lobbyPage.locator("#battle-entry, #arena-entry, #collection-entry").count(), 3,
+      "the lobby must expose exactly three primary mode entries");
+    assert.equal(await lobbyPage.locator("#arena-entry").getAttribute("href"), "/arena");
+    assert.equal(await lobbyPage.locator("#collection-entry").getAttribute("href"), "/collection");
+    await lobbyPage.locator("#battle-entry").focus();
+    await lobbyPage.keyboard.press("Enter");
+    assert.equal(await lobbyPage.evaluate(() => document.activeElement && document.activeElement.id), "nickname-input",
+      "the Battle entry must be keyboard operable and move focus to settings");
+    await lobbyPage.setViewportSize({ width: 375, height: 812 });
+    await assertNoHorizontalOverflow(lobbyPage, "lobby at 375px");
+    await lobbyPage.locator("#nickname-input").fill("Saved Deck Player");
+    const lobbyStartRequest = lobbyPage.waitForRequest((request) =>
+      request.method() === "POST" && new URL(request.url()).pathname === "/api/start", { timeout });
+    await lobbyPage.locator("#start-match-button").click();
+    await lobbyStartRequest;
+    assert.deepEqual(lobbyStartBody, { nickname: "Saved Deck Player", locale: "zhCN", deck_id: "deck-alpha" });
+    await lobbyPage.close();
+
     assert.equal(await page.locator('[data-testid="quick-action"]').count(), 0, "MAIN buttons should not appear during Mulligan");
     assert(mulliganState.observation.self.hand.length >= 2, "real opening hand should be visible");
     assert(!Object.hasOwn(mulliganState.observation.opponent, "hand"), "server must omit opponent hand objects");
@@ -494,6 +570,7 @@ async function main() {
         text: "完成测试目标。" },
     ];
     mock.observation.opponent.secrets_count = 2;
+    mock.observation.opponent.secret_classes = [["MAGE"], ["HUNTER", "MAGE"]];
     mock.observation.opponent.quests = [
       { entity_id: 90005, card_id: "UNG_940", name: "对手任务", kind: "sidequest", progress: 1, progress_total: 3,
         text: "完成另一个测试目标。" },
@@ -521,6 +598,19 @@ async function main() {
     assert.match(await mockPage.locator('[data-testid="self-weapon"]').innerText(), /测试武器/);
     assert.match(await mockPage.locator('[data-testid="self-secret"]').innerText(), /测试奥秘/);
     assert.match(await mockPage.locator('[data-testid="opponent-secret-count"]').innerText(), /×2/);
+    assert.equal(await mockPage.locator('[data-testid="opponent-secret"]').count(), 2);
+    assert.deepEqual(await mockPage.locator('[data-testid="opponent-secret"] .secret-class-label').allTextContents(),
+      ["法师", "猎人 / 法师"],
+      "opponent secrets should expose only localized profession labels");
+    assert.equal(await mockPage.locator('[data-testid="opponent-secret"][role="img"]').count(), 2);
+    assert.deepEqual(await mockPage.locator('[data-testid="opponent-secret"]').evaluateAll((nodes) =>
+      nodes.map((node) => node.getAttribute("aria-label"))),
+      ["对手第 1 个奥秘：法师", "对手第 2 个奥秘：猎人 / 法师"]);
+    assert.equal(await mockPage.locator('[data-testid="opponent-secret"] .card-art, [data-testid="opponent-secret"] .card-inspect').count(), 0,
+      "concealed opponent secrets must not expose card art or detail controls");
+    assert.deepEqual(await mockPage.locator('[data-testid="opponent-secret"]').evaluateAll((nodes) =>
+      nodes.map((node) => node.tagName)), ["SPAN", "SPAN"],
+    "concealed opponent secrets must remain non-interactive status tokens");
     assert.equal(await mockPage.locator('#self-hero-status [data-testid="self-secret"]').count(), 1);
     assert.equal(await mockPage.locator('#self-extras [data-testid="self-secret"]').count(), 0,
       "secrets belong in the hero status rack, not the weapon row");
@@ -532,6 +622,9 @@ async function main() {
     assert(!await mockPage.locator("body").innerText().then((text) => text.includes(privateMarker)));
     await mockPage.locator("#game-over-dismiss").click();
     await mockPage.locator('[data-testid="game-over"]').waitFor({ state: "hidden", timeout });
+    await mockPage.locator('[data-testid="opponent-secret"]').first().click();
+    assert(await mockPage.locator("#card-modal").isHidden(),
+      "clicking an opponent secret back must not open card details");
     await mockPage.locator('[data-testid="self-quest"] [data-testid="card-inspect"]').count().then(async (count) => {
       assert.equal(count, 0, "status cards use the whole tile as their detail control");
     });
@@ -544,6 +637,25 @@ async function main() {
     await mockPage.locator("#card-modal").waitFor({ state: "visible", timeout });
     assert.match(await mockPage.locator("#modal-card-name").innerText(), /对手任务/);
     await mockPage.locator("#modal-close").click();
+
+    const legacySecretMock = JSON.parse(JSON.stringify(mock));
+    delete legacySecretMock.observation.opponent.secret_classes;
+    legacySecretMock.revision += 1;
+    const legacySecretPage = await context.newPage();
+    legacySecretPage.setDefaultTimeout(timeout);
+    await legacySecretPage.route("**/api/state", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json; charset=utf-8",
+      body: JSON.stringify(legacySecretMock),
+    }));
+    await legacySecretPage.goto(endpoint.url, { waitUntil: "domcontentloaded" });
+    await waitForPhase(legacySecretPage, "对局结束");
+    assert.equal(await legacySecretPage.locator('[data-testid="opponent-secret"]').count(), 2,
+      "legacy opponent secret states should still render the known count");
+    assert.equal(await legacySecretPage.locator('[data-testid="opponent-secret"] .secret-class-label').count(), 0,
+      "legacy opponent secret states should fall back to count-only backs");
+    assert.match(await legacySecretPage.locator('[data-testid="opponent-secret-count"]').innerText(), /×2/);
+    await legacySecretPage.close();
     const desktopStatusGeometry = await mockPage.evaluate(() => {
       const rack = document.querySelector("#self-hero-status").getBoundingClientRect();
       const hero = document.querySelector("#self-hero-row .hero-card .card-art").getBoundingClientRect();
@@ -576,6 +688,7 @@ async function main() {
       { entity_id: 90111, card_id: "UNG_940", name: "测试任务 B", kind: "sidequest", progress: 1, progress_total: null },
     ];
     crowdedStatuses.observation.opponent.secrets_count = 5;
+    crowdedStatuses.observation.opponent.secret_classes = [["MAGE"], ["HUNTER", "MAGE"], ["PRIEST"], ["WARLOCK"], ["PALADIN"]];
     crowdedStatuses.observation.opponent.quests = [
       { entity_id: 90112, card_id: "UNG_940", name: "对手任务 A", kind: "quest", progress: 2, progress_total: 8 },
       { entity_id: 90113, card_id: "UNG_940", name: "对手任务 B", kind: "sidequest", progress: 1, progress_total: 3 },
@@ -593,6 +706,25 @@ async function main() {
     assert.equal(await crowdedStatusPage.locator('[data-testid="self-secret"]').count(), 5);
     assert.equal(await crowdedStatusPage.locator('[data-testid="self-quest"]').count(), 2);
     assert.equal(await crowdedStatusPage.locator('[data-testid="opponent-quest"]').count(), 2);
+    assert.equal(await crowdedStatusPage.locator('[data-testid="opponent-secret"]').count(), 5);
+    assert.deepEqual(await crowdedStatusPage.locator('#opponent-hero-status .secret-class-label').allTextContents(),
+      ["法师", "猎人 / 法师", "牧师", "术士", "圣骑士"]);
+    const opponentSecretGeometry = await crowdedStatusPage.evaluate(() =>
+      [...document.querySelectorAll("#opponent-hero-status .secret-class-label")].map((node) => {
+        const rect = node.getBoundingClientRect();
+        const style = getComputedStyle(node);
+        return {
+          text: node.textContent,
+          fontSize: Number.parseFloat(style.fontSize),
+          width: rect.width,
+          height: rect.height,
+          scrollWidth: node.scrollWidth,
+          clientWidth: node.clientWidth,
+        };
+      }));
+    assert(opponentSecretGeometry.every((label) => label.fontSize >= 10 && label.width > 0 && label.height >= 10 &&
+      label.scrollWidth <= label.clientWidth + 1),
+    `opponent secret profession labels must remain legible and wrapped inside their backs: ${JSON.stringify(opponentSecretGeometry)}`);
     assert.match(await crowdedStatusPage.locator('[data-testid="self-quest"]').first().innerText(), /4 \/ 10/);
     assert.match(await crowdedStatusPage.locator('[data-testid="self-quest"]').nth(1).innerText(), /进度 1/);
     const statusGeometry = await crowdedStatusPage.evaluate(() => {
@@ -959,6 +1091,19 @@ async function main() {
     await crowdedPage.locator('#self-board .board-slot[data-position="6"]').click();
     assert(crowdedPost && sameAction(crowdedPost.action, crowded.legal_actions[6]), "last mobile slot must submit its original legal Action");
     await crowdedPage.close();
+
+    const deniedStoragePage = await context.newPage();
+    await deniedStoragePage.addInitScript(() => {
+      Object.defineProperty(window, "localStorage", {
+        configurable: true,
+        get() { throw new DOMException("Storage disabled", "SecurityError"); },
+      });
+    });
+    await deniedStoragePage.goto(endpoint.url, { waitUntil: "domcontentloaded" });
+    await deniedStoragePage.waitForFunction(() => Boolean(window.fireplaceWebGui));
+    await deniedStoragePage.close();
+
+    assert.equal(pageErrors.length, 0, `browser pages raised errors:\n${pageErrors.join("\n")}`);
 
     console.log(JSON.stringify({
       result: "PASS",

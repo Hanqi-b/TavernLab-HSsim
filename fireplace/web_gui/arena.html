@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="dark">
+    <meta name="description" content="Fireplace 本地竞技场选牌与对战流程">
+    <title>Fireplace · 竞技场</title>
+    <link rel="stylesheet" href="style-base.css">
+    <link rel="stylesheet" href="style-arena.css">
+    <script type="module" src="arena_app.js"></script>
+  </head>
+  <body class="arena-page">
+    <main class="arena-shell" id="arena-app" data-testid="arena-page">
+      <div class="arena-backdrop" aria-hidden="true"></div>
+
+      <header class="arena-header">
+        <div class="arena-heading">
+          <a class="arena-back-link" href="/" data-testid="arena-back">
+            <span aria-hidden="true">←</span>
+            <span data-copy="back">返回开始界面</span>
+          </a>
+          <p class="eyebrow">FIREPLACE / ARENA RUN</p>
+          <h1 data-copy="title">竞技场</h1>
+          <p class="arena-subtitle" data-copy="subtitle">选择卡池，挑选英雄，组建三十张牌组。</p>
+        </div>
+        <div class="arena-header-actions">
+          <div class="account-toolbar" id="arena-account-toolbar" hidden data-testid="account-toolbar">
+            <a class="account-label account-link" id="arena-account-label" href="/account"></a>
+            <button class="account-import-button" id="arena-account-import" type="button" hidden></button>
+            <button id="arena-account-logout" type="button"></button>
+          </div>
+          <div class="arena-record" aria-label="竞技场战绩">
+            <span class="arena-record-item"><strong id="arena-header-wins">0</strong><small data-copy="wins">胜</small></span>
+            <span class="arena-record-divider" aria-hidden="true">/</span>
+            <span class="arena-record-item"><strong id="arena-header-losses">0</strong><small data-copy="losses">负</small></span>
+          </div>
+          <fieldset class="arena-language" aria-labelledby="arena-language-label">
+            <legend id="arena-language-label" data-copy="language">界面语言</legend>
+            <div class="segmented-control" role="group" aria-labelledby="arena-language-label">
+              <button class="segment-button is-selected" id="arena-locale-zhCN" type="button" data-locale="zhCN" aria-pressed="true">中文</button>
+              <button class="segment-button" id="arena-locale-enUS" type="button" data-locale="enUS" aria-pressed="false">English</button>
+            </div>
+          </fieldset>
+        </div>
+      </header>
+
+      <section class="arena-progress" aria-label="竞技场进度">
+        <div class="arena-progress-step is-current" data-step="setup">
+          <span class="arena-step-number">1</span><span data-copy="stepSetup">选包</span>
+        </div>
+        <span class="arena-progress-line" aria-hidden="true"></span>
+        <div class="arena-progress-step" data-step="hero">
+          <span class="arena-step-number">2</span><span data-copy="stepHero">选英雄</span>
+        </div>
+        <span class="arena-progress-line" aria-hidden="true"></span>
+        <div class="arena-progress-step" data-step="draft">
+          <span class="arena-step-number">3</span><span data-copy="stepDraft">选牌</span>
+        </div>
+        <span class="arena-progress-line" aria-hidden="true"></span>
+        <div class="arena-progress-step" data-step="ready">
+          <span class="arena-step-number">4</span><span data-copy="stepReady">开战</span>
+        </div>
+      </section>
+
+      <div class="arena-status" id="arena-status" role="status" aria-live="polite"></div>
+      <div class="arena-error" id="arena-error" role="alert" hidden></div>
+      <div class="arena-loading" id="arena-loading" data-testid="arena-loading">正在读取竞技场状态……</div>
+      <section class="arena-stage" id="arena-stage" data-testid="arena-stage" hidden></section>
+    </main>
+  </body>
+</html>

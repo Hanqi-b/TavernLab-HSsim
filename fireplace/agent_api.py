@@ -15,6 +15,7 @@ USE_HERO_POWER = "USE_HERO_POWER"
 END_TURN = "END_TURN"
 CHOOSE = "CHOOSE"
 MULLIGAN = "MULLIGAN"
+CONCEDE = "CONCEDE"
 
 ACTION_TYPES = frozenset(
     {
@@ -24,6 +25,7 @@ ACTION_TYPES = frozenset(
         END_TURN,
         CHOOSE,
         MULLIGAN,
+        CONCEDE,
     }
 )
 
@@ -52,6 +54,7 @@ _ACTION_KEYS = {
     END_TURN: frozenset({"schema_version", "type"}),
     CHOOSE: frozenset({"schema_version", "type", "choice_entity_id"}),
     MULLIGAN: frozenset({"schema_version", "type", "mulligan_entity_ids"}),
+    CONCEDE: frozenset({"schema_version", "type"}),
 }
 
 _REQUIRED_ACTION_KEYS = {
@@ -61,6 +64,7 @@ _REQUIRED_ACTION_KEYS = {
     END_TURN: frozenset({"schema_version", "type"}),
     CHOOSE: frozenset({"schema_version", "type", "choice_entity_id"}),
     MULLIGAN: frozenset({"schema_version", "type", "mulligan_entity_ids"}),
+    CONCEDE: frozenset({"schema_version", "type"}),
 }
 
 
@@ -157,6 +161,13 @@ class Action:
             _forbid(self.choice_entity_id, "choice_entity_id")
             _forbid(mulligan_ids, "mulligan_entity_ids")
         elif self.type == END_TURN:
+            _forbid(self.source_entity_id, "source_entity_id")
+            _forbid(self.target_entity_id, "target_entity_id")
+            _forbid(self.choose_option_entity_id, "choose_option_entity_id")
+            _forbid(self.position, "position")
+            _forbid(self.choice_entity_id, "choice_entity_id")
+            _forbid(mulligan_ids, "mulligan_entity_ids")
+        elif self.type == CONCEDE:
             _forbid(self.source_entity_id, "source_entity_id")
             _forbid(self.target_entity_id, "target_entity_id")
             _forbid(self.choose_option_entity_id, "choose_option_entity_id")
@@ -270,4 +281,5 @@ __all__ = [
     "END_TURN",
     "CHOOSE",
     "MULLIGAN",
+    "CONCEDE",
 ]

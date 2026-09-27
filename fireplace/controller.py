@@ -10,7 +10,7 @@ from itertools import combinations
 from hearthstone.enums import CardType, State
 
 from .actions import MulliganChoice
-from .agent_api import Action
+from .agent_api import Action, CONCEDE
 from .action_log import ActionLog
 from .exceptions import GameOver, InvalidAction
 from .managers import BaseObserver
@@ -25,6 +25,7 @@ class EntityIndex(BaseObserver):
     """Keep this game's entity handles available without exposing entities to agents."""
 
     def __init__(self, game):
+        self.game = game
         self.entities = {game.entity_id: game}
         game.manager.register(self)
         # Also support attaching to a game that has already started.
@@ -37,6 +38,14 @@ class EntityIndex(BaseObserver):
             for card in player.hand:
                 for branch in card.choose_cards:
                     self.new_entity(branch)
+
+    def close(self):
+        """Stop observing the game when a short-lived session is discarded."""
+
+        try:
+            self.game.manager.observers.remove(self)
+        except ValueError:
+            pass
 
     def new_entity(self, entity):
         entity_id = getattr(entity, "entity_id", None)
@@ -141,6 +150,15 @@ def execute_action(game, player, action, index):
     """Revalidate a value action, resolve IDs, and call one checked engine API."""
     if not isinstance(action, Action):
         raise ActionError("Expected an Action value")
+    if action.type == CONCEDE:
+        # Concession is an explicit browser control, so it intentionally does
+        # not appear in legal_actions.  It is still restricted to the player
+        # whose decision currently blocks the game, matching every other
+        # checked session action.
+        if decision_player(game) is not player:
+            raise ActionError("Concession is unavailable outside the current decision")
+        player.concede()
+        return None
     if action not in legal_actions(game, player):
         raise ActionError("Action is unavailable or stale in the current phase")
     try:
@@ -183,6 +201,11 @@ class GameSession:
             self.game.start()
             self.action_log.started(self.game)
 
+    def close(self):
+        """Detach the session's entity observer from its engine game."""
+
+        self.index.close()
+
     def legal_actions(self, player):
         return legal_actions(self.game, player)
 
@@ -205,24 +228,53 @@ class GameSession:
             self.action_log.finish(self.game)
         return result
 
+    def _run_agent_action(self, player):
+        actions = self.legal_actions(player)
+        if not actions:
+            raise RuntimeError("No legal decision for %s" % player.name)
+        action = self.agents[player].choose_action(
+            self.observation(player), actions
+        )
+        if action not in actions:
+            raise ActionError("Action is unavailable or stale in the current phase")
+        return self.execute(player, action)
+
+    def run_turn(self):
+        """Run the current decision cycle with the session's agents.
+
+        This is the small-step counterpart to :meth:`run`.  It lets batch
+        helpers retain one explicit ``GameSession`` across multiple calls
+        without attaching hidden state to the engine ``Game`` instance.  A
+        terminal action is recorded by :meth:`execute` before it re-raises
+        Fireplace's ``GameOver`` signal.
+        """
+        self.start()
+        starting_player = self.game.current_player
+        while not self.game.ended and (
+            self.game.current_player is starting_player
+            or any(player.choice for player in self.game.players)
+        ):
+            player = decision_player(self.game)
+            if player is None:
+                raise RuntimeError("Game has no player who can act")
+            self._run_agent_action(player)
+        return self.game
+
     def run(self):
         self.start()
         while not self.game.ended:
             player = decision_player(self.game)
             if player is None:
                 raise RuntimeError("Game has no player who can act")
-            actions = self.legal_actions(player)
-            if not actions:
-                raise RuntimeError("No legal decision for %s" % player.name)
-            agent = self.agents[player]
-            action = agent.choose_action(self.observation(player), actions)
             try:
-                self.execute(player, action)
+                self._run_agent_action(player)
             except ActionError as exc:
                 # An interactive agent can display the reason and select
                 # again from a fresh observation. Automated agent bugs remain
                 # visible rather than being silently replaced with a move.
-                report_error = getattr(agent, "on_action_error", None)
+                report_error = getattr(
+                    self.agents[player], "on_action_error", None
+                )
                 if report_error is None:
                     raise
                 report_error(str(exc))

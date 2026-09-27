@@ -9,12 +9,14 @@ from hearthstone.enums import CardClass
 from fireplace import cards
 from fireplace.action_log import ActionLog
 from fireplace.agents import RandomAgent
-from fireplace.controller import GameSession
+from fireplace.agent_api import Action
+from fireplace.controller import GameSession, decision_player
 from fireplace.game import Game
 from fireplace.player import Player
 from fireplace.replay import ReplayError, replay_action_log
-from fireplace.replay_state import normalized_game_state
+from fireplace.replay_state import code_signature, normalized_game_state
 from fireplace.utils import setup_game
+from fireplace.exceptions import GameOver
 
 
 cards.db.initialize()
@@ -45,8 +47,33 @@ def test_complete_log_replays_from_json_and_matches_state(tmp_path):
     expected = normalized_game_state(original)
     assert normalized_game_state(replayed) == expected
     assert normalized_game_state(replayed_again) == expected
+    assert replayed.manager.observers == []
+    assert replayed_again.manager.observers == []
     assert saved["replay"]["final_state"] == expected
     assert saved["seed"] == 19
+
+
+def test_concede_log_replays_as_a_terminal_action(tmp_path):
+    hero = CardClass.MAGE.default_hero
+    players = (Player("Alpha", ["CS2_231"] * 5, hero),
+               Player("Beta", ["CS2_231"] * 5, hero))
+    game = Game(players, seed=23)
+    path = tmp_path / "concede-replay.json"
+    log = ActionLog(game, output_path=path)
+    session = GameSession(game, {}, action_log=log)
+    session.start()
+    player = decision_player(session.game)
+    with pytest.raises(GameOver):
+        session.execute(player, Action(type="CONCEDE"))
+
+    saved = json.loads(path.read_text(encoding="utf-8"))
+    assert saved["status"] == "complete"
+    assert saved["actions"][-1]["action"] == {
+        "schema_version": 1,
+        "type": "CONCEDE",
+    }
+    replayed = replay_action_log(saved)
+    assert normalized_game_state(replayed) == normalized_game_state(game)
 
 
 def test_replay_rejects_changed_code_and_action(tmp_path):
@@ -74,6 +101,39 @@ def test_replay_rejects_changed_initial_deck(tmp_path):
     saved["players"][0]["deck_card_ids"][0] = "CS2_029"
     with pytest.raises(ReplayError, match="setup diverged"):
         replay_action_log(saved)
+
+
+def test_code_signature_ignores_presentation_only_sources(tmp_path):
+    (tmp_path / "game.py").write_text("RULE_VERSION = 1\n", encoding="utf-8")
+    cards_root = tmp_path / "cards"
+    cards_root.mkdir()
+    (cards_root / "CardDefs.xml").write_text("<cards />\n", encoding="utf-8")
+    web_root = tmp_path / "web_gui"
+    web_root.mkdir()
+    web_file = web_root / "server.py"
+    web_file.write_text("PRESENTATION_VERSION = 1\n", encoding="utf-8")
+
+    before = code_signature(source_root=tmp_path)
+    web_file.write_text("PRESENTATION_VERSION = 2\n", encoding="utf-8")
+
+    assert code_signature(source_root=tmp_path) == before
+
+
+def test_code_signature_includes_engine_and_card_changes(tmp_path):
+    game_file = tmp_path / "game.py"
+    game_file.write_text("RULE_VERSION = 1\n", encoding="utf-8")
+    cards_root = tmp_path / "cards"
+    cards_root.mkdir()
+    card_defs = cards_root / "CardDefs.xml"
+    card_defs.write_text("<cards />\n", encoding="utf-8")
+
+    baseline = code_signature(source_root=tmp_path)["source_sha256"]
+    game_file.write_text("RULE_VERSION = 2\n", encoding="utf-8")
+    engine_changed = code_signature(source_root=tmp_path)["source_sha256"]
+    assert engine_changed != baseline
+
+    card_defs.write_text("<cards version=\"2\" />\n", encoding="utf-8")
+    assert code_signature(source_root=tmp_path)["source_sha256"] != engine_changed
 
 
 def test_seed_controls_random_class_and_deck_setup():

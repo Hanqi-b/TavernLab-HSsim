@@ -54,6 +54,62 @@ def _first_difference(expected: Any, actual: Any, path: str = "state") -> str | 
     return None
 
 
+def _replay_session(
+    session: GameSession,
+    log: dict[str, Any],
+    replay: dict[str, Any],
+    player_data: list[dict[str, Any]],
+    actions: list[Any],
+) -> Game:
+    """Apply and verify a log through one owned replay session."""
+
+    game = session.game
+    try:
+        session.start()
+    except Exception as exc:
+        raise ReplayError("Game setup diverged: %s" % exc) from exc
+
+    first_player = log.get("first_player_seat")
+    if type(first_player) is not int or first_player != game.players.index(game.player1):
+        raise ReplayError("First player diverged during setup")
+    for seat, (entry, player) in enumerate(zip(player_data, game.players)):
+        actual = session.action_log.to_dict()["players"][seat]
+        if (entry.get("resolved_hero_id") != actual.get("resolved_hero_id")
+                or entry.get("resolved_deck_card_ids") != actual.get("resolved_deck_card_ids")):
+            raise ReplayError("Player %d setup diverged" % seat)
+
+    for index, entry in enumerate(actions, 1):
+        if not isinstance(entry, dict) or type(entry.get("seq")) is not int or entry["seq"] != index:
+            raise ReplayError("Invalid action sequence at entry %d" % index)
+        player = decision_player(game)
+        if player is None:
+            raise ReplayError("Action %d occurs after game over" % index)
+        seat = game.players.index(player)
+        phase = phase_for(game, player)
+        if (entry.get("player") != seat or entry.get("turn") != game.turn
+                or entry.get("phase") != phase):
+            raise ReplayError("Action %d context diverged (turn/player/phase)" % index)
+        try:
+            action = Action.from_dict(entry.get("action"))
+            session.execute(player, action)
+        except GameOver:
+            if index != len(actions):
+                raise ReplayError("Action %d ended the game before the log ended" % index)
+        except (ActionError, ValueError, TypeError) as exc:
+            raise ReplayError("Action %d diverged: %s" % (index, exc)) from exc
+
+    if not game.ended:
+        raise ReplayError("Action log ended before the game")
+    actual_result = session.action_log.to_dict()["result"]
+    if actual_result != log.get("result"):
+        raise ReplayError("Final result diverged")
+    actual_state = normalized_game_state(game)
+    difference = _first_difference(replay["final_state"], actual_state)
+    if difference is not None:
+        raise ReplayError("Final normalized state diverged at %s" % difference)
+    return game
+
+
 def replay_action_log(value: Mapping[str, Any] | str | Path) -> Game:
     """Recreate a complete standard game and verify its normalized final state.
 
@@ -117,49 +173,9 @@ def replay_action_log(value: Mapping[str, Any] | str | Path) -> Game:
         raise ReplayError("Invalid pre-start RNG state") from exc
     session = GameSession(game, {})
     try:
-        session.start()
-    except Exception as exc:
-        raise ReplayError("Game setup diverged: %s" % exc) from exc
-
-    first_player = log.get("first_player_seat")
-    if type(first_player) is not int or first_player != game.players.index(game.player1):
-        raise ReplayError("First player diverged during setup")
-    for seat, (entry, player) in enumerate(zip(player_data, game.players)):
-        actual = session.action_log.to_dict()["players"][seat]
-        if (entry.get("resolved_hero_id") != actual.get("resolved_hero_id")
-                or entry.get("resolved_deck_card_ids") != actual.get("resolved_deck_card_ids")):
-            raise ReplayError("Player %d setup diverged" % seat)
-
-    for index, entry in enumerate(actions, 1):
-        if not isinstance(entry, dict) or type(entry.get("seq")) is not int or entry["seq"] != index:
-            raise ReplayError("Invalid action sequence at entry %d" % index)
-        player = decision_player(game)
-        if player is None:
-            raise ReplayError("Action %d occurs after game over" % index)
-        seat = game.players.index(player)
-        phase = phase_for(game, player)
-        if (entry.get("player") != seat or entry.get("turn") != game.turn
-                or entry.get("phase") != phase):
-            raise ReplayError("Action %d context diverged (turn/player/phase)" % index)
-        try:
-            action = Action.from_dict(entry.get("action"))
-            session.execute(player, action)
-        except GameOver:
-            if index != len(actions):
-                raise ReplayError("Action %d ended the game before the log ended" % index)
-        except (ActionError, ValueError, TypeError) as exc:
-            raise ReplayError("Action %d diverged: %s" % (index, exc)) from exc
-
-    if not game.ended:
-        raise ReplayError("Action log ended before the game")
-    actual_result = session.action_log.to_dict()["result"]
-    if actual_result != log.get("result"):
-        raise ReplayError("Final result diverged")
-    actual_state = normalized_game_state(game)
-    difference = _first_difference(replay["final_state"], actual_state)
-    if difference is not None:
-        raise ReplayError("Final normalized state diverged at %s" % difference)
-    return game
+        return _replay_session(session, log, replay, player_data, actions)
+    finally:
+        session.close()
 
 
 __all__ = ["ReplayError", "replay_action_log"]

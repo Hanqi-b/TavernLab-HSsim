@@ -1,13 +1,15 @@
 import json
 import io
 import re
+from types import SimpleNamespace
 
 import pytest
-from hearthstone.enums import CardClass, Zone
+from hearthstone.enums import CardClass, MultiClassGroup, Zone
 
 from fireplace import cards
 from fireplace.agent_api import Action
 from fireplace.controller import ActionError, GameSession, decision_player
+from fireplace.exceptions import GameOver
 from fireplace.game import Game
 from fireplace.player import Player
 
@@ -48,6 +50,40 @@ def test_mulligan_and_stale_rejection():
     finish_mulligan(current)
     with pytest.raises(ActionError):
         current.execute(p, Action(type="MULLIGAN"))
+
+
+def test_concede_is_explicit_but_not_an_ai_legal_action():
+    current = session()
+    current.start()
+    player = decision_player(current.game)
+    other = next(candidate for candidate in current.game.players if candidate is not player)
+    concede = Action(type="CONCEDE")
+
+    assert concede not in current.legal_actions(player)
+    with pytest.raises(ActionError, match="current decision"):
+        current.execute(other, concede)
+    assert not current.game.ended
+
+    with pytest.raises(GameOver):
+        current.execute(player, concede)
+    assert current.game.ended
+    assert current.action_log.to_dict()["actions"][-1]["action"] == concede.to_dict()
+    assert current.action_log.to_dict()["status"] == "complete"
+
+
+def test_agent_cannot_invent_concede_outside_legal_actions():
+    class MaliciousAgent:
+        def choose_action(self, _observation, _legal_actions):
+            return Action(type="CONCEDE")
+
+    current = session()
+    current.start()
+    player = decision_player(current.game)
+    current.agents[player] = MaliciousAgent()
+
+    with pytest.raises(ActionError, match="unavailable"):
+        current._run_agent_action(player)
+    assert not current.game.ended
 
 
 def test_minion_positions_and_end_turn():
@@ -310,6 +346,102 @@ def test_random_agents_finish_a_game():
     assert result.turn > 0
 
 
+def test_run_turn_keeps_random_session_explicit():
+    from fireplace.agents import RandomAgent
+    from fireplace.utils import play_turn, setup_game
+
+    game = setup_game(seed=17)
+    agent = RandomAgent(seed=17)
+    current = GameSession(game, {player: agent for player in game.players})
+
+    play_turn(game, session=current)
+
+    assert current.game is game
+    assert not hasattr(game, "_random_session")
+
+
+def test_legacy_play_turn_preserves_policy_stream_without_game_state():
+    from fireplace.replay_state import normalized_game_state
+    from fireplace.utils import play_turn, setup_game
+
+    first = setup_game(seed=23)
+    second = setup_game(seed=23)
+    first_observers = len(first.manager.observers)
+    for _ in range(2):
+        play_turn(first)
+        play_turn(second)
+
+    assert normalized_game_state(first) == normalized_game_state(second)
+    assert not hasattr(first, "_random_session")
+    assert len(first.manager.observers) == first_observers
+
+
+def test_random_match_factories_preserve_seeded_setup():
+    import hashlib
+
+    from fireplace.match_factory import build_random_game
+    from fireplace.utils import setup_game
+
+    shared = build_random_game(
+        73, player_names=("Player1", "Player2")
+    )
+    batch = setup_game(seed=73, start=False)
+
+    assert [
+        (player.starting_hero, player.starting_deck)
+        for player in shared[0].players
+    ] == [
+        (player.starting_hero, player.starting_deck)
+        for player in batch.players
+    ]
+    assert shared[0].random.getstate() == batch.random.getstate()
+
+    payload = "|".join(
+        [
+            *(player.starting_hero for player in shared[0].players),
+            *(card for player in shared[0].players for card in player.starting_deck),
+        ]
+    )
+    assert [player.starting_hero for player in shared[0].players] == [
+        "HERO_09",
+        "HERO_05",
+    ]
+    assert hashlib.sha256(payload.encode()).hexdigest() == (
+        "493f0fad853806055dedca549c74cc496571dbdcf5980487e5f08f8ad1db01c2"
+    )
+
+
+def test_random_match_factory_initializes_card_db_once(monkeypatch):
+    from fireplace import cards
+    from fireplace.match_factory import build_random_game
+
+    original_initialize = cards.db.initialize
+    initial_state = cards.db.initialized
+    calls = []
+
+    def initialize(*args, **kwargs):
+        calls.append((args, kwargs))
+        return original_initialize(*args, **kwargs)
+
+    monkeypatch.setattr(cards.db, "initialize", initialize)
+    cards.db.initialized = False
+    try:
+        first = build_random_game(seed=101)
+        second = build_random_game(seed=101)
+    finally:
+        cards.db.initialized = initial_state
+
+    assert len(calls) == 1
+    assert [
+        (player.starting_hero, player.starting_deck)
+        for player in first[0].players
+    ] == [
+        (player.starting_hero, player.starting_deck)
+        for player in second[0].players
+    ]
+    assert first[0].random.getstate() == second[0].random.getstate()
+
+
 def test_human_tui_and_random_share_session_to_game_over():
     from fireplace.agents import HumanTUIAgent, RandomAgent
 
@@ -351,7 +483,9 @@ def test_active_quests_are_public_but_opponent_secrets_stay_concealed():
     quest = player.give("UNG_116")
     sidequest = player.give("DRG_051")
     secret = player.give("EX1_287")
-    for card in (quest, sidequest, secret):
+    multi_class_secret = player.give("EX1_611")
+    multi_class_secret.multi_class_group = MultiClassGroup.MAGE_ROGUE
+    for card in (quest, sidequest, secret, multi_class_secret):
         play = next(action for action in current.legal_actions(player)
                     if action.type == "PLAY_CARD" and action.source_entity_id == card.entity_id)
         current.execute(player, play)
@@ -360,16 +494,28 @@ def test_active_quests_are_public_but_opponent_secrets_stay_concealed():
 
     own = current.observation(player)["self"]
     seen_by_opponent = current.observation(player.opponent)["opponent"]
-    assert [card["card_id"] for card in own["secrets"]] == ["EX1_287"]
+    assert [card["card_id"] for card in own["secrets"]] == ["EX1_287", "EX1_611"]
     assert own["quests"] == seen_by_opponent["quests"]
     assert [(card["card_id"], card["kind"], card["progress"], card["progress_total"])
             for card in own["quests"]] == [
                 ("UNG_116", "quest", 2, 5),
                 ("DRG_051", "sidequest", 4, 10),
             ]
-    assert seen_by_opponent["secrets_count"] == 1
+    assert seen_by_opponent["secrets_count"] == 2
+    assert seen_by_opponent["secret_classes"] == [["MAGE"], ["MAGE", "ROGUE"]]
     assert "secrets" not in seen_by_opponent
     assert "EX1_287" not in json.dumps(seen_by_opponent)
+    assert "EX1_611" not in json.dumps(seen_by_opponent)
+    assert str(secret.entity_id) not in json.dumps(seen_by_opponent)
+    assert str(multi_class_secret.entity_id) not in json.dumps(seen_by_opponent)
+
+
+@pytest.mark.parametrize("unknown", [None, "NOT_A_CARD_CLASS", 999999, object()])
+def test_unknown_secret_class_falls_back_to_an_empty_public_class_list(unknown):
+    from fireplace.observation import _secret_class_names
+
+    card = SimpleNamespace(classes=[unknown], card_class=unknown)
+    assert _secret_class_names(card) == []
 
 
 def test_opponent_cannot_see_secret_or_pending_discover_options():
@@ -401,6 +547,8 @@ def test_action_json_round_trip():
     action = Action(type="PLAY_CARD", source_entity_id=5, target_entity_id=6,
                     choose_option_entity_id=7, position=0)
     assert Action.from_dict(json.loads(json.dumps(action.to_dict()))) == action
+    concede = Action(type="CONCEDE")
+    assert Action.from_dict(json.loads(json.dumps(concede.to_dict()))) == concede
     with pytest.raises(ValueError):
         Action.from_dict({"type": "END_TURN", "extra": 1})
 

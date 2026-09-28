@@ -412,6 +412,7 @@ class CardCatalog:
         card_class: str | None = None,
         query: str = "",
         scope: str = "collectible",
+        sort: str = "name",
         page: int = 1,
         page_size: int = 48,
     ) -> dict[str, Any]:
@@ -419,11 +420,14 @@ class CardCatalog:
 
         ``scope="collectible"`` excludes non-collectible records and hero
         skins.  ``scope="all"`` includes every XML record, including those
-        generated or used only by the game client.
+        generated or used only by the game client.  ``sort="cost"`` orders
+        the filtered records before pagination.
         """
 
         locale = self._validate_locale(locale)
         scope = self._validate_scope(scope)
+        if not isinstance(sort, str) or sort not in {"name", "cost"}:
+            raise ValueError("sort must be one of: name, cost")
         page, page_size = self._validate_page(page, page_size)
         query = self._validate_query(query)
         if isinstance(card_set, str) and card_set.upper() == "HEROES":
@@ -444,6 +448,9 @@ class CardCatalog:
             or (record.collectible and record.card_set != CardSet.HERO_SKINS.name)
         )
         metadata = self._filter_metadata(scoped, locale)
+        if card_class is not None:
+            class_scoped = tuple(record for record in scoped if card_class in record.classes)
+            metadata["sets"] = self._filter_metadata(class_scoped, locale)["sets"]
         needle = query.casefold()
         filtered = tuple(
             record
@@ -452,6 +459,13 @@ class CardCatalog:
             and (card_class is None or card_class in record.classes)
             and (not needle or needle in record.search_text)
         )
+        if sort == "cost":
+            filtered = tuple(
+                sorted(
+                    filtered,
+                    key=lambda record: (record.cost, record.name.casefold(), record.id),
+                )
+            )
         total = len(filtered)
         start = (page - 1) * page_size
         items = [record.as_dict() for record in filtered[start : start + page_size]]

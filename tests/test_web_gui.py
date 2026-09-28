@@ -717,6 +717,88 @@ def test_terminal_action_returns_outcome(web_game):
     assert state["outcome"] == {"winner": "Alice", "human_won": True}
 
 
+def test_action_response_returns_ordered_intermediate_presentation_steps(web_game):
+    app, human, opponent, base = web_game()
+    state = ready(base)
+    opponent.max_mana = 10
+    opponent_card = opponent.give("CS2_231")
+
+    class ScriptedAgent:
+        played = False
+
+        def choose_action(self, _observation, actions):
+            if not self.played:
+                self.played = True
+                return next(
+                    item for item in actions
+                    if item.type == "PLAY_CARD"
+                    and item.source_entity_id == opponent_card.entity_id
+                )
+            return next(item for item in actions if item.type == "END_TURN")
+
+    app.opponent_agent = ScriptedAgent()
+    starting_revision = state["revision"]
+    status, state = submit(base, state, action(state, "END_TURN"))
+    assert status == 200
+
+    steps = state["presentation_steps"]
+    assert [step["event"]["type"] for step in steps] == [
+        "END_TURN", "PLAY_CARD", "END_TURN"
+    ]
+    assert [step["event"]["actor"] for step in steps] == [
+        "self", "opponent", "opponent"
+    ]
+    assert [step["revision"] for step in steps] == list(
+        range(starting_revision + 1, state["revision"] + 1)
+    )
+    assert steps[-1]["revision"] == state["revision"]
+    assert not any(
+        card["entity_id"] == opponent_card.entity_id
+        for card in steps[0]["observation"]["opponent"]["board"]
+    )
+    assert any(
+        card["entity_id"] == opponent_card.entity_id
+        for card in steps[1]["observation"]["opponent"]["board"]
+    )
+    for step in steps:
+        assert not any(key.startswith("_") for key in step["event"])
+        assert "card_id" not in step["event"]
+        assert "hand" not in step["observation"]["opponent"]
+    assert steps[-1]["observation"]["phase"] == state["observation"]["phase"]
+    assert steps[-1]["outcome"] == state["outcome"]
+
+
+def test_terminal_action_includes_terminal_presentation_step(web_game):
+    app, human, opponent, base = web_game()
+    state = ready(base)
+    human.name = "Alice"
+    human.max_mana = 10
+    opponent.hero.damage = opponent.hero.max_health - 1
+    fireball = human.give("CS2_029")
+    _, state = request(base)
+
+    status, state = submit(
+        base,
+        state,
+        action(
+            state,
+            "PLAY_CARD",
+            source_entity_id=fireball.entity_id,
+            target_entity_id=opponent.hero.entity_id,
+        ),
+    )
+    assert status == 200
+    assert len(state["presentation_steps"]) == 1
+    step = state["presentation_steps"][0]
+    assert step["event"]["type"] == "PLAY_CARD"
+    assert step["event"]["actor"] == "self"
+    assert step["revision"] == state["revision"]
+    assert step["observation"]["phase"] == "GAME_OVER"
+    assert step["outcome"] == state["outcome"] == {
+        "winner": "Alice", "human_won": True
+    }
+
+
 def test_complete_match_through_http_actions(web_game):
     app, human, opponent, base = web_game(deck_size=5)
     status, state = request(base)

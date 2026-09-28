@@ -23,7 +23,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 
 from fireplace import cards
 from fireplace.agents import HeuristicAgent
-from fireplace.controller import GameSession
+from fireplace.controller import GameSession, decision_player
 from fireplace.game import Game
 from fireplace.player import Player
 from fireplace.web_gui.server import WebGame, make_server
@@ -36,8 +36,22 @@ class ShowcaseGame(WebGame):
         self._fixture_ready = False
         super().__init__(*args, **kwargs)
 
+    def _advance_ai_locked(self, presentation_steps=None) -> None:
+        # The base game refreshes mana at turn start. Refill once at the AI
+        # resolution boundary so this fixture can expose multiple real legal
+        # Heuristic plays in one presentation queue.
+        if self._fixture_ready and decision_player(self.session.game) is self.human.opponent:
+            opponent = self.human.opponent
+            opponent.max_mana = 10
+            opponent.used_mana = 0
+            opponent.hand.clear()
+            for _ in range(3):
+                opponent.give("CS2_231")
+        super()._advance_ai_locked(presentation_steps)
+
     def handle_action(self, payload: object) -> dict[str, object]:
         response = super().handle_action(payload)
+        presentation_steps = response.get("presentation_steps")
         action = payload.get("action") if isinstance(payload, Mapping) else None
         if (
             not self._fixture_ready
@@ -73,6 +87,11 @@ class ShowcaseGame(WebGame):
                 self.human.used_mana = 0
                 self._revision += 1
                 response = self.snapshot()
+        if presentation_steps is not None:
+            # Showcase-only mana/hand adjustments add a final fixture revision
+            # after the real Action and AI resolutions. Preserve the real
+            # per-Action frames so the browser can present the same history.
+            response["presentation_steps"] = presentation_steps
         return response
 
 

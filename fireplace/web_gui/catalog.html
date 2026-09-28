@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="dark">
-    <meta name="description" content="Fireplace 本地卡牌资料浏览器">
+    <meta name="description" content="Fireplace 可收藏卡牌浏览器">
     <title>Fireplace · 卡牌浏览</title>
     <link rel="stylesheet" href="style-base.css">
     <link rel="stylesheet" href="style-catalog.css">
@@ -24,7 +24,7 @@
           </a>
           <p class="eyebrow" id="catalog-eyebrow">FIREPLACE / CARD CATALOG</p>
           <h1 id="catalog-title">卡牌浏览</h1>
-          <p class="catalog-subtitle" id="catalog-subtitle">按系列、职业和名称查阅本地卡牌资料。</p>
+          <p class="catalog-subtitle" id="catalog-subtitle">按系列和职业查看可收藏卡牌，按法力值从低到高排列。</p>
         </div>
         <fieldset class="catalog-language" aria-labelledby="catalog-language-label">
           <legend id="catalog-language-label">界面语言</legend>
@@ -52,23 +52,15 @@
           <div class="catalog-filter-field">
             <label for="catalog-set" id="catalog-set-label">系列 / 扩展包</label>
             <select id="catalog-set" data-testid="catalog-set" autocomplete="off">
-              <option value="">全部系列</option>
+              <option value="BASIC">基本</option>
             </select>
           </div>
           <div class="catalog-filter-field">
             <label for="catalog-class" id="catalog-class-label">职业</label>
             <select id="catalog-class" data-testid="catalog-class" autocomplete="off">
-              <option value="">全部职业 / 中立</option>
+              <option value="NEUTRAL">中立</option>
             </select>
           </div>
-          <label class="catalog-scope-toggle" for="catalog-scope-all">
-            <input id="catalog-scope-all" data-testid="catalog-scope" type="checkbox">
-            <span class="catalog-toggle-mark" aria-hidden="true"></span>
-            <span>
-              <strong id="catalog-scope-label">资料范围</strong>
-              <small id="catalog-scope-copy">全部 XML 资料</small>
-            </span>
-          </label>
         </div>
       </section>
 

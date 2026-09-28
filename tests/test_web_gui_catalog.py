@@ -172,6 +172,7 @@ def test_catalog_searches_both_names_and_ids_and_supports_filters(card_defs: Pat
     )["classes"]
     neutral = catalog.list_cards(card_class="NEUTRAL", scope="all")
     assert "B_MULTI" not in {item["id"] for item in neutral["items"]}
+    assert catalog.list_cards(card_class="NEUTRAL")["sets"] == []
 
 
 def test_scope_excludes_tokens_and_hero_skins_by_default(card_defs: Path):
@@ -188,6 +189,16 @@ def test_scope_excludes_tokens_and_hero_skins_by_default(card_defs: Path):
         "C_TOKEN",
         "D_SKIN",
     }
+
+
+def test_cost_sort_applies_before_pagination(card_defs: Path):
+    catalog = CardCatalog(card_defs)
+    first = catalog.list_cards(sort="cost", page_size=1, page=1)
+    second = catalog.list_cards(sort="cost", page_size=1, page=2)
+    assert [item["id"] for item in first["items"]] == ["B_MULTI"]
+    assert [item["id"] for item in second["items"]] == ["A_CARD"]
+    with pytest.raises(ValueError, match="sort must be one of"):
+        catalog.list_cards(sort="unknown")
 
 
 def test_heroes_use_a_separate_catalog_set(card_defs: Path):

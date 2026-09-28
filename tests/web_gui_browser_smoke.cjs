@@ -27,6 +27,7 @@ const artifacts = process.env.FIREPLACE_GUI_ARTIFACTS || path.join(os.tmpdir(), 
 const python = process.env.FIREPLACE_GUI_PYTHON || process.env.PYTHON || "python3";
 const chrome = process.env.CHROME_PATH || "/opt/google/chrome/chrome";
 const timeout = Number(process.env.FIREPLACE_GUI_TIMEOUT_MS || 20000);
+const browserConsoleErrors = [];
 
 function startFixture() {
   const child = spawn(python, ["-u", fixturePath, "--port", "0"], {
@@ -92,12 +93,12 @@ async function waitForPhase(page, label) {
   }, label, { timeout });
 }
 
-async function waitForRevision(page, previous) {
+async function waitForRevision(page, target) {
   await page.waitForFunction((value) => {
     const node = document.querySelector('[data-testid="revision"]');
     const match = node && node.textContent.match(/(\d+)/);
-    return match && Number(match[1]) > value;
-  }, previous, { timeout });
+    return match && Number(match[1]) >= value;
+  }, target, { timeout });
 }
 
 function captureActionRequest(page) {
@@ -158,7 +159,22 @@ async function performAction(page, before, clickOperation, label) {
   assert(response, `${label}: action request had no response`);
   const payload = await response.json();
   assert.equal(response.status(), 200, `${label}: ${JSON.stringify(payload)}`);
-  await waitForRevision(page, before.revision);
+  try {
+    await waitForRevision(page, payload.revision);
+  } catch (error) {
+    const debug = await page.evaluate(() => ({
+      revision: document.querySelector('[data-testid="revision"]')?.textContent,
+      phase: document.querySelector('[data-testid="phase"]')?.textContent,
+      busy: window.fireplaceWebGui?.isBusy?.(),
+      notice: document.querySelector("#notice")?.textContent,
+      gameHidden: document.querySelector("#game")?.hidden,
+    }));
+    const frames = (payload.presentation_steps || []).map((frame) => ({ revision: frame.revision, type: frame.event?.type }));
+    console.error(`${label}: response_revision=${payload.revision}; frames=${JSON.stringify(frames)}; final DOM=${JSON.stringify(debug)}; consoleErrors=${JSON.stringify(browserConsoleErrors)}`);
+    throw error;
+  }
+  await page.waitForFunction(() => window.fireplaceWebGui &&
+    typeof window.fireplaceWebGui.isBusy === "function" && !window.fireplaceWebGui.isBusy(), null, { timeout });
   return { action: body.action, state: payload };
 }
 
@@ -285,6 +301,9 @@ async function main() {
       openedPage.on("pageerror", (error) => {
         pageErrors.push(error.stack || String(error));
         console.error(`browser page error: ${error.stack || error}`);
+      });
+      openedPage.on("console", (message) => {
+        if (message.type() === "error") browserConsoleErrors.push(message.text());
       });
     });
     const page = await context.newPage();
@@ -487,15 +506,27 @@ async function main() {
     assert(boar, "Stonetusk Boar should be on board");
     const attackTarget = state.observation.opponent.hero.entity_id;
     performed = await performAction(page, state, async () => {
+      assert(await page.locator(".attack-line").evaluate((node) =>
+        node.hasAttribute("hidden") && getComputedStyle(node).display === "none"),
+        "attack guide should stay hidden until an attacker is selected");
       await page.locator(`[data-testid="self-board"] .board-card[data-entity-id="${boar.entity_id}"]`).click();
       const target = page.locator(`[data-testid="opponent-hero"] .targetable[data-entity-id="${attackTarget}"]`);
       await target.hover();
-      assert.equal(await page.locator(".attack-line").evaluate((node) => node.hidden), false, "attack line should track the legal target");
+      assert(await page.locator(".attack-line").evaluate((node) =>
+        !node.hasAttribute("hidden") && getComputedStyle(node).display !== "none"),
+      "attack guide should track the legal target");
+      await page.screenshot({ path: path.join(artifacts, "web-gui-attack-guide.png") });
       await target.click();
+      assert(await page.locator(".attack-line").evaluate((node) =>
+        node.hasAttribute("hidden") && getComputedStyle(node).display === "none"),
+        "attack guide should disappear as soon as the attack is submitted");
     }, "Charge attack");
     assert.equal(performed.action.type, "ATTACK");
     assert.equal(performed.action.source_entity_id, boar.entity_id);
     assert.equal(performed.action.target_entity_id, attackTarget);
+    assert(await page.locator(".attack-line").evaluate((node) =>
+      node.hasAttribute("hidden") && getComputedStyle(node).display === "none"),
+      "attack guide should remain hidden after attack resolution");
     actions.push(performed.action);
 
     performed = await clickPositionedMinion(page, "LOE_006", 0, "Museum Curator Discover play");

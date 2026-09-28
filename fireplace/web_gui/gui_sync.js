@@ -9,7 +9,7 @@ const API = {
 /** Owns all HTTP requests, busy state, and revision synchronization. */
 export function createSync({
   window, document, elements, state, locale, data, dom, cards,
-  renderer, feedback, modal, getMode, onModeChange, onClearMatch,
+  renderer, feedback, presentation, isDragging, modal, getMode, onModeChange, onClearMatch,
   onApplyLocale, onRenderLobby, onSetLobbyFormValues, onSetLobbyStatus,
 }) {
   let busy = false;
@@ -91,7 +91,7 @@ export function createSync({
     return window.fetch(API.state, { headers: { Accept: "application/json" }, cache: "no-store" })
       .then(readJsonResponse)
       .then((payload) => {
-        if (generation !== requestGeneration) return null;
+        if (generation !== requestGeneration || busy || (isDragging && isDragging())) return null;
         const envelope = normalizeServerPayload(payload);
         const result = applyServerPayload(payload, {
           resetSelection: envelope.snapshot ? state.isDecisionChanged(envelope.snapshot) : false,
@@ -116,7 +116,7 @@ export function createSync({
     return window.fetch(API.state, { headers: { Accept: "application/json" }, cache: "no-store" })
       .then(readJsonResponse)
       .then((payload) => {
-        if (generation !== requestGeneration) return;
+        if (generation !== requestGeneration || busy || (isDragging && isDragging())) return;
         const envelope = normalizeServerPayload(payload);
         if (envelope.mode === "lobby") {
           if (getMode() !== "lobby") applyServerPayload(payload, { resetSelection: true });
@@ -142,7 +142,7 @@ export function createSync({
     try { return JSON.stringify(value); } catch (_error) { return String(Date.now()); }
   }
 
-  function applySnapshot(next, options) {
+  function applySnapshot(next, options = {}) {
     const transition = state.commit(next, options);
     const previous = transition.sessionChanged ? null : transition.previous;
     const previousEventSeq = transition.previousEventSeq;
@@ -164,9 +164,9 @@ export function createSync({
       focusPosition = active.getAttribute && active.getAttribute("data-position");
       focusActionKey = active.getAttribute && active.getAttribute("data-action-key");
     }
-    renderer.renderSnapshot();
+    renderer.renderSnapshot(options.positionTransition !== false);
     modal.refreshOpenCardModal();
-    feedback.showPublicFeedback(previous, next, previousEventSeq);
+    if (!options.visualFeedbackDisabled) feedback.showPublicFeedback(previous, next, previousEventSeq);
     if (!resetSelection) restoreFocus({ focusId, focusEntityId, focusInspectEntityId, focusPosition, focusActionKey });
     if (previous && transition.events.length) {
       const previousSeq = previousEventSeq === null ? -1 : previousEventSeq;
@@ -195,16 +195,17 @@ export function createSync({
     document.querySelectorAll("button").forEach((button) => { button.disabled = Boolean(disabled); });
   }
 
-  function submitAction(index) {
+  function submitAction(index, presentationHint = null) {
     const snapshot = state.current.snapshot;
     const action = state.current.actionIndex.actions[index];
-    if (busy || !snapshot) return;
+    if (busy || !snapshot || ((isDragging && isDragging()) &&
+        !(presentationHint && presentationHint.preanimatedPlay))) return;
     if (!data.isObject(action)) {
       dom.showNotice(locale.tr("staleRevision"), "error", 0);
       loadState(false);
       return;
     }
-    const generation = requestGeneration;
+    const generation = ++requestGeneration;
     busy = true;
     setButtonsDisabled(true);
     dom.setConnection(locale.tr("status.submitting"), false);
@@ -214,10 +215,36 @@ export function createSync({
       body: JSON.stringify({ session_id: snapshot.session_id, revision: snapshot.revision, action }),
     })
       .then(readJsonResponse)
-      .then((payload) => {
+      .then(async (payload) => {
         if (generation !== requestGeneration) return;
-        const envelope = applyServerPayload(payload, { resetSelection: true });
+        const envelope = normalizeServerPayload(payload);
         if (envelope.mode !== "match" || !envelope.snapshot) throw new Error(locale.tr("actionMissing"));
+        const steps = Array.isArray(payload.presentation_steps) ? payload.presentation_steps : [];
+        const last = steps[steps.length - 1];
+        const before = state.current.snapshot;
+        if (before && steps.length && last && last.revision <= envelope.snapshot.revision &&
+            steps[0].revision > before.revision && before.session_id === envelope.snapshot.session_id) {
+          try {
+            await presentation.play(steps, envelope.snapshot, {
+              current: () => state.current.snapshot,
+              commit: (next, isFinal = false) => {
+                applySnapshot(next, {
+                  resetSelection: true, positionTransition: false, visualFeedbackDisabled: true,
+                });
+                setButtonsDisabled(!isFinal);
+              },
+            }, () => generation === requestGeneration, {
+              skipFirstIntent: Boolean(presentationHint && presentationHint.preanimatedPlay),
+              beforeFinal: () => { busy = false; },
+            });
+          } catch (animationError) {
+            presentation.cancel();
+            applyServerPayload(payload, { resetSelection: true });
+            window.console.error("Action presentation failed", animationError);
+          }
+        } else {
+          applyServerPayload(payload, { resetSelection: true });
+        }
         dom.setConnection(locale.tr("status.connected"), false);
       })
       .catch((error) => {
@@ -234,7 +261,7 @@ export function createSync({
         else dom.showNotice(locale.tr("submitFailed", { message: data.errorMessage(error) }), "error", 0);
         if (error && error.status === 409 && synced) dom.setConnection(locale.tr("status.connected"), false);
         else dom.setConnection(error && error.status ? locale.tr("status.rejected") : locale.tr("status.disconnected"), true);
-        if (!synced) loadState(false);
+        if (!synced) window.setTimeout(() => loadState(false), 0);
       })
       .finally(() => {
         if (generation !== requestGeneration) return;
@@ -327,7 +354,7 @@ export function createSync({
   function concede() {
     const snapshot = state.current.snapshot;
     const phase = snapshot && snapshot.observation ? String(snapshot.observation.phase || "") : "";
-    if (busy || !snapshot || snapshot.outcome || phase === "GAME_OVER") return;
+    if (busy || (isDragging && isDragging()) || !snapshot || snapshot.outcome || phase === "GAME_OVER") return;
     const generation = ++requestGeneration;
     busy = true;
     setButtonsDisabled(true);
@@ -357,7 +384,7 @@ export function createSync({
         dom.showNotice(locale.tr("surrenderFailed", { message: data.errorMessage(error) }), "error", 0);
         if (error && error.status === 409 && synced) dom.setConnection(locale.tr("status.connected"), false);
         else dom.setConnection(error && error.status ? locale.tr("status.rejected") : locale.tr("status.disconnected"), true);
-        if (!synced) loadState(false);
+        if (!synced) window.setTimeout(() => loadState(false), 0);
       })
       .finally(() => {
         if (generation !== requestGeneration) return;
@@ -375,7 +402,7 @@ export function createSync({
     applySnapshot,
     concede,
     get busy() { return busy; },
-    isBusy: () => busy,
+    isBusy: () => busy || Boolean(isDragging && isDragging()),
     loadState,
     normalizeServerPayload,
     pollState,

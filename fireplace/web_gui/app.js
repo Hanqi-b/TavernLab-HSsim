@@ -7,6 +7,8 @@ import { createFeedback } from "./gui_feedback.js";
 import { createBoard } from "./gui_board.js";
 import { createModal } from "./gui_modal.js";
 import { createSync } from "./gui_sync.js";
+import { createPresentation } from "./gui_presentation.js";
+import { createHandDrag } from "./gui_hand_drag.js";
 import { collectElements, createLobby } from "./gui_core.js";
 
 /**
@@ -41,6 +43,8 @@ function bootstrap() {
   let renderer;
   let sync;
   let lobby;
+  let handDrag;
+  let feedback;
 
   const cards = createCards({
     document,
@@ -66,12 +70,15 @@ function bootstrap() {
     locale,
     cards,
     onRender: () => renderer && renderer.renderSnapshot(),
-    onSubmitAction: (index) => sync && sync.submitAction(index),
+    onSubmitAction: (index) => {
+      if (feedback) feedback.clearAttackLine();
+      return sync && sync.submitAction(index);
+    },
     onLoadState: (silent) => sync && sync.loadState(silent),
     getBusy: () => Boolean(sync && sync.isBusy()),
   });
 
-  const feedback = createFeedback({
+  feedback = createFeedback({
     document,
     window,
     elements,
@@ -82,6 +89,11 @@ function bootstrap() {
     statusView: window.FireplaceStatusView,
     targetIds: () => decisions.targetIds(),
     renderDecision: () => decisions.renderDecision(),
+    getBusy: () => Boolean(sync && sync.isBusy()),
+  });
+
+  const presentation = createPresentation({
+    document, window, elements, data, eventText: decisions.eventText,
   });
 
   const board = createBoard({
@@ -124,7 +136,11 @@ function bootstrap() {
   });
 
   renderer = {
-    renderSnapshot: board.renderSnapshot,
+    renderSnapshot: (withPositionTransition = true) => {
+      const previousPositions = withPositionTransition ? presentation.boardPositions() : null;
+      board.renderSnapshot();
+      if (previousPositions) void presentation.animateBoardReflow(previousPositions);
+    },
     eventText: decisions.eventText,
     refreshOpenCardModal: modal.refreshOpenCardModal,
   };
@@ -141,10 +157,16 @@ function bootstrap() {
     cards,
     renderer,
     feedback,
+    presentation,
+    isDragging: () => Boolean(handDrag && handDrag.isDragging()),
     modal,
     getMode: () => (lobby ? lobby.mode : "lobby"),
     onModeChange: (mode) => lobby && lobby.setScreen(mode),
-    onClearMatch: () => lobby && lobby.clearMatchState(),
+    onClearMatch: () => {
+      presentation.cancel();
+      if (handDrag) handDrag.cancel();
+      if (lobby) lobby.clearMatchState();
+    },
     onApplyLocale: () => lobby && lobby.applyLocaleToDocument(),
     onRenderLobby: () => lobby && lobby.renderLobby(),
     onSetLobbyFormValues: () => lobby && lobby.setLobbyFormValues(),
@@ -172,8 +194,20 @@ function bootstrap() {
     getBusy: () => Boolean(sync && sync.isBusy()),
   });
 
+  handDrag = createHandDrag({
+    document, window, elements, state, model,
+    onSubmitIndex: (index, hint) => sync.submitAction(index, hint),
+    onSelectSource: decisions.chooseSource,
+    onSelectPosition: decisions.choosePosition,
+    onSelectTarget: decisions.chooseTarget,
+    getBusy: () => sync.isBusy(),
+  });
+  handDrag.bind();
+
   window.addEventListener("resize", cards.refreshLiveStatsOverlays);
   window.addEventListener("beforeunload", cards.resetAssets);
+  window.addEventListener("beforeunload", presentation.cancel);
+  window.addEventListener("beforeunload", handDrag.cancel);
   lobby.init();
 
   // Small compatibility surface used by browser acceptance checks.
@@ -181,6 +215,7 @@ function bootstrap() {
     loadState: sync.loadState,
     submitAction: sync.submitAction,
     cancelSelection: decisions.cancelSelection,
+    isBusy: sync.isBusy,
   };
 }
 

@@ -59,6 +59,39 @@ async function frameFace(page, face, top = 100) {
   }, top);
 }
 
+async function waitForCatalogPayload(records, setId, pageNumber, query = null) {
+  const deadline = Date.now() + 20000;
+  while (Date.now() < deadline) {
+    const record = [...records].reverse().find((item) =>
+      item.url.searchParams.get("set") === setId &&
+      item.url.searchParams.get("page") === String(pageNumber) &&
+      item.url.searchParams.get("q") === query,
+    );
+    if (record) return record;
+    await new Promise((resolve) => setTimeout(resolve, 25));
+  }
+  throw new Error(`catalog response not observed for ${setId}, page ${pageNumber}`);
+}
+
+function assertCollectibleNeutralPage(payload) {
+  assert(payload.items.length > 0, "a catalog page should contain cards");
+  for (const card of payload.items) {
+    assert.equal(card.collectible, true, `${card.id} must be collectible`);
+    assert.deepEqual(card.classes, ["NEUTRAL"], `${card.id} must be neutral only`);
+  }
+  const costs = payload.items.map((card) => card.cost);
+  assert.deepEqual(costs, [...costs].sort((a, b) => a - b), "cards on each page must be sorted by mana cost");
+}
+
+function assertCatalogQuery(record, setId, pageNumber) {
+  assert.equal(record.url.searchParams.get("set"), setId);
+  assert.equal(record.url.searchParams.get("page"), String(pageNumber));
+  assert.equal(record.url.searchParams.get("scope"), "collectible");
+  assert.equal(record.url.searchParams.get("class"), "NEUTRAL");
+  assert.equal(record.url.searchParams.get("sort"), "cost");
+  assertCollectibleNeutralPage(record.payload);
+}
+
 async function main() {
   const testDataRoot = fs.mkdtempSync(path.join(os.tmpdir(), "fireplace-catalog-browser-"));
   const server = startServer(testDataRoot);
@@ -69,22 +102,30 @@ async function main() {
     const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
     const pageErrors = [];
     page.on("pageerror", (error) => pageErrors.push(error.message));
-    let aRequests = 0;
-    let delayA = false;
+    let retryCardRequests = 0;
+    let delayRetryCard = false;
     const assetRequests = [];
     const assetResponses = [];
+    const catalogResponses = [];
     const image = (color) => Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="80" height="120" viewBox="0 0 80 120"><rect x="1" y="1" width="78" height="118" rx="7" fill="#171b2b" stroke="${color}" stroke-width="3"/><circle cx="40" cy="50" r="24" fill="${color}"/><path d="M10 88h60v18H10z" fill="#e3c079"/></svg>`);
+    await page.route("**/api/catalog?*", async (route) => {
+      const url = new URL(route.request().url());
+      const response = await route.fetch();
+      const body = await response.body();
+      if (response.ok()) catalogResponses.push({ url, payload: JSON.parse(body.toString("utf8")) });
+      await route.fulfill({ response, body });
+    });
     await page.route("**/catalog/assets/**", async (route) => {
       const requestUrl = new URL(route.request().url());
       const cardId = decodeURIComponent(requestUrl.pathname.split("/").pop());
       assetRequests.push(requestUrl.pathname);
-      if (cardId === "AT_003") {
-        aRequests += 1;
-        if (aRequests <= 3) {
+      if (cardId === "EX1_015") {
+        retryCardRequests += 1;
+        if (retryCardRequests <= 3) {
           assetResponses.push({ path: requestUrl.pathname, status: 202 });
           return route.fulfill({ status: 202, body: "" });
         }
-        if (delayA) await new Promise((resolve) => setTimeout(resolve, 1000));
+        if (delayRetryCard) await new Promise((resolve) => setTimeout(resolve, 1000));
         assetResponses.push({ path: requestUrl.pathname, status: 200 });
         return route.fulfill({ status: 200, contentType: "image/svg+xml", body: image("red") });
       }
@@ -101,20 +142,82 @@ async function main() {
     await page.waitForURL(`${base}cards`);
     await waitForCards(page);
     assert((await page.locator(".catalog-card[data-card-id]").count()) > 0);
+    const classOptions = await page.locator('[data-testid="catalog-class"] option').evaluateAll((options) =>
+      options.map((option) => option.value),
+    );
+    assert.deepEqual(classOptions, [
+      "NEUTRAL", "DRUID", "HUNTER", "MAGE", "PALADIN", "PRIEST",
+      "ROGUE", "SHAMAN", "WARLOCK", "WARRIOR", "DEMONHUNTER",
+    ], "card viewing must offer Neutral and each profession without an all-classes option");
+    assert.equal(await page.locator('[data-testid="catalog-class"]').inputValue(), "NEUTRAL");
+    assert.equal(await page.locator(".catalog-scope-toggle, [data-testid='catalog-scope']").count(), 0,
+      "the catalog must not expose an all-XML scope control");
+    const setOptions = await page.locator('[data-testid="catalog-set"] option').evaluateAll((options) =>
+      options.map((option) => option.value),
+    );
+    assert(!setOptions.includes(""), "the catalog must not expose an all-sets option");
+    assert.equal(await page.locator('[data-testid="catalog-set"]').inputValue(), "BASIC",
+      "the catalog should open on the Basic set by default");
+    assert(setOptions.includes("EXPERT1"), "a concrete expansion should remain selectable");
+    const basicResponse = await waitForCatalogPayload(catalogResponses, "BASIC", 1);
+    assertCatalogQuery(basicResponse, "BASIC", 1);
+    assert(basicResponse.payload.total > 0, "the default Basic set should contain collectible Neutral cards");
     fs.mkdirSync(artifacts, { recursive: true });
     await page.screenshot({ path: path.join(artifacts, "catalog-desktop.png") });
 
-    await page.locator('[data-testid="catalog-search"]').fill("Fallen Hero");
-    await page.locator('.catalog-card[data-card-id="AT_003"]').waitFor({ timeout: 20000 });
+    const mageResponse = page.waitForResponse((response) => {
+      const url = new URL(response.url());
+      return url.pathname === "/api/catalog" && url.searchParams.get("class") === "MAGE" && url.searchParams.get("set") === "BASIC";
+    });
+    await page.locator('[data-testid="catalog-class"]').selectOption("MAGE");
+    const mageCards = await (await mageResponse).json();
+    assert(mageCards.items.length > 0, "a profession option should show its own collectible cards");
+    assert(mageCards.items.every((card) => card.collectible && card.classes.includes("MAGE")));
+
+    const mageExpertResponse = page.waitForResponse((response) => {
+      const url = new URL(response.url());
+      return url.pathname === "/api/catalog" && url.searchParams.get("class") === "MAGE" && url.searchParams.get("set") === "EXPERT1";
+    });
+    await page.locator('[data-testid="catalog-set"]').selectOption("EXPERT1");
+    await mageExpertResponse;
+
+    const demonHunterResponse = page.waitForResponse((response) => {
+      const url = new URL(response.url());
+      return url.pathname === "/api/catalog" && url.searchParams.get("class") === "DEMONHUNTER" && url.searchParams.get("set") === "BASIC";
+    });
+    await page.locator('[data-testid="catalog-class"]').selectOption("DEMONHUNTER");
+    const demonHunterCards = await (await demonHunterResponse).json();
+    assert(demonHunterCards.items.length > 0, "Demon Hunter should switch to a set containing its collectible cards");
+    assert(demonHunterCards.items.every((card) => card.collectible && card.classes.includes("DEMONHUNTER")));
+    await page.waitForFunction(() => document.getElementById("catalog-grid")?.getAttribute("aria-busy") === "false");
+    assert.equal(await page.locator('[data-testid="catalog-set"]').inputValue(), "BASIC");
+
+    const backToNeutral = page.waitForResponse((response) => {
+      const url = new URL(response.url());
+      return url.pathname === "/api/catalog" && url.searchParams.get("class") === "NEUTRAL" && url.searchParams.get("set") === "BASIC";
+    });
+    await page.locator('[data-testid="catalog-class"]').selectOption("NEUTRAL");
+    await backToNeutral;
+    await page.waitForFunction(() => document.getElementById("catalog-grid")?.getAttribute("aria-busy") === "false");
+
+    const retrySearchResponse = page.waitForResponse((response) => {
+      const url = new URL(response.url());
+      return url.pathname === "/api/catalog" && url.searchParams.get("set") === "BASIC" &&
+        url.searchParams.get("q") === "EX1_015";
+    });
+    await page.locator('[data-testid="catalog-search"]').fill("EX1_015");
+    await retrySearchResponse;
+    await page.waitForFunction(() => document.getElementById("catalog-grid")?.getAttribute("aria-busy") === "false");
+    await page.locator('.catalog-card[data-card-id="EX1_015"]').waitFor({ timeout: 20000 });
     assert.equal(await page.locator(".catalog-card[data-card-id]").count(), 1);
-    await page.locator('.catalog-card[data-card-id="AT_003"]').scrollIntoViewIfNeeded();
+    await page.locator('.catalog-card[data-card-id="EX1_015"]').scrollIntoViewIfNeeded();
     try {
-      await page.waitForFunction(() => document.querySelector('.static-card-face[data-card-id="AT_003"]')?.dataset.imageState === "loaded", null, { timeout: 20000 });
+      await page.waitForFunction(() => document.querySelector('.static-card-face[data-card-id="EX1_015"]')?.dataset.imageState === "loaded", null, { timeout: 20000 });
     } catch (error) {
-      console.error("AT_003 face diagnostics", {
-        requests: assetRequests.filter((path) => path.endsWith("/AT_003")),
-        responses: assetResponses.filter((item) => item.path.endsWith("/AT_003")),
-        face: await page.locator('.static-card-face[data-card-id="AT_003"]').evaluate((node) => {
+      console.error("EX1_015 face diagnostics", {
+        requests: assetRequests.filter((path) => path.endsWith("/EX1_015")),
+        responses: assetResponses.filter((item) => item.path.endsWith("/EX1_015")),
+        face: await page.locator('.static-card-face[data-card-id="EX1_015"]').evaluate((node) => {
           const image = node.querySelector("img.static-card-face-image");
           const fallback = node.querySelector(".static-card-face-fallback");
           return {
@@ -132,9 +235,9 @@ async function main() {
       });
       throw error;
     }
-    assert(aRequests >= 4, "a pending image response must be retried beyond one second");
-    assert(assetRequests.includes("/catalog/assets/render/AT_003"), "catalog faces must request full rendered card assets");
-    const cardFace = page.locator('.static-card-face[data-card-id="AT_003"]');
+    assert(retryCardRequests >= 4, "a pending image response must be retried beyond one second");
+    assert(assetRequests.includes("/catalog/assets/render/EX1_015"), "catalog faces must request full rendered card assets");
+    const cardFace = page.locator('.static-card-face[data-card-id="EX1_015"]');
     assert.equal(await cardFace.getAttribute("data-image-state"), "loaded", "catalog card face should finish loading its render");
     const faceBox = await cardFace.boundingBox();
     assert(faceBox && faceBox.height / faceBox.width >= 1.35, "catalog card face should keep a portrait card proportion");
@@ -148,28 +251,30 @@ async function main() {
     await page.screenshot({ path: path.join(artifacts, "catalog-rendered-mobile.png") });
     await page.setViewportSize({ width: 1440, height: 900 });
     await frameFace(page, cardFace, 160);
-    assert.equal(await page.locator('.catalog-card[data-card-id="AT_003"] .catalog-script-badge').count(), 1, "cards must expose Python script status");
-    await page.locator('[data-testid="catalog-set"]').selectOption("TGT");
-    await page.locator('[data-testid="catalog-class"]').selectOption("MAGE");
-    await page.locator('.catalog-card[data-card-id="AT_003"]').waitFor({ timeout: 20000 });
-    await page.locator('.catalog-card[data-card-id="AT_003"]').click();
+    assert.equal(await page.locator('.catalog-card[data-card-id="EX1_015"] .catalog-script-badge').count(), 1, "cards must expose Python script status");
+    const retryResponse = [...catalogResponses].reverse().find((item) => item.url.searchParams.get("q") === "EX1_015");
+    assert(retryResponse, "search should issue a catalog query");
+    assertCatalogQuery(retryResponse, "BASIC", 1);
+    assert.equal(retryResponse.payload.total, 1);
+    await page.locator('.catalog-card[data-card-id="EX1_015"]').click();
     await page.locator('[data-testid="catalog-detail"]').waitFor({ state: "visible" });
-    assert.match(await page.locator("#catalog-detail-id").textContent(), /AT_003/);
-    assert(assetRequests.includes("/catalog/assets/render/AT_003"), "detail cards must request rendered card assets");
+    assert.match(await page.locator("#catalog-detail-id").textContent(), /EX1_015/);
+    assert(assetRequests.includes("/catalog/assets/render/EX1_015"), "detail cards must request rendered card assets");
     const detailBox = await page.locator("#catalog-detail-art").boundingBox();
     assert(detailBox && detailBox.width <= 221, "detail card art should stay within the compact width limit");
     assert.equal(await page.locator("#catalog-script-note").getAttribute("hidden"), null, "detail must explain Python script status");
     await page.locator('#catalog-detail-image[data-image-state="loaded"]').waitFor({ timeout: 20000 });
     const detailImageUrl = await page.locator("#catalog-detail-image").getAttribute("src");
     const refreshedList = page.waitForResponse((response) =>
-      new URL(response.url()).pathname === "/api/catalog" && response.url().includes("q=AT_003"),
+      new URL(response.url()).pathname === "/api/catalog" && response.url().includes("q=CS2_171"),
     );
     await page.evaluate(() => {
       const search = document.getElementById("catalog-search");
-      search.value = "AT_003";
+      search.value = "CS2_171";
       search.dispatchEvent(new Event("input", { bubbles: true }));
     });
     await refreshedList;
+    await page.locator('.catalog-card[data-card-id="CS2_171"]').waitFor({ timeout: 20000 });
     await page.waitForFunction(() => document.getElementById("catalog-grid")?.getAttribute("aria-busy") === "false");
     const detailImageStillAvailable = await page.evaluate(async (url) => {
       try { return (await fetch(url)).ok; } catch (_error) { return false; }
@@ -177,44 +282,26 @@ async function main() {
     assert(detailImageStillAvailable, "refreshing the grid must not revoke the open detail image");
     await page.locator("#catalog-dialog-close").click();
     await page.locator("#catalog-locale-enUS").click();
-    await page.locator('.catalog-card[data-card-id="AT_003"]').click();
-    await page.waitForFunction(() => document.getElementById("catalog-detail-name")?.textContent === "Fallen Hero", null, { timeout: 20000 });
+    await page.locator('.catalog-card[data-card-id="CS2_171"]').click();
+    await page.waitForFunction(() => document.getElementById("catalog-detail-name")?.textContent === "Stonetusk Boar", null, { timeout: 20000 });
     await page.locator("#catalog-dialog-close").click();
 
-    await page.locator('[data-testid="catalog-search"]').fill("HERO_01c");
-    await page.locator('[data-testid="catalog-set"]').selectOption("");
-    await page.locator('[data-testid="catalog-class"]').selectOption("");
-    await page.locator("#catalog-empty").waitFor({ state: "visible", timeout: 20000 });
-    await page.locator(".catalog-scope-toggle").click();
-    assert.equal(await page.locator('[data-testid="catalog-set"] option[value="HEROES"]').count(), 1, "heroes must have their own catalog category");
-    await page.locator('[data-testid="catalog-set"]').selectOption("HERO_SKINS");
-    await page.locator('.catalog-card[data-card-id="HERO_01c"]').waitFor({ timeout: 20000 });
-    assert.equal(await page.locator('.catalog-card[data-card-id="HERO_01c"]').getAttribute("data-catalog-set"), "HERO_SKINS", "hero skins should retain their source category");
-    await page.locator('[data-testid="catalog-search"]').fill("HERO_01");
-    await page.locator('[data-testid="catalog-set"]').selectOption("HEROES");
-    await page.locator('.catalog-card[data-card-id="HERO_01"]').waitFor({ timeout: 20000 });
-    assert.equal(await page.locator('.catalog-card[data-card-id="HERO_01"]').getAttribute("data-catalog-set"), "HEROES", "starting heroes should use the Heroes category");
-    await page.locator('[data-testid="catalog-search"]').fill("BOT_238");
-    await page.locator('[data-testid="catalog-set"]').selectOption("BOOMSDAY");
-    await page.locator('.catalog-card[data-card-id="BOT_238"]').waitFor({ timeout: 20000 });
-    assert.equal(await page.locator('.catalog-card[data-card-id="BOT_238"]').getAttribute("data-catalog-set"), "BOOMSDAY", "playable hero cards should stay in their expansion");
-
+    // A delayed response from a closed Neutral card must not replace the next card's art.
+    await page.locator('[data-testid="catalog-search"]').fill("EX1_015");
+    await page.locator('.catalog-card[data-card-id="EX1_015"]').waitFor({ timeout: 20000 });
+    delayRetryCard = true;
+    const priorRetryRequests = retryCardRequests;
+    await page.locator('.catalog-card[data-card-id="EX1_015"]').click();
+    await page.locator("#catalog-detail-image").waitFor({ state: "attached", timeout: 20000 });
+    const requestDeadline = Date.now() + 20000;
+    while (retryCardRequests <= priorRetryRequests && Date.now() < requestDeadline) {
+      await page.waitForTimeout(25);
+    }
+    assert(retryCardRequests > priorRetryRequests, "the delayed previous card image request should be in flight");
+    await page.locator("#catalog-dialog-close").click();
+    await page.locator('[data-testid="catalog-set"]').selectOption("EXPERT1");
     await page.locator('[data-testid="catalog-search"]').fill("CS2_231");
-    await page.locator('[data-testid="catalog-set"]').selectOption("");
-    await page.locator('[data-testid="catalog-class"]').selectOption("NEUTRAL");
     await page.locator('.catalog-card[data-card-id="CS2_231"]').waitFor({ timeout: 20000 });
-
-    await page.locator('[data-testid="catalog-search"]').fill("");
-    await page.locator('[data-testid="catalog-class"]').selectOption("");
-    await page.locator('[data-testid="catalog-next"]').click();
-    await page.waitForFunction(() => /2/.test(document.getElementById("catalog-page-label")?.textContent || ""));
-
-    // A delayed response from a closed card must not replace the next card's art.
-    delayA = true;
-    await page.locator('[data-testid="catalog-search"]').fill("AT_003");
-    await page.locator('.catalog-card[data-card-id="AT_003"]').click();
-    await page.locator("#catalog-dialog-close").click();
-    await page.locator('[data-testid="catalog-search"]').fill("CS2_231");
     await page.locator('.catalog-card[data-card-id="CS2_231"]').click();
     await page.locator('#catalog-detail-image[data-image-state="loaded"]').waitFor({ timeout: 20000 });
     await page.waitForTimeout(1200);
@@ -224,6 +311,30 @@ async function main() {
     });
     assert.match(detailArt, /blue/, "stale art from the previous card replaced the current card");
     await page.locator("#catalog-dialog-close").click();
+
+    const expertListResponse = page.waitForResponse((response) => {
+      const url = new URL(response.url());
+      return url.pathname === "/api/catalog" && url.searchParams.get("set") === "EXPERT1" &&
+        url.searchParams.get("page") === "1" && url.searchParams.get("q") === null;
+    });
+    await page.locator('[data-testid="catalog-search"]').fill("");
+    await expertListResponse;
+    await page.waitForFunction(() => document.getElementById("catalog-grid")?.getAttribute("aria-busy") === "false");
+    await page.locator('[data-testid="catalog-next"]').click();
+    const expertPage2 = await waitForCatalogPayload(catalogResponses, "EXPERT1", 2);
+    assertCatalogQuery(expertPage2, "EXPERT1", 2);
+    await page.waitForFunction(() => document.getElementById("catalog-grid")?.getAttribute("aria-busy") === "false");
+    await page.locator('[data-testid="catalog-next"]').click();
+    const expertPage3 = await waitForCatalogPayload(catalogResponses, "EXPERT1", 3);
+    assertCatalogQuery(expertPage3, "EXPERT1", 3);
+    await page.waitForFunction(() => document.getElementById("catalog-grid")?.getAttribute("aria-busy") === "false");
+    const expertPage1 = await waitForCatalogPayload(catalogResponses, "EXPERT1", 1);
+    assertCatalogQuery(expertPage1, "EXPERT1", 1);
+    const expertCards = [...expertPage1.payload.items, ...expertPage2.payload.items, ...expertPage3.payload.items];
+    assert.equal(expertCards.length, expertPage1.payload.total, "pagination should cover every card in the selected set");
+    const expertCosts = expertCards.map((card) => card.cost);
+    assert.deepEqual(expertCosts, [...expertCosts].sort((a, b) => a - b),
+      "mana cost order must remain ascending across page boundaries");
 
     await page.setViewportSize({ width: 390, height: 844 });
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);

@@ -326,6 +326,7 @@ async function main() {
     assert.equal(await page.locator('[data-testid="card-count"]').textContent(), countBeforeInspect, "closing inspection must not add the inspected card");
 
     assert(fixture.catalogRequests.some((query) => query.includes("class=MAGE")), "hero class must filter catalog requests");
+    assert(fixture.catalogRequests.every((query) => query.includes("sort=cost")), "collection cards must be ordered by mana cost before pagination");
     const firstAddButton = page.locator('.collection-card-option[data-card-id="COL_001"]');
     await firstAddButton.scrollIntoViewIfNeeded();
     const firstPoolFaceNode = await firstPoolFace.elementHandle();

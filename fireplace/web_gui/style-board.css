@@ -340,6 +340,13 @@
   z-index: 16;
 }
 
+/* A targetable opposing hero must receive the click even when a Secret
+   badge shares the portrait's center. The badge remains usable otherwise. */
+.opponent-panel .hero-row:has(.hero-card.targetable),
+.opponent-panel .hero-row:has(.hero-card.hand-drag-target) {
+  z-index: 16;
+}
+
 /* Secrets and quests sit in the same visual lane as a hero's portrait.  They
    remain compact so the tabletop art and combat stats keep their fixed space. */
 .hero-status-rack {

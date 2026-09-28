@@ -1,10 +1,26 @@
 /** Battlefield feedback and attack guide line. */
 export function createFeedback({
-  document, window, elements, state, data, dom, translate: tr, statusView, targetIds, renderDecision,
+  document, window, elements, state, data, dom, translate: tr, statusView, targetIds, renderDecision, getBusy,
 }) {
   let attackPointer = null;
   let attackLine = null;
+  let attackOutline = null;
   let attackStroke = null;
+  let attackHead = null;
+  let attackOrigin = null;
+  let attackGradient = null;
+  const svgNamespace = "http://www.w3.org/2000/svg";
+
+  function svgElement(name, className) {
+    const node = document.createElementNS(svgNamespace, name);
+    if (className) node.classList.add(className);
+    return node;
+  }
+
+  function setAttackLineVisible(visible) {
+    if (!attackLine) return;
+    attackLine.toggleAttribute("hidden", !visible);
+  }
 
   function publicCharacters(observation) {
     const characters = new Map();
@@ -32,12 +48,26 @@ export function createFeedback({
   function initAttackLine() {
     const table = document.querySelector(".table");
     if (!table) return;
-    attackLine = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    attackLine.classList.add("attack-line");
+    attackLine = svgElement("svg", "attack-line");
     attackLine.setAttribute("aria-hidden", "true");
-    attackLine.hidden = true;
-    attackStroke = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    attackLine.appendChild(attackStroke);
+    setAttackLineVisible(false);
+    const defs = svgElement("defs");
+    attackGradient = svgElement("linearGradient");
+    attackGradient.id = "attack-guide-gradient";
+    attackGradient.setAttribute("gradientUnits", "userSpaceOnUse");
+    [["0%", "#b96c36"], ["48%", "#ffe2a0"], ["100%", "#fff4d1"]].forEach(([offset, color]) => {
+      const stop = svgElement("stop");
+      stop.setAttribute("offset", offset);
+      stop.setAttribute("stop-color", color);
+      attackGradient.appendChild(stop);
+    });
+    defs.appendChild(attackGradient);
+    attackOutline = svgElement("path", "attack-guide-outline");
+    attackStroke = svgElement("path", "attack-guide-stroke");
+    attackOrigin = svgElement("circle", "attack-guide-origin");
+    attackOrigin.setAttribute("r", "4");
+    attackHead = svgElement("path", "attack-guide-head");
+    attackLine.append(defs, attackOutline, attackStroke, attackOrigin, attackHead);
     table.appendChild(attackLine);
     table.addEventListener("pointermove", (event) => {
       const target = event.target instanceof window.Element ? event.target.closest(".targetable") : null;
@@ -51,13 +81,20 @@ export function createFeedback({
     window.addEventListener("resize", updateAttackLine);
   }
 
+  function clearAttackLine() {
+    attackPointer = null;
+    if (!attackLine) return;
+    setAttackLineVisible(false);
+    attackLine.classList.remove("snapped");
+  }
+
   function updateAttackLine() {
     if (!attackLine || !attackStroke) return;
     const selection = state.current.selection;
     const source = selection.type === "ATTACK" && publicNode(selection.sourceId);
     const table = document.querySelector(".table");
-    if (!source || !table || !attackPointer || !table.contains(source)) {
-      attackLine.hidden = true;
+    if (!source || !table || !attackPointer || !table.contains(source) || (getBusy && getBusy())) {
+      clearAttackLine();
       return;
     }
     const tableRect = table.getBoundingClientRect();
@@ -66,17 +103,52 @@ export function createFeedback({
     const targetId = target && data.entityId(target.getAttribute("data-entity-id"));
     if (!target || !target.isConnected || !targetIds().has(targetId)) target = null;
     const targetRect = target && target.getBoundingClientRect();
-    const x1 = sourceRect.left + sourceRect.width / 2 - tableRect.left;
-    const y1 = sourceRect.top + sourceRect.height / 2 - tableRect.top;
-    const x2 = targetRect ? targetRect.left + targetRect.width / 2 - tableRect.left : attackPointer.clientX - tableRect.left;
-    const y2 = targetRect ? targetRect.top + targetRect.height / 2 - tableRect.top : attackPointer.clientY - tableRect.top;
+    const sourceCenter = {
+      x: sourceRect.left + sourceRect.width / 2 - tableRect.left,
+      y: sourceRect.top + sourceRect.height / 2 - tableRect.top,
+    };
+    const targetCenter = targetRect ? {
+      x: targetRect.left + targetRect.width / 2 - tableRect.left,
+      y: targetRect.top + targetRect.height / 2 - tableRect.top,
+    } : { x: attackPointer.clientX - tableRect.left, y: attackPointer.clientY - tableRect.top };
+    const dx = targetCenter.x - sourceCenter.x;
+    const dy = targetCenter.y - sourceCenter.y;
+    const distance = Math.hypot(dx, dy);
+    if (distance < 28) {
+      setAttackLineVisible(false);
+      return;
+    }
+    const ux = dx / distance;
+    const uy = dy / distance;
+    const sourceInset = Math.min(sourceRect.width, sourceRect.height) * .3;
+    const targetInset = targetRect ? Math.min(targetRect.width, targetRect.height) * .34 : 0;
+    const x1 = sourceCenter.x + ux * sourceInset;
+    const y1 = sourceCenter.y + uy * sourceInset;
+    const x2 = targetCenter.x - ux * targetInset;
+    const y2 = targetCenter.y - uy * targetInset;
+    const bend = Math.min(38, distance * .11);
+    const controlX = (x1 + x2) / 2 - uy * bend;
+    const controlY = (y1 + y2) / 2 + ux * bend;
+    const tangentX = x2 - controlX;
+    const tangentY = y2 - controlY;
+    const tangentLength = Math.hypot(tangentX, tangentY) || 1;
+    const tipX = tangentX / tangentLength;
+    const tipY = tangentY / tangentLength;
+    const baseX = x2 - tipX * 19;
+    const baseY = y2 - tipY * 19;
+    const path = `M ${x1} ${y1} Q ${controlX} ${controlY} ${x2} ${y2}`;
     attackLine.setAttribute("viewBox", `0 0 ${String(tableRect.width)} ${String(tableRect.height)}`);
-    attackStroke.setAttribute("x1", String(x1));
-    attackStroke.setAttribute("y1", String(y1));
-    attackStroke.setAttribute("x2", String(x2));
-    attackStroke.setAttribute("y2", String(y2));
+    attackGradient.setAttribute("x1", String(x1));
+    attackGradient.setAttribute("y1", String(y1));
+    attackGradient.setAttribute("x2", String(x2));
+    attackGradient.setAttribute("y2", String(y2));
+    attackOutline.setAttribute("d", path);
+    attackStroke.setAttribute("d", path);
+    attackOrigin.setAttribute("cx", String(x1));
+    attackOrigin.setAttribute("cy", String(y1));
+    attackHead.setAttribute("d", `M ${x2} ${y2} L ${baseX - tipY * 9} ${baseY + tipX * 9} L ${baseX + tipY * 9} ${baseY - tipX * 9} Z`);
     attackLine.classList.toggle("snapped", Boolean(target));
-    attackLine.hidden = false;
+    setAttackLineVisible(true);
   }
 
   function transientClass(node, className) {
@@ -135,5 +207,5 @@ export function createFeedback({
     updateAttackLine();
   }
 
-  return { initAttackLine, publicCharacters, publicNode, renderEmptyState, showPublicFeedback, transientClass, updateAttackLine };
+  return { clearAttackLine, initAttackLine, publicCharacters, publicNode, renderEmptyState, showPublicFeedback, transientClass, updateAttackLine };
 }

@@ -245,7 +245,8 @@ async function playMatch(page, { locale, nickname, screenshot }) {
     assert(next.revision > state.revision, `heuristic/${locale}: revision did not advance`);
     await page.waitForFunction((revision) => {
       const match = document.querySelector('[data-testid="revision"]')?.textContent.match(/(\d+)/);
-      return match && Number(match[1]) >= revision;
+      return match && Number(match[1]) >= revision && window.fireplaceWebGui &&
+        typeof window.fireplaceWebGui.isBusy === "function" && !window.fireplaceWebGui.isBusy();
     }, next.revision, { timeout: 60000 });
     state = next;
   }

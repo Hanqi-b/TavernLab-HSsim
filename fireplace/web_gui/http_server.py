@@ -55,6 +55,9 @@ _STATIC_MIME_TYPES = {
     "style-board.css": "text/css; charset=utf-8",
     "style-cards.css": "text/css; charset=utf-8",
     "style-hand.css": "text/css; charset=utf-8",
+    "style-presentation.css": "text/css; charset=utf-8",
+    "gui_presentation.js": "text/javascript; charset=utf-8",
+    "gui_hand_drag.js": "text/javascript; charset=utf-8",
     "style-decision.css": "text/css; charset=utf-8",
     "style-support.css": "text/css; charset=utf-8",
     "style-responsive.css": "text/css; charset=utf-8",
@@ -445,7 +448,7 @@ class _RequestHandler(BaseHTTPRequestHandler):
     def _catalog_list(self) -> None:
         try:
             query = self._query(
-                {"locale", "set", "class", "q", "scope", "page", "page_size"}
+                {"locale", "set", "class", "q", "scope", "sort", "page", "page_size"}
             )
             page = int(query.get("page", "1"))
             page_size = int(query.get("page_size", "48"))
@@ -455,6 +458,7 @@ class _RequestHandler(BaseHTTPRequestHandler):
                 card_class=query.get("class") or None,
                 query=query.get("q", ""),
                 scope=query.get("scope", "collectible"),
+                sort=query.get("sort", "name"),
                 page=page,
                 page_size=page_size,
             )

@@ -196,6 +196,13 @@ class WebGame:
         """
 
         events = copy.deepcopy(self._events)
+        return self._localize_public_events_locked(events)
+
+    def _localize_public_events_locked(
+        self, events: list[dict[str, Any]]
+    ) -> list[dict[str, Any]]:
+        """Localize event copies while keeping internal card ids private."""
+
         card_ids = {
             card_id
             for event in events
@@ -207,6 +214,29 @@ class WebGame:
         else:
             descriptions = {}
         return localize_events(events, descriptions)
+
+    def _presentation_step_locked(
+        self, event: Mapping[str, Any]
+    ) -> dict[str, Any]:
+        """Capture one accepted action after its engine effects have settled.
+
+        The stored event may contain private card ids used for asynchronous
+        localization.  Presentation frames go directly to the browser, so
+        they use the same public projection as the event timeline and keep
+        those implementation details out of the response.
+        """
+
+        public_event = self._localize_public_events_locked([
+            copy.deepcopy(dict(event))
+        ])[0]
+        return {
+            "revision": self._revision,
+            "observation": self._localized_observation_locked(
+                self.session.observation(self.human)
+            ),
+            "event": public_event,
+            "outcome": _outcome(self.session.game, self.human),
+        }
 
     def _snapshot_locked(self) -> dict[str, Any]:
         observation = self._localized_observation_locked(
@@ -283,7 +313,9 @@ class WebGame:
             "match lifecycle is unavailable for this server", 409, self.snapshot()
         )
 
-    def _advance_ai_locked(self) -> None:
+    def _advance_ai_locked(
+        self, presentation_steps: list[dict[str, Any]] | None = None
+    ) -> None:
         """Run the supplied agent until human input or terminal state."""
 
         while not _game_ended(self.session.game):
@@ -310,11 +342,15 @@ class WebGame:
             except GameOver:
                 self._append_event_locked(event)
                 self._revision += 1
+                if presentation_steps is not None:
+                    presentation_steps.append(self._presentation_step_locked(event))
                 return
             except ActionError as exc:
                 raise RuntimeError("Opponent action was rejected: %s" % exc) from exc
             self._append_event_locked(event)
             self._revision += 1
+            if presentation_steps is not None:
+                presentation_steps.append(self._presentation_step_locked(event))
 
     def handle_action(self, payload: object) -> dict[str, Any]:
         """Validate and execute one browser action, returning a new snapshot.
@@ -365,7 +401,10 @@ class WebGame:
                 # action before raising its terminal signal.
                 self._append_event_locked(event)
                 self._revision += 1
-                return self._snapshot_locked()
+                presentation_steps = [self._presentation_step_locked(event)]
+                response = self._snapshot_locked()
+                response["presentation_steps"] = presentation_steps
+                return response
             except ActionError as exc:
                 current = self._snapshot_locked()
                 current["error"] = str(exc)
@@ -373,8 +412,11 @@ class WebGame:
 
             self._append_event_locked(event)
             self._revision += 1
-            self._advance_ai_locked()
-            return self._snapshot_locked()
+            presentation_steps = [self._presentation_step_locked(event)]
+            self._advance_ai_locked(presentation_steps)
+            response = self._snapshot_locked()
+            response["presentation_steps"] = presentation_steps
+            return response
 
     def concede(self, payload: object) -> dict[str, Any]:
         """Concede the active match through the human player's engine API.

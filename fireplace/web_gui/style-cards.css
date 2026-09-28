@@ -767,15 +767,48 @@ html[lang="en"] .board-card.targetable::before {
   height: 100%;
   overflow: visible;
   pointer-events: none;
+  filter: drop-shadow(0 3px 5px rgb(15 7 5 / 68%));
 }
 
-.attack-line line {
-  stroke: var(--target);
-  stroke-width: 3;
+.attack-line[hidden] {
+  display: none;
+}
+
+.attack-guide-outline,
+.attack-guide-stroke {
+  fill: none;
   stroke-linecap: round;
-  stroke-dasharray: 7 7;
-  filter: drop-shadow(0 0 5px rgb(244 186 89 / 80%));
   vector-effect: non-scaling-stroke;
+}
+
+.attack-guide-outline {
+  stroke: rgb(39 20 17 / 90%);
+  stroke-width: 12;
+}
+
+.attack-guide-stroke {
+  stroke: url("#attack-guide-gradient");
+  stroke-width: 5;
+  filter: drop-shadow(0 0 7px rgb(255 197 103 / 72%));
+}
+
+.attack-guide-origin {
+  fill: #ffe5a7;
+  stroke: #50301f;
+  stroke-width: 2;
+}
+
+.attack-guide-head {
+  fill: #ffe0a0;
+  stroke: #4c2719;
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 6px rgb(255 191 89 / 75%));
+}
+
+.attack-line.snapped .attack-guide-stroke,
+.attack-line.snapped .attack-guide-head {
+  filter: drop-shadow(0 0 10px rgb(255 223 151 / 95%));
 }
 
 .card-zoomable {

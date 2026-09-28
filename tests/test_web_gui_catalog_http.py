@@ -130,6 +130,7 @@ def test_catalog_heroes_are_separate_and_script_badge_is_data_only(catalog_http)
         "/api/catalog?page=0",
         "/api/catalog?page_size=101",
         "/api/catalog?scope=unknown",
+        "/api/catalog?sort=unknown",
         "/api/catalog?locale=frFR",
         "/api/catalog?page=1&page=2",
         "/api/catalog?unknown=1",

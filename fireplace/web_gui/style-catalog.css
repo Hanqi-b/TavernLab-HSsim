@@ -285,7 +285,7 @@ html[lang="en"] .catalog-link-en {
 
 .catalog-search-row {
   display: grid;
-  grid-template-columns: minmax(240px, 1.6fr) minmax(160px, 1fr) minmax(160px, 1fr) minmax(170px, .9fr);
+  grid-template-columns: minmax(240px, 1.6fr) repeat(2, minmax(160px, 1fr));
   align-items: end;
   gap: 14px;
 }
@@ -296,8 +296,7 @@ html[lang="en"] .catalog-link-en {
 }
 
 .catalog-search-field label,
-.catalog-filter-field label,
-.catalog-scope-toggle strong {
+.catalog-filter-field label {
   display: block;
   margin-bottom: 7px;
   color: var(--gold-light);
@@ -381,67 +380,6 @@ html[lang="en"] .catalog-link-en {
   margin: 6px 0 0;
   color: var(--muted);
   font-size: .7rem;
-}
-
-.catalog-scope-toggle {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  min-height: 48px;
-  border: 1px solid rgb(201 155 83 / 30%);
-  border-radius: 9px;
-  padding: 8px 11px;
-  background: rgb(10 15 26 / 55%);
-  color: var(--parchment);
-  cursor: pointer;
-}
-
-.catalog-scope-toggle input {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
-}
-
-.catalog-scope-toggle input:focus-visible + .catalog-toggle-mark {
-  outline: 3px solid rgb(244 211 149 / 36%);
-  outline-offset: 2px;
-}
-
-.catalog-toggle-mark {
-  display: grid;
-  flex: 0 0 auto;
-  place-items: center;
-  width: 22px;
-  height: 22px;
-  border: 1px solid rgb(244 211 149 / 60%);
-  border-radius: 5px;
-  background: rgb(8 14 26 / 90%);
-}
-
-.catalog-toggle-mark::after {
-  width: 10px;
-  height: 6px;
-  border-bottom: 2px solid var(--gold-light);
-  border-left: 2px solid var(--gold-light);
-  content: "";
-  opacity: 0;
-  transform: translateY(-2px) rotate(-45deg);
-  transition: opacity 160ms ease;
-}
-
-.catalog-scope-toggle input:checked + .catalog-toggle-mark::after {
-  opacity: 1;
-}
-
-.catalog-scope-toggle strong {
-  margin: 0 0 2px;
-}
-
-.catalog-scope-toggle small {
-  display: block;
-  color: var(--muted);
-  font-size: .72rem;
 }
 
 .catalog-results {
@@ -856,8 +794,7 @@ html[lang="en"] .catalog-link-en {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .catalog-search-field,
-  .catalog-scope-toggle {
+  .catalog-search-field {
     grid-column: 1 / -1;
   }
 
@@ -907,8 +844,7 @@ html[lang="en"] .catalog-link-en {
     grid-template-columns: 1fr;
   }
 
-  .catalog-search-field,
-  .catalog-scope-toggle {
+  .catalog-search-field {
     grid-column: auto;
   }
 
@@ -957,8 +893,7 @@ html[lang="en"] .catalog-link-en {
 @media (prefers-reduced-motion: reduce) {
   .catalog-card,
   .lobby-catalog-entry,
-  .lobby-mode-card,
-  .catalog-toggle-mark::after {
+  .lobby-mode-card {
     transition: none;
   }
 

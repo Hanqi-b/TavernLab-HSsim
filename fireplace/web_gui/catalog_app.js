@@ -4,6 +4,10 @@ import { createStaticCardFace, createStaticCardFaceManager } from "./card_face.j
  * reaches into the match GUI modules. */
 
 const PAGE_SIZE = 48;
+const CATALOG_CLASSES = [
+  "NEUTRAL", "DRUID", "HUNTER", "MAGE", "PALADIN", "PRIEST",
+  "ROGUE", "SHAMAN", "WARLOCK", "WARRIOR", "DEMONHUNTER",
+];
 const IMAGE_ATTEMPTS = 6;
 const IMAGE_RETRY_DELAYS = [250, 750, 1500, 3000, 5000];
 
@@ -28,9 +32,6 @@ const refs = {
   setLabel: document.getElementById("catalog-set-label"),
   class: document.getElementById("catalog-class"),
   classLabel: document.getElementById("catalog-class-label"),
-  scopeAll: document.getElementById("catalog-scope-all"),
-  scopeLabel: document.getElementById("catalog-scope-label"),
-  scopeCopy: document.getElementById("catalog-scope-copy"),
   resultsEyebrow: document.querySelector(".catalog-results .eyebrow"),
   resultsTitle: document.getElementById("catalog-results-title"),
   resultCount: document.getElementById("catalog-result-count"),
@@ -63,7 +64,7 @@ const refs = {
 
 const state = {
   locale: initialLocale(),
-  filters: { set: "", class: "", query: "", scope: "collectible", page: 1 },
+  filters: { set: "BASIC", class: "NEUTRAL", query: "", page: 1 },
   items: [],
   total: 0,
   pageSize: PAGE_SIZE,
@@ -350,7 +351,7 @@ function renderCard(card) {
   copy.append(createNode("strong", "catalog-card-name", card.name));
   const metadata = createNode("span", "catalog-card-meta");
   const set = createNode("span", "catalog-card-set", card.catalogSetName || card.catalogSetId || card.setName || card.setId);
-  const className = createNode("span", "catalog-card-class", card.className || t("catalog.allClasses"));
+  const className = createNode("span", "catalog-card-class", card.className || "—");
   metadata.append(set, className);
   copy.append(metadata);
   if (card.collectible === false) copy.append(createNode("span", "catalog-card-badge", t("catalog.nonCollectible")));
@@ -399,20 +400,18 @@ function renderCards() {
   refs.empty.hidden = !empty;
 }
 
-function renderOptions(select, options, allLabel, selected) {
+function renderSetOptions(select, options, selected) {
   const normalized = optionList(options);
-  if (selected && !normalized.some((option) => option.value === selected)) {
-    normalized.unshift({ value: selected, label: selected });
-  }
   select.replaceChildren();
-  select.append(new Option(allLabel, ""));
+  if (!normalized.length) normalized.push({ value: selected, label: selected });
   normalized.forEach((option) => select.append(new Option(option.label, option.value)));
-  select.value = selected || "";
+  select.value = selected;
 }
 
 function renderMetadata() {
-  renderOptions(refs.set, state.sets, t("catalog.allSets"), state.filters.set);
-  renderOptions(refs.class, state.classes, t("catalog.allClasses"), state.filters.class);
+  renderSetOptions(refs.set, state.sets, state.filters.set);
+  refs.class.replaceChildren(...CATALOG_CLASSES.map((value) => new Option(t(`class.${value}`), value)));
+  refs.class.value = state.filters.class;
 }
 
 function totalPages() {
@@ -458,8 +457,6 @@ function renderStaticCopy() {
   refs.clearSearch.setAttribute("aria-label", t("catalog.clearSearch"));
   refs.setLabel.textContent = t("catalog.setLabel");
   refs.classLabel.textContent = t("catalog.classLabel");
-  refs.scopeLabel.textContent = t("catalog.scopeLabel");
-  refs.scopeCopy.textContent = refs.scopeAll.checked ? t("catalog.scopeAll") : t("catalog.scopeCollectible");
   refs.resultsEyebrow.textContent = t("catalog.collection");
   refs.resultsTitle.textContent = t("catalog.resultsTitle");
   refs.emptyTitle.textContent = t("catalog.noResults");
@@ -511,12 +508,13 @@ async function requestJson(url, signal) {
 function catalogUrl() {
   const query = new URLSearchParams({
     locale: state.locale,
-    scope: state.filters.scope,
+    scope: "collectible",
+    class: state.filters.class,
+    sort: "cost",
     page: String(state.filters.page),
     page_size: String(PAGE_SIZE),
   });
   if (state.filters.set) query.set("set", state.filters.set);
-  if (state.filters.class) query.set("class", state.filters.class);
   if (state.filters.query) query.set("q", state.filters.query);
   return `/api/catalog?${query.toString()}`;
 }
@@ -535,6 +533,13 @@ async function loadCatalog() {
     state.filters.page = Number.isFinite(Number(payload.page)) && Number(payload.page) > 0 ? Number(payload.page) : state.filters.page;
     if (payload.sets !== undefined) state.sets = payload.sets;
     if (payload.classes !== undefined) state.classes = payload.classes;
+    const availableSets = optionList(state.sets);
+    if (availableSets.length && !availableSets.some((option) => option.value === state.filters.set)) {
+      state.filters.set = (availableSets.find((option) => option.value !== "HEROES") || availableSets[0]).value;
+      state.filters.page = 1;
+      void loadCatalog();
+      return;
+    }
     state.items = rawItems.map(normalizeCard).filter((card) => card.id);
     renderMetadata();
     renderCards();
@@ -710,13 +715,8 @@ function bindEvents() {
     void loadCatalog();
   });
   refs.class.addEventListener("change", () => {
+    if (!CATALOG_CLASSES.includes(refs.class.value)) return;
     state.filters.class = refs.class.value;
-    state.filters.page = 1;
-    void loadCatalog();
-  });
-  refs.scopeAll.addEventListener("change", () => {
-    state.filters.scope = refs.scopeAll.checked ? "all" : "collectible";
-    refs.scopeCopy.textContent = refs.scopeAll.checked ? t("catalog.scopeAll") : t("catalog.scopeCollectible");
     state.filters.page = 1;
     void loadCatalog();
   });

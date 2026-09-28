@@ -1,0 +1,91 @@
+.presentation-ghost {
+  box-sizing: border-box;
+  opacity: .98;
+  isolation: isolate;
+  filter: drop-shadow(0 12px 12px rgb(0 0 0 / 55%));
+}
+
+.presentation-ghost .card-inspect {
+  display: none;
+}
+
+.presentation-bolt {
+  position: fixed;
+  z-index: 1002;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, #fff9c4 0%, #9dddfd 38%, #4c80fa 67%, transparent 72%);
+  box-shadow: 0 0 24px 9px rgb(110 184 255 / 65%);
+}
+
+.presentation-number {
+  position: fixed;
+  z-index: 1003;
+  pointer-events: none;
+  font: 900 clamp(24px, 3vw, 44px) Georgia, serif;
+  text-shadow: 0 2px 2px #170b09, 0 0 11px #170b09;
+  white-space: nowrap;
+}
+
+.presentation-damage { color: #ff9a78; }
+.presentation-heal { color: #a4f6b7; }
+.presentation-armor { color: #a4d6ff; }
+
+.presentation-turn {
+  position: absolute;
+  z-index: 70;
+  top: 50%;
+  left: 50%;
+  max-width: 75%;
+  border: 2px solid #f4d395;
+  border-radius: 999px;
+  padding: 12px 32px;
+  pointer-events: none;
+  background: rgb(29 25 31 / 92%);
+  box-shadow: 0 8px 28px rgb(0 0 0 / 60%), 0 0 22px rgb(244 186 89 / 50%);
+  color: #ffe3a8;
+  font: 800 clamp(16px, 2vw, 28px) Georgia, serif;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.game-over:not([hidden]) {
+  animation: presentation-game-over-backdrop 420ms ease-out both;
+}
+
+.game-over:not([hidden]) .game-over-card {
+  animation: presentation-game-over-card 520ms cubic-bezier(.2,.8,.2,1) both;
+}
+
+@keyframes presentation-game-over-backdrop {
+  from { opacity: 0; backdrop-filter: blur(0); }
+  to { opacity: 1; backdrop-filter: blur(5px); }
+}
+
+@keyframes presentation-game-over-card {
+  from { opacity: 0; transform: translateY(32px) scale(.86); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Feedback for a fresh state loaded outside the action presentation queue. */
+.board-card.summon-flash { animation: summon-flash 480ms ease-out; }
+.board-card.damage-flash,
+.hero-card.damage-flash { animation: damage-flash 520ms ease-out; }
+.board-card.heal-flash,
+.hero-card.heal-flash { animation: heal-flash 520ms ease-out; }
+.board-card.attack-source,
+.hero-card.attack-source { animation: attack-nudge 450ms ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  .game-over:not([hidden]),
+  .game-over:not([hidden]) .game-over-card { animation-duration: 1ms; }
+  .board-card.summon-flash,
+  .board-card.damage-flash,
+  .hero-card.damage-flash,
+  .board-card.heal-flash,
+  .hero-card.heal-flash,
+  .board-card.attack-source,
+  .hero-card.attack-source { animation: none; }
+}

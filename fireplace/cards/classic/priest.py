@@ -327,7 +327,7 @@ class EX1_194:
     play = Buff(TARGET, "EX1_194e")
 
 
-EX1_194e = buff(+2, +2)
+EX1_194e = buff(+2, +6)
 
 
 class EX1_197:

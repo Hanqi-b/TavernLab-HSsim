@@ -73,7 +73,12 @@ class ExactCopy(Copy):
                 source.game.active_aura_buffs.append(new_buff)
         if entity.type == CardType.MINION:
             for k in entity.silenceable_attributes:
-                v = getattr(entity, k)
+                # Buffs were already copied above. Copy the minion's own
+                # spellpower here so a Spell Damage buff is not counted twice.
+                v = (
+                    getattr(entity, "_spellpower", 0)
+                    if k == "spellpower" else getattr(entity, k)
+                )
                 setattr(ret, k, v)
             ret.additional_deathrattles = entity.additional_deathrattles[:]
             ret.silenced = entity.silenced

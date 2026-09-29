@@ -1,0 +1,292 @@
+﻿version,set,card_id,name_en,name_zh,status
+17.6.0.53261,Classic (EXPERT1),CS1_069,Fen Creeper,沼泽爬行者,YELLOW
+17.6.0.53261,Classic (EXPERT1),CS1_129,Inner Fire,心灵之火,YELLOW
+17.6.0.53261,Classic (EXPERT1),CS2_028,Blizzard,暴风雪,YELLOW
+17.6.0.53261,Classic (EXPERT1),CS2_038,Ancestral Spirit,先祖之魂,YELLOW
+17.6.0.53261,Classic (EXPERT1),CS2_053,Far Sight,视界术,YELLOW
+17.6.0.53261,Classic (EXPERT1),CS2_059,Blood Imp,鲜血小鬼,YELLOW
+17.6.0.53261,Classic (EXPERT1),CS2_073,Cold Blood,冷血,YELLOW
+17.6.0.53261,Classic (EXPERT1),CS2_104,Rampage,狂暴,YELLOW
+17.6.0.53261,Classic (EXPERT1),CS2_117,Earthen Ring Farseer,大地之环先知,YELLOW
+17.6.0.53261,Classic (EXPERT1),CS2_146,Southsea Deckhand,南海船工,YELLOW
+17.6.0.53261,Classic (EXPERT1),CS2_151,Silver Hand Knight,白银之手骑士,YELLOW
+17.6.0.53261,Classic (EXPERT1),CS2_161,Ravenholdt Assassin,拉文霍德刺客,YELLOW
+17.6.0.53261,Classic (EXPERT1),CS2_169,Young Dragonhawk,幼龙鹰,YELLOW
+17.6.0.53261,Classic (EXPERT1),CS2_181,Injured Blademaster,负伤剑圣,YELLOW
+17.6.0.53261,Classic (EXPERT1),CS2_203,Ironbeak Owl,铁喙猫头鹰,YELLOW
+17.6.0.53261,Classic (EXPERT1),CS2_221,Spiteful Smith,恶毒铁匠,YELLOW
+17.6.0.53261,Classic (EXPERT1),CS2_227,Venture Co. Mercenary,风险投资公司雇佣兵,YELLOW
+17.6.0.53261,Classic (EXPERT1),CS2_233,Blade Flurry,剑刃乱舞,YELLOW
+17.6.0.53261,Classic (EXPERT1),DS1_188,Gladiator's Longbow,角斗士的长弓,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_001,Lightwarden,圣光护卫者,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_002,The Black Knight,黑骑士,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_004,Young Priestess,年轻的女祭司,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_005,Big Game Hunter,王牌猎人,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_006,Alarm-o-Bot,报警机器人,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_008,Argent Squire,银色侍从,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_009,Angry Chicken,愤怒的小鸡,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_010,Worgen Infiltrator,狼人渗透者,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_012,Bloodmage Thalnos,血法师萨尔诺斯,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_014,King Mukla,穆克拉,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_017,Jungle Panther,丛林猎豹,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_020,Scarlet Crusader,血色十字军战士,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_021,Thrallmar Farseer,萨尔玛先知,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_023,Silvermoon Guardian,银月城卫兵,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_028,Stranglethorn Tiger,荆棘谷猛虎,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_029,Leper Gnome,麻风侏儒,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_032,Sunwalker,烈日行者,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_033,Windfury Harpy,风怒鹰身人,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_043,Twilight Drake,暮光幼龙,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_044,Questing Adventurer,任务达人,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_045,Ancient Watcher,上古看守者,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_046,Dark Iron Dwarf,黑铁矮人,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_055,Mana Addict,魔瘾者,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_057,Ancient Brewmaster,年迈的酒仙,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_058,Sunfury Protector,日怒保卫者,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_059,Crazed Alchemist,疯狂的炼金师,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_067,Argent Commander,银色指挥官,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_076,Pint-Sized Summoner,小个子召唤师,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_080,Secretkeeper,奥秘守护者,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_082,Mad Bomber,疯狂投弹者,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_083,Tinkmaster Overspark,工匠大师欧沃斯巴克,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_089,Arcane Golem,奥术傀儡,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_091,Cabal Shadow Priest,秘教暗影祭司,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_093,Defender of Argus,阿古斯防御者,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_095,Gadgetzan Auctioneer,加基森拍卖师,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_096,Loot Hoarder,战利品贮藏者,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_097,Abomination,憎恶,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_100,Lorewalker Cho,游学者周卓,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_102,Demolisher,攻城车,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_103,Coldlight Seer,寒光先知,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_110,Cairne Bloodhoof,凯恩·血蹄,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_124,Eviscerate,刺骨,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_126,Betrayal,背叛,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_130,Noble Sacrifice,崇高牺牲,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_131,Defias Ringleader,迪菲亚头目,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_132,Eye for an Eye,以眼还眼,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_133,Perdition's Blade,毁灭之刃,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_137,Headcrack,裂颅之击,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_144,Shadowstep,暗影步,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_145,Preparation,伺机待发,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_154,Wrath,愤怒,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_155,Mark of Nature,自然印记,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_158,Soul of the Forest,丛林之魂,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_164,Nourish,滋养,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_165,Druid of the Claw,利爪德鲁伊,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_166,Keeper of the Grove,丛林守护者,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_178,Ancient of War,战争古树,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_179,Icicle,冰刺,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_180,Tome of Intellect,智慧秘典,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_181,Call of the Void,虚空召唤,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_182,Pilfer,窃取,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_183,Gift of the Wild,野性赐福,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_184,Righteousness,正义,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_185,Siegebreaker,攻城恶魔,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_186,SI:7 Infiltrator,军情七处渗透者,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_187,Arcane Devourer,奥术吞噬者,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_188,Barrens Stablehand,贫瘠之地饲养员,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_189,Brightwing,光明之翼,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_190,High Inquisitor Whitemane,大检察官怀特迈恩,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_195,Kul Tiran Chaplain,库尔提拉斯教士,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_196,Scarlet Subjugator,血色征服者,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_197,Shadow Word: Ruin,暗言术：毁,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_198,Natalie Seline,娜塔莉·塞林,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_238,Lightning Bolt,闪电箭,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_241,Lava Burst,熔岩爆裂,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_243,Dust Devil,尘魔,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_245,Earth Shock,大地震击,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_247,Stormforged Axe,雷铸战斧,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_248,Feral Spirit,野性狼魂,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_249,Baron Geddon,迦顿男爵,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_250,Earth Elemental,土元素,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_251,Forked Lightning,叉状闪电,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_258,Unbound Elemental,无羁元素,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_259,Lightning Storm,闪电风暴,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_274,Ethereal Arcanist,虚灵奥术师,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_275,Cone of Cold,冰锥术,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_279,Pyroblast,炎爆术,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_283,Frost Elemental,冰霜元素,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_289,Ice Barrier,寒冰护体,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_294,Mirror Entity,镜像实体,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_301,Felguard,恶魔卫士,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_303,Shadowflame,暗影烈焰,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_304,Void Terror,虚空恐魔,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_309,Siphon Soul,灵魂虹吸,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_312,Twisting Nether,扭曲虚空,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_313,Pit Lord,深渊领主,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_315,Summoning Portal,召唤传送门,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_317,Sense Demons,感知恶魔,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_319,Flame Imp,烈焰小鬼,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_320,Bane of Doom,末日灾祸,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_323,Lord Jaraxxus,加拉克苏斯大王,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_334,Shadow Madness,暗影狂乱,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_335,Lightspawn,光耀之子,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_339,Thoughtsteal,思维窃取,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_341,Lightwell,光明之泉,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_345,Mindgames,控心术,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_354,Lay on Hands,圣疗术,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_355,Blessed Champion,受祝福的勇士,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_362,Argent Protector,银色保卫者,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_363,Blessing of Wisdom,智慧祝福,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_365,Holy Wrath,神圣愤怒,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_366,Sword of Justice,公正之剑,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_379,Repentance,忏悔,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_382,Aldor Peacekeeper,奥尔多卫士,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_383,Tirion Fordring,提里奥·弗丁,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_384,Avenging Wrath,复仇之怒,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_390,Tauren Warrior,牛头人战士,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_391,Slam,猛击,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_392,Battle Rage,战斗怒火,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_393,Amani Berserker,阿曼尼狂战士,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_396,Mogu'shan Warden,魔古山守望者,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_398,Arathi Weaponsmith,阿拉希武器匠,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_402,Armorsmith,铸甲师,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_405,Shieldbearer,持盾卫士,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_407,Brawl,绝命乱斗,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_408,Mortal Strike,致死打击,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_409,Upgrade!,升级,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_410,Shield Slam,盾牌猛击,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_411,Gorehowl,血吼,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_412,Raging Worgen,暴怒的狼人,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_414,Grommash Hellscream,格罗玛什·地狱咆哮,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_507,Murloc Warleader,鱼人领军,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_509,Murloc Tidecaller,鱼人招潮者,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_522,Patient Assassin,耐心的刺客,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_531,Scavenging Hyena,食腐土狼,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_533,Misdirection,误导,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_534,Savannah Highmane,长鬃草原狮,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_536,Eaglehorn Bow,鹰角弓,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_537,Explosive Shot,爆炸射击,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_538,Unleash the Hounds,关门放狗,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_543,King Krush,暴龙王克鲁什,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_544,Flare,照明弹,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_549,Bestial Wrath,狂野怒火,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_554,Snake Trap,毒蛇陷阱,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_556,Harvest Golem,麦田傀儡,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_557,Nat Pagle,纳特·帕格,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_558,Harrison Jones,哈里森·琼斯,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_559,Archmage Antonidas,大法师安东尼达斯,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_560,Nozdormu,诺兹多姆,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_561,Alexstrasza,阿莱克丝塔萨,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_562,Onyxia,奥妮克希亚,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_563,Malygos,玛里苟斯,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_564,Faceless Manipulator,无面操纵者,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_567,Doomhammer,毁灭之锤,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_570,Bite,撕咬,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_571,Force of Nature,自然之力,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_572,Ysera,伊瑟拉,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_573,Cenarius,塞纳留斯,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_575,Mana Tide Totem,法力之潮图腾,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_577,The Beast,比斯巨兽,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_578,Savagery,野蛮之击,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_583,Priestess of Elune,艾露恩的女祭司,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_584,Ancient Mage,年迈的法师,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_586,Sea Giant,海巨人,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_590,Blood Knight,血骑士,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_594,Vaporize,蒸发,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_595,Cult Master,诅咒教派领袖,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_596,Demonfire,恶魔之火,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_597,Imp Master,小鬼召唤师,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_603,Cruel Taskmaster,严酷的监工,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_604,Frothing Berserker,暴乱狂战士,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_607,Inner Rage,怒火中烧,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_608,Sorcerer's Apprentice,巫师学徒,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_609,Snipe,狙击,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_610,Explosive Trap,爆炸陷阱,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_611,Freezing Trap,冰冻陷阱,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_612,Kirin Tor Mage,肯瑞托法师,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_613,Edwin VanCleef,艾德温·范克里夫,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_614,Xavius,萨维斯,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_616,Mana Wraith,法力怨魂,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_617,Deadly Shot,致命射击,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_619,Equality,生而平等,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_621,Circle of Healing,治疗之环,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_623,Temple Enforcer,圣殿执行者,YELLOW
+17.6.0.53261,Classic (EXPERT1),EX1_626,Mass Dispel,群体驱散,YELLOW
+17.6.0.53261,Classic (EXPERT1),NEW1_005,Kidnapper,劫持者,YELLOW
+17.6.0.53261,Classic (EXPERT1),NEW1_007,Starfall,星辰坠落,YELLOW
+17.6.0.53261,Classic (EXPERT1),NEW1_008,Ancient of Lore,知识古树,YELLOW
+17.6.0.53261,Classic (EXPERT1),NEW1_010,Al'Akir the Windlord,风领主奥拉基尔,YELLOW
+17.6.0.53261,Classic (EXPERT1),NEW1_014,Master of Disguise,伪装大师,YELLOW
+17.6.0.53261,Classic (EXPERT1),NEW1_017,Hungry Crab,鱼人杀手蟹,YELLOW
+17.6.0.53261,Classic (EXPERT1),NEW1_018,Bloodsail Raider,血帆袭击者,YELLOW
+17.6.0.53261,Classic (EXPERT1),NEW1_019,Knife Juggler,飞刀杂耍者,YELLOW
+17.6.0.53261,Classic (EXPERT1),NEW1_020,Wild Pyromancer,狂野炎术师,YELLOW
+17.6.0.53261,Classic (EXPERT1),NEW1_021,Doomsayer,末日预言者,YELLOW
+17.6.0.53261,Classic (EXPERT1),NEW1_022,Dread Corsair,恐怖海盗,YELLOW
+17.6.0.53261,Classic (EXPERT1),NEW1_023,Faerie Dragon,精灵龙,YELLOW
+17.6.0.53261,Classic (EXPERT1),NEW1_024,Captain Greenskin,绿皮船长,YELLOW
+17.6.0.53261,Classic (EXPERT1),NEW1_025,Bloodsail Corsair,血帆海盗,YELLOW
+17.6.0.53261,Classic (EXPERT1),NEW1_026,Violet Teacher,紫罗兰教师,YELLOW
+17.6.0.53261,Classic (EXPERT1),NEW1_027,Southsea Captain,南海船长,YELLOW
+17.6.0.53261,Classic (EXPERT1),NEW1_029,Millhouse Manastorm,米尔豪斯·法力风暴,YELLOW
+17.6.0.53261,Classic (EXPERT1),NEW1_030,Deathwing,死亡之翼,YELLOW
+17.6.0.53261,Classic (EXPERT1),NEW1_036,Commanding Shout,命令怒吼,YELLOW
+17.6.0.53261,Classic (EXPERT1),NEW1_037,Master Swordsmith,铸剑师,YELLOW
+17.6.0.53261,Classic (EXPERT1),NEW1_038,Gruul,格鲁尔,YELLOW
+17.6.0.53261,Classic (EXPERT1),NEW1_040,Hogger,霍格,YELLOW
+17.6.0.53261,Classic (EXPERT1),NEW1_041,Stampeding Kodo,狂奔科多兽,YELLOW
+17.6.0.53261,Classic (EXPERT1),tt_004,Flesheating Ghoul,腐肉食尸鬼,YELLOW
+17.6.0.53261,Classic (EXPERT1),tt_010,Spellbender,扰咒术,YELLOW
+17.6.0.53261,Hall of Fame (HOF),CS2_031,Ice Lance,冰枪术,YELLOW
+17.6.0.53261,Hall of Fame (HOF),CS2_235,Northshire Cleric,北郡牧师,YELLOW
+17.6.0.53261,Hall of Fame (HOF),CS2_236,Divine Spirit,神圣之灵,YELLOW
+17.6.0.53261,Hall of Fame (HOF),DS1_233,Mind Blast,心灵震爆,YELLOW
+17.6.0.53261,Hall of Fame (HOF),EX1_007,Acolyte of Pain,苦痛侍僧,YELLOW
+17.6.0.53261,Hall of Fame (HOF),EX1_016,Sylvanas Windrunner,希尔瓦娜斯·风行者,YELLOW
+17.6.0.53261,Hall of Fame (HOF),EX1_048,Spellbreaker,破法者,YELLOW
+17.6.0.53261,Hall of Fame (HOF),EX1_062,Old Murk-Eye,老瞎眼,YELLOW
+17.6.0.53261,Hall of Fame (HOF),EX1_085,Mind Control Tech,精神控制技师,YELLOW
+17.6.0.53261,Hall of Fame (HOF),EX1_105,Mountain Giant,山岭巨人,YELLOW
+17.6.0.53261,Hall of Fame (HOF),EX1_112,Gelbin Mekkatorque,格尔宾·梅卡托克,YELLOW
+17.6.0.53261,Hall of Fame (HOF),EX1_116,Leeroy Jenkins,火车王里诺艾,YELLOW
+17.6.0.53261,Hall of Fame (HOF),EX1_128,Conceal,隐藏,YELLOW
+17.6.0.53261,Hall of Fame (HOF),EX1_161,Naturalize,自然平衡,YELLOW
+17.6.0.53261,Hall of Fame (HOF),EX1_284,Azure Drake,碧蓝幼龙,YELLOW
+17.6.0.53261,Hall of Fame (HOF),EX1_295,Ice Block,寒冰屏障,YELLOW
+17.6.0.53261,Hall of Fame (HOF),EX1_298,Ragnaros the Firelord,炎魔之王拉格纳罗斯,YELLOW
+17.6.0.53261,Hall of Fame (HOF),EX1_310,Doomguard,末日守卫,YELLOW
+17.6.0.53261,Hall of Fame (HOF),EX1_316,Power Overwhelming,力量的代价,YELLOW
+17.6.0.53261,Hall of Fame (HOF),EX1_349,Divine Favor,神恩术,YELLOW
+17.6.0.53261,Hall of Fame (HOF),EX1_350,Prophet Velen,先知维伦,YELLOW
+17.6.0.53261,Hall of Fame (HOF),EX1_591,Auchenai Soulpriest,奥金尼灵魂祭司,YELLOW
+17.6.0.53261,Hall of Fame (HOF),EX1_620,Molten Giant,熔核巨人,YELLOW
+17.6.0.53261,Hall of Fame (HOF),EX1_624,Holy Fire,神圣之火,YELLOW
+17.6.0.53261,Hall of Fame (HOF),EX1_625,Shadowform,暗影形态,YELLOW
+17.6.0.53261,Hall of Fame (HOF),GIL_130,Gloom Stag,阴郁的牡鹿,YELLOW
+17.6.0.53261,Hall of Fame (HOF),GIL_530,Murkspark Eel,阴燃电鳗,YELLOW
+17.6.0.53261,Hall of Fame (HOF),GIL_692,Genn Greymane,吉恩·格雷迈恩,YELLOW
+17.6.0.53261,Hall of Fame (HOF),GIL_826,Baku the Mooneater,噬月者巴库,YELLOW
+17.6.0.53261,Hall of Fame (HOF),GIL_837,Glitter Moth,闪光飞蛾,YELLOW
+17.6.0.53261,Hall of Fame (HOF),GIL_838,Black Cat,黑猫,YELLOW
+17.6.0.53261,Hall of Fame (HOF),NEW1_004,Vanish,消失,YELLOW
+17.6.0.53261,Hall of Fame (HOF),NEW1_016,Captain's Parrot,船长的鹦鹉,YELLOW
+17.6.0.53261,Hall of Fame (HOF),PRO_001,Elite Tauren Chieftain,精英牛头人酋长,YELLOW
+17.6.0.53261,Curse of Naxxramas (NAXX),FP1_002,Haunted Creeper,鬼灵爬行者,YELLOW
+17.6.0.53261,Curse of Naxxramas (NAXX),FP1_003,Echoing Ooze,分裂软泥怪,YELLOW
+17.6.0.53261,Curse of Naxxramas (NAXX),FP1_004,Mad Scientist,疯狂的科学家,YELLOW
+17.6.0.53261,Curse of Naxxramas (NAXX),FP1_005,Shade of Naxxramas,纳克萨玛斯之影,YELLOW
+17.6.0.53261,Curse of Naxxramas (NAXX),FP1_007,Nerubian Egg,蛛魔之卵,YELLOW
+17.6.0.53261,Curse of Naxxramas (NAXX),FP1_008,Spectral Knight,鬼灵骑士,YELLOW
+17.6.0.53261,Curse of Naxxramas (NAXX),FP1_009,Deathlord,死亡领主,YELLOW
+17.6.0.53261,Curse of Naxxramas (NAXX),FP1_010,Maexxna,迈克斯纳,YELLOW
+17.6.0.53261,Curse of Naxxramas (NAXX),FP1_011,Webspinner,结网蛛,YELLOW
+17.6.0.53261,Curse of Naxxramas (NAXX),FP1_012,Sludge Belcher,淤泥喷射者,YELLOW
+17.6.0.53261,Curse of Naxxramas (NAXX),FP1_013,Kel'Thuzad,克尔苏加德,YELLOW
+17.6.0.53261,Curse of Naxxramas (NAXX),FP1_014,Stalagg,斯塔拉格,YELLOW
+17.6.0.53261,Curse of Naxxramas (NAXX),FP1_015,Feugen,费尔根,YELLOW
+17.6.0.53261,Curse of Naxxramas (NAXX),FP1_016,Wailing Soul,哀嚎的灵魂,YELLOW
+17.6.0.53261,Curse of Naxxramas (NAXX),FP1_017,Nerub'ar Weblord,尼鲁巴蛛网领主,YELLOW
+17.6.0.53261,Curse of Naxxramas (NAXX),FP1_018,Duplicate,复制,YELLOW
+17.6.0.53261,Curse of Naxxramas (NAXX),FP1_019,Poison Seeds,剧毒之种,YELLOW
+17.6.0.53261,Curse of Naxxramas (NAXX),FP1_020,Avenge,复仇,YELLOW
+17.6.0.53261,Curse of Naxxramas (NAXX),FP1_021,Death's Bite,死亡之咬,YELLOW
+17.6.0.53261,Curse of Naxxramas (NAXX),FP1_022,Voidcaller,空灵召唤者,YELLOW
+17.6.0.53261,Curse of Naxxramas (NAXX),FP1_024,Unstable Ghoul,蹒跚的食尸鬼,YELLOW
+17.6.0.53261,Curse of Naxxramas (NAXX),FP1_025,Reincarnate,转生,YELLOW
+17.6.0.53261,Curse of Naxxramas (NAXX),FP1_026,Anub'ar Ambusher,阿努巴尔伏击者,YELLOW
+17.6.0.53261,Curse of Naxxramas (NAXX),FP1_027,Stoneskin Gargoyle,岩肤石像鬼,YELLOW
+17.6.0.53261,Curse of Naxxramas (NAXX),FP1_028,Undertaker,送葬者,YELLOW
+17.6.0.53261,Curse of Naxxramas (NAXX),FP1_029,Dancing Swords,舞动之剑,YELLOW
+17.6.0.53261,Curse of Naxxramas (NAXX),FP1_030,Loatheb,洛欧塞布,YELLOW
+17.6.0.53261,Curse of Naxxramas (NAXX),FP1_031,Baron Rivendare,瑞文戴尔男爵,YELLOW

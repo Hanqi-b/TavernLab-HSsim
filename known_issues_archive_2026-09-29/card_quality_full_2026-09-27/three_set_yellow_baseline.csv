@@ -1,0 +1,307 @@
+﻿version,set,card_id,name_en,name_zh,status
+17.6.0.53261,One Night in Karazhan (KARA),KAR_004,Cat Trick,豹子戏法,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_005,Kindly Grandmother,慈祥的外婆,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_006,Cloaked Huntress,神秘女猎手,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_009,Babbling Book,呓语魔典,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_010,Nightbane Templar,夜魇骑士,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_011,Pompous Thespian,自负的演员,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_013,Purify,净化,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_021,Wicked Witchdoctor,邪恶的巫医,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_025,Kara Kazham!,附灵术,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_026,Protect the King!,保卫国王,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_028,Fool's Bane,愚者之灾,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_029,Runic Egg,符文蛋,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_030a,Pantry Spider,橱柜蜘蛛,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_033,Book Wyrm,书卷之龙,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_035,Priest of the Feast,宴会牧师,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_036,Arcane Anomaly,奥术畸体,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_037,Avian Watcher,鸟禽守护者,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_041,Moat Lurker,沟渠潜伏者,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_044,Moroes,莫罗斯,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_057,Ivory Knight,象牙骑士,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_061,The Curator,馆长,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_062,Netherspite Historian,虚空幽龙史学家,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_063,Spirit Claws,幽灵之爪,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_065,Menagerie Warden,展览馆守卫,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_069,Swashburglar,吹嘘海盗,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_070,Ethereal Peddler,虚灵商人,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_073,Maelstrom Portal,大漩涡传送门,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_075,Moonglade Portal,月光林地传送门,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_076,Firelands Portal,火焰之地传送门,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_077,Silvermoon Portal,银月城传送门,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_089,Malchezaar's Imp,玛克扎尔的小鬼,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_091,Ironforge Portal,铁炉堡传送门,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_092,Medivh's Valet,麦迪文的男仆,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_095,Zoobot,机械动物管理员,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_096,Prince Malchezaar,玛克扎尔王子,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_097,"Medivh, the Guardian",守护者麦迪文,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_114,Barnes,巴内斯,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_204,Onyx Bishop,玛瑙主教,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_205,Silverware Golem,镀银魔像,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_702,Menagerie Magician,展览馆法师,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_710,Arcanosmith,奥能铁匠,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_711,Arcane Giant,奥术巨人,YELLOW
+17.6.0.53261,One Night in Karazhan (KARA),KAR_712,Violet Illusionist,紫罗兰法师,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_020,Raza the Chained,缚链者拉兹,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_021,Freezing Potion,冰冻药水,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_025,Wind-up Burglebot,发条强盗机器人,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_026,Hidden Cache,军备宝箱,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_039,Street Trickster,杂耍小鬼,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_060,Red Mana Wyrm,猩红法力浮龙,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_061,Jinyu Waterspeaker,锦鱼人水语者,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_062,Grimestreet Protector,污手街守护者,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_063,Kooky Chemist,化学怪人,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_064,Blubber Baron,黑金大亨,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_065,Volcanic Potion,火山药水,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_066,Kabal Lackey,暗金教侍从,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_067,Hozen Healer,猢狲医者,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_094,Felfire Potion,邪火药水,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_120,Mistress of Mixtures,亡灵药剂师,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_300,Public Defender,公辩律师,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_305,Smuggler's Run,风驰电掣,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_308,Kun the Forgotten King,遗忘之王库恩,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_310,Call in the Finishers,神奇四鱼,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_312,Jade Chieftain,青玉酋长,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_313,Finders Keepers,先到先得,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_315,Alleycat,雄斑虎,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_316,Rat Pack,瘟疫鼠群,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_321,Grimestreet Informant,污手街情报员,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_324,White Eyes,白眼大侠,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_325,Small-Time Buccaneer,蹩脚海盗,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_328,Fight Promoter,竞技推广员,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_333,Knuckles,金手指纳克斯,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_334,Smuggler's Crate,走私货物,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_335,Dispatch Kodo,驮运科多兽,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_336,Shaky Zipgunner,豺狼人土枪手,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_337,Piranha Launcher,食人鱼喷枪,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_338,Trogg Beastrager,穴居人驯兽师,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_341,Sergeant Sally,女警萨莉,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_342,Luckydo Buccaneer,土地精海盗,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_343,Jade Behemoth,青玉巨兽,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_344,"Finja, the Flying Star",飞火流星·芬杰,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_602,Jade Idol,青玉护符,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_603,Potion of Madness,疯狂药水,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_604,Greater Healing Potion,强效治疗药水,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_605,Drakonid Operative,龙人侦测者,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_606,Mana Geode,法力晶簇,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_608,Blastcrystal Potion,爆晶药水,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_609,Fel Orc Soulfiend,邪兽人噬魂魔,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_610,Crystalweaver,魔瘾结晶者,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_611,Bloodfury Potion,血怒药水,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_614,Mark of the Lotus,玉莲印记,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_616,Pilfered Power,妙手空空,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_617,Celestial Dreamer,天神唤梦者,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_619,Kabal Chemist,暗金教炼金师,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_620,Potion of Polymorph,变形药水,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_621,Kazakus,卡扎库斯,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_623,Greater Arcane Missiles,强能奥术飞弹,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_626,Kabal Talonpriest,暗金教鸦人祭司,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_630,Counterfeit Coin,伪造的幸运币,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_631,Brass Knuckles,黄铜指虎,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_634,Lotus Assassin,玉莲帮刺客,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_636,Shadow Rager,暗影狂怒者,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_637,Patches the Pirate,海盗帕奇斯,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_639,Grimestreet Enforcer,污手街惩罚者,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_643,Hobart Grapplehammer,霍巴特·钩锤,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_646,Backstreet Leper,后街男巫,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_647,Blowgill Sniper,吹箭鱼人,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_648,Big-Time Racketeer,犯罪高手,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_649,Kabal Courier,暗金教信使,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_650,Grimscale Chum,暗鳞劫掠者,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_651,Naga Corsair,纳迦海盗,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_652,Second-Rate Bruiser,二流打手,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_653,Hired Gun,重装佣兵,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_654,Friendly Bartender,热心的酒保,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_655,Toxic Sewer Ooze,毒性污水软泥怪,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_656,Streetwise Investigator,街头调查员,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_657,Kabal Songstealer,暗金教窃歌者,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_658,Backroom Bouncer,后院保镖,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_659,Gadgetzan Socialite,加基森名媛,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_660,Manic Soulcaster,狂热铸魂者,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_661,Pint-Size Potion,缩小药水,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_662,Dragonfire Potion,龙息药水,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_663,Kabal Trafficker,暗金教恶魔商贩,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_666,Grook Fu Master,功夫大师,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_667,Bomb Squad,爆破小队,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_668,Doppelgangster,魅影歹徒,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_669,Burgly Bully,穴居人强盗,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_670,Mayor Noggenfogger,诺格弗格市长,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_671,Cryomancer,凛风巫师,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_672,Madam Goya,郭雅夫人,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_685,Don Han'Cho,唐·汉古,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_687,Inkmaster Solia,墨水大师索莉娅,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_688,Spiked Hogrider,野猪骑士斯派克,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_690,Jade Shuriken,青玉飞镖,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_691,Jade Swarmer,青玉游荡者,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_693,Gadgetzan Ferryman,加基森摆渡人,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_694,Shadow Sensei,暗影大师,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_696,Devolve,衰变,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_697,Lotus Illusionist,玉莲帮幻术师,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_699,Seadevil Stinger,海魔钉刺者,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_707,Jade Lightning,青玉闪电,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_713,Jade Blossom,青玉绽放,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_715,Jade Spirit,青玉之灵,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_716,Sleep with the Fishes,鱼死网破,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_717,Jade Claws,青玉之爪,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_750,Krul the Unshackled,唤魔者克鲁尔,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_751,Abyssal Enforcer,渊狱惩击者,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_752,Stolen Goods,失窃物资,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_753,Grimestreet Outfitter,污手街供货商,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_754,Grimy Gadgeteer,污手玩具商,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_755,Grimestreet Pawnbroker,污手街典当师,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_756,Alley Armorsmith,兽人铸甲师,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_759,Meanstreet Marshal,海象人执法官,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_760,Kabal Crystal Runner,暗金教水晶侍女,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_781,"Shaku, the Collector",收集者沙库尔,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_790,Dirty Rat,卑劣的脏鼠,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_800,Getaway Kodo,战术撤离,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_806,Wrathion,拉希奥,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_807,Auctionmaster Beardo,大富翁比尔杜,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_808,"Genzo, the Shark",“鲨鱼”加佐,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_809,Tanaris Hogchopper,野猪骑士塔纳利,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_810,Leatherclad Hogleader,野猪骑士蕾瑟兰,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_811,Lunar Visions,新月视界,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_815,Wickerflame Burnbristle,燃鬃·自走炮,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_816,Virmen Sensei,兔妖教头,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_851,Daring Reporter,勇敢的记者,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_852,Lotus Agents,玉莲帮密探,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_853,Grimestreet Smuggler,污手街走私者,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_854,Ancient of Blossoms,远古之树,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_855,Defias Cleaner,迪菲亚清道夫,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_900,Unlicensed Apothecary,无证药剂师,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_902,Aya Blackpaw,艾雅·黑掌,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_905,Small-Time Recruits,三教九流,YELLOW
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),CFM_940,I Know a Guy,盛气凌人,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_001,Pterrordax Hatchling,翼手龙宝宝,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_002,Volcanosaur,火山龙,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_004,Dinosize,巨化术,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_009,Ravasaur Runt,暴掠龙幼崽,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_010,Sated Threshadon,臃肿的蛇颈龙,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_011,Hydrologist,水文学家,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_015,Sunkeeper Tarim,守日者塔林姆,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_018,Flame Geyser,烈焰喷涌,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_019,Air Elemental,空气元素,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_020,Arcanologist,秘法学家,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_021,Steam Surger,蒸汽涌动者,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_022,Mirage Caller,幻象制造者,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_024,Mana Bind,法术共鸣,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_025,Volcano,火山喷发,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_027,Pyros,派烙斯,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_028,Open the Waygate,打开时空之门,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_029,Shadow Visions,暗影视界,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_030,Binding Heal,联结治疗,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_032,Crystalline Oracle,结晶预言者,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_034,Radiant Elemental,光照元素,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_035,Curious Glimmerroot,好奇的萤根草,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_047,Ravenous Pterrordax,饥饿的翼手龙,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_049,Tar Lurker,焦油潜伏者,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_057,Razorpetal Volley,刀瓣齐射,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_058,Razorpetal Lasher,刀瓣鞭笞者,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_060,Mimic Pod,拟态豆荚,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_061,Obsidian Shard,黑曜石碎片,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_063,Biteweed,食人草,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_064,Vilespine Slayer,邪脊吞噬者,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_065,"Sherazin, Corpse Flower",“尸魔花”瑟拉金,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_067,The Caverns Below,探索地下洞穴,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_070,Tol'vir Stoneshaper,托维尔塑石师,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_071,Giant Mastodon,巨型乳齿象,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_072,Stonehill Defender,石丘防御者,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_073,Rockpool Hunter,石塘猎人,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_075,Vicious Fledgling,凶恶的雏龙,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_076,Eggnapper,卑劣的窃蛋者,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_078,Tortollan Forager,始祖龟劫掠者,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_079,Frozen Crusher,冰冻粉碎者,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_082,Thunder Lizard,雷霆蜥蜴,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_083,Devilsaur Egg,魔暴龙蛋,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_084,Fire Plume Phoenix,火羽凤凰,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_085,Emerald Hive Queen,翡翠蜂后,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_086,Giant Anaconda,巨型蟒蛇,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_087,Bittertide Hydra,苦潮多头蛇,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_088,Tortollan Primalist,始祖龟预言者,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_089,Gentle Megasaur,温顺的巨壳龙,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_099,Charged Devilsaur,狂奔的魔暴龙,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_100,Verdant Longneck,苍绿长颈龙,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_101,Shellshifter,变形神龟,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_103,Evolving Spores,生长孢子,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_108,Earthen Scales,大地之鳞,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_109,Elder Longneck,年迈的长颈龙,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_111,Living Mana,活体法力,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_113,Bright-Eyed Scout,热情的探险家,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_116,Jungle Giants,丛林巨兽,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_201,Primalfin Totem,蛮鱼图腾,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_202,Fire Plume Harbinger,火羽先锋,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_205,Glacial Shard,冰川裂片,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_208,Stone Sentinel,岩石哨兵,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_211,"Kalimos, Primal Lord",荒蛮之主卡利莫斯,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_800,Terrorscale Stalker,恐鳞追猎者,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_801,Nesting Roc,筑巢双头鹏,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_803,Emerald Reaver,翡翠掠夺者,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_807,Golakka Crawler,葛拉卡爬行蟹,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_808,Stubborn Gastropod,倔强的蜗牛,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_809,Fire Fly,火羽精灵,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_810,Stegodon,剑龙,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_812,Sabretooth Stalker,剑齿追猎者,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_813,Stormwatcher,风暴看守,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_814,Giant Wasp,巨型黄蜂,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_816,Servant of Kalimos,卡利莫斯的仆从,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_817,Tidal Surge,海潮涌动,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_818,Volatile Elemental,不稳定的元素,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_823,Envenom Weapon,浸毒武器,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_829,Lakkari Sacrifice,拉卡利献祭,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_830,Cruel Dinomancer,残暴的恐龙术士,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_831,Corrupting Mist,腐化迷雾,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_832,Bloodbloom,血色绽放,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_833,Lakkari Felhound,拉卡利地狱犬,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_834,Feeding Time,喂食时间,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_835,Chittering Tunneler,聒噪的挖掘者,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_836,Clutchmother Zavas,萨瓦丝女王,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_838,Tar Lord,焦油兽王,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_840,"Hemet, Jungle Hunter",“丛林猎人”赫米特,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_843,The Voraxx,沃拉斯,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_844,Humongous Razorleaf,巨齿刀叶,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_845,Igneous Elemental,火岩元素,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_846,Shimmering Tempest,活体风暴,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_847,Blazecaller,火焰使者,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_848,Primordial Drake,始生幼龙,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_851,Elise the Trailblazer,“开拓者”伊莉斯,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_852,Tyrantus,泰拉图斯,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_854,Free From Amber,琥口脱险,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_856,Hallucination,幻觉,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_900,Spiritsinger Umbra,灵魂歌者安布拉,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_907,Ozruk,欧泽鲁克,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_910,Grievous Bite,凶残撕咬,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_912,Jeweled Macaw,宝石鹦鹉,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_913,Tol'vir Warden,托维尔守卫,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_914,Raptor Hatchling,迅猛龙宝宝,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_915,Crackling Razormaw,雷鸣刺喉龙,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_916,Stampede,奔踏,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_917,Dinomancy,恐龙学,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_919,Swamp King Dred,沼泽之王爵德,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_920,The Marsh Queen,湿地女王,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_922,Explore Un'Goro,探索安戈洛,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_923,Iron Hide,铜皮铁甲,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_925,Ornery Direhorn,暴躁的恐角龙,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_926,Cornered Sentry,身陷绝境的哨卫,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_927,Sudden Genesis,基因转接,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_928,Tar Creeper,焦油爬行者,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_929,Molten Blade,熔岩之刃,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_933,King Mosh,暴龙之王摩什,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_934,Fire Plume's Heart,火羽之心,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_937,Primalfin Lookout,蛮鱼斥候,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_938,Hot Spring Guardian,温泉守卫,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_940,Awaken the Makers,唤醒造物者,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_941,Primordial Glyph,远古雕文,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_942,Unite the Murlocs,鱼人总动员,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_946,Gluttonous Ooze,贪食软泥怪,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_948,Molten Reflection,熔岩镜像,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_950,Vinecleaver,斩棘刀,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_952,Spikeridged Steed,剑龙骑术,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_953,Primalfin Champion,蛮鱼勇士,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_954,The Last Kaleidosaur,最后的水晶龙,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_955,Meteor,陨石术,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_956,Spirit Echo,灵魂回响,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_957,Direhorn Hatchling,恐角龙宝宝,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_960,Lost in the Jungle,迷失丛林,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_961,Adaptation,适者生存,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_962,Lightfused Stegodon,光注剑龙,YELLOW
+17.6.0.53261,Journey to Un'Goro (UNGORO),UNG_963,Lyra the Sunshard,“太阳裂片”莱拉,YELLOW

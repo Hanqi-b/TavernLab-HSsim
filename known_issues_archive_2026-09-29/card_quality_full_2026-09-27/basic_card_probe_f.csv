@@ -1,0 +1,11 @@
+﻿card_id,case_id,expected,observed,outcome,notes
+EX1_169,EX1_169_temporary,Gain exactly one usable mana this turn without permanent crystal; clear at end turn,"before=(3, 5, 0);during=(4, 5, 1, <Zone.GRAVEYARD: 4>);after_end_turn=(5, 0)",pass,CardDefs.xml#EX1_169; fireplace/cards/classic/druid.py:272; contextual test_witchwood.py:38
+EX1_169,EX1_169_cap,"At ten mana, temporary mana cannot exceed resource cap",mana=10;max=10;temp=0;zone=GRAVEYARD,pass,CardDefs.xml#EX1_169; fireplace/actions.py:1463
+EX1_192,EX1_192_heal,Heal friendly hero for five and leave enemy hero unchanged,friendly_hero=27;enemy_hero=23;zone=GRAVEYARD,pass,CardDefs.xml#EX1_192; fireplace/cards/classic/priest.py:315; no prior effect assertion
+EX1_192,EX1_192_full_health,At full health hero remains at maximum,friendly_hero=30;zone=GRAVEYARD,pass,CardDefs.xml#EX1_192; fireplace/cards/classic/priest.py:315
+EX1_593,EX1_593_battlecry,Battlecry deals three to enemy hero and minion enters play,friendly_hero=30;enemy_hero=27;minion=PLAY,pass,CardDefs.xml#EX1_593; fireplace/cards/classic/neutral_common.py:87; no prior effect assertion
+EX1_593,EX1_593_armor,Enemy hero armor absorbs first two and health loses one,enemy_armor=0;enemy_health=29,pass,CardDefs.xml#EX1_593; fireplace/cards/classic/neutral_common.py:87
+EX1_606,EX1_606_draw,Gain five armor and draw the known deck card,armor=7;drawn=CS2_231:HAND;deck=0;spell=GRAVEYARD,pass,CardDefs.xml#EX1_606; fireplace/cards/classic/warrior.py:177; prior test refs are contextual
+EX1_606,EX1_606_empty_deck,Armor still gained when deck is empty; no card appears,armor=5;hand=0;deck=0;spell=GRAVEYARD,pass,CardDefs.xml#EX1_606; fireplace/cards/classic/warrior.py:177
+EX1_581,EX1_581_bounce,Only enemy minion target returns to opponent hand with controller preserved,target=HAND;owner_preserved=True;friendly=PLAY;spell=GRAVEYARD,pass,CardDefs.xml#EX1_581; fireplace/cards/classic/rogue.py:207; contextual test_naxxramas.py:485
+EX1_581,EX1_581_full_hand,Full enemy hand causes bounced minion to be destroyed rather than overfill hand,target=GRAVEYARD;enemy_hand=10;spell=GRAVEYARD,pass,CardDefs.xml#EX1_581; fireplace/actions.py:769

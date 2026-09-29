@@ -1,0 +1,4 @@
+﻿case_id,card_id,expected,observed,outcome,evidence
+death_zone_GIL_819,GIL_819,one random Shaman spell added to hand after a friendly minion dies,effect_count=0;victim_zone=GRAVEYARD,confirmed_error,"fireplace/actions.py:345-374; fireplace/dsl/selector.py:532,549"
+death_zone_ICC_900,ICC_900,one ICC_900t summoned after a friendly minion dies,effect_count=0;victim_zone=GRAVEYARD,confirmed_error,"fireplace/actions.py:345-374; fireplace/dsl/selector.py:532,549"
+death_zone_control_EX1_595,EX1_595,zone-independent Death(FRIENDLY + MINION) draws the known top card,drawn=True;hand=['CS2_231'];victim_zone=GRAVEYARD,pass,fireplace/cards/classic/neutral_common.py:96

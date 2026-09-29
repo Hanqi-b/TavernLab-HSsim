@@ -1,0 +1,11 @@
+﻿card_id,status,mechanic_scope,reason,probe_file,notes
+EX1_617,GREEN,Random effects|Spell resolution,致命射击只随机消灭一个敌方随从，24种子覆盖双候选；无敌方随从时不能施放且不扣费。,classic_probe_final10.csv,"逐卡真实对局：2 个独立 case；pass,pass。"
+EX1_619,GREEN,Spell resolution,平等将双方所有随从的当前和最大生命都改为1，受伤随从亦然；英雄不受影响。,classic_probe_final10.csv,逐卡真实对局：1 个独立 case；pass。
+EX1_621,GREEN,Spell resolution,治疗之环使双方受伤随从各回复4点并受上限约束，英雄不受影响。,classic_probe_final10.csv,逐卡真实对局：1 个独立 case；pass。
+EX1_623,GREEN,Battlecry|Targeting,战吼仅选择友方随从并增加3点生命；无友方目标仍可作为5/6入场。,classic_probe_final10.csv,"逐卡真实对局：2 个独立 case；pass,pass。"
+EX1_626,GREEN,Draw / Discard|Silence|Spell resolution,群体驱散沉默所有敌方随从、不影响友方随从并抽一张牌；敌方无随从时仍抽牌。,classic_probe_final10.csv,"逐卡真实对局：2 个独立 case；pass,pass。"
+NEW1_005,RED,Combo|Targeting,连击时偷来的随从错误返回当前控制者而不是原拥有者的手牌；普通友敌回手和无连击分支通过。,classic_probe_final10.csv,"逐卡真实对局：4 个独立 case；pass,pass,pass,confirmed_error。"
+NEW1_007,GREEN,Choose One|Spell resolution|Targeting,星辰坠落两选项分别实测单体5伤与敌方随从全体2伤，缺选择和英雄非法目标均不扣费。,classic_probe_final10.csv,"逐卡真实对局：3 个独立 case；pass,pass,pass。"
+NEW1_008,GREEN,Choose One|Draw / Discard|Targeting,知识古树抽牌分支从牌库抽恰好一张已知牌；治疗分支对合法英雄回复5点；未选分支被拒且不扣费。,classic_probe_final10.csv,"逐卡真实对局：5 个独立 case；pass,pass,pass,pass,pass。"
+NEW1_010,GREEN,Charge|Divine Shield|Taunt|Windfury,奥拉基尔四关键词均实战验证：即时两次攻击、第三次不可攻击、圣盾挡反击、嘲讽阻挡敌方直击。,classic_probe_final10.csv,"逐卡真实对局：2 个独立 case；pass,pass。"
+NEW1_014,GREEN,Battlecry|Targeting,伪装大师仅给其他友方随从潜行，敌方法术在持续期不能指定，下个己方回合开始解除；无目标仍可作为4/4入场。,classic_probe_final10.csv,"逐卡真实对局：2 个独立 case；pass,pass。"

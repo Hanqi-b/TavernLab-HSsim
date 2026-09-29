@@ -1,0 +1,17 @@
+﻿case_id,mechanism,card_ids,expected,observed,outcome
+ZONE-01,Zone movement,CS2_231,hand->field->graveyard with matching collections,hand=True;field=True;graveyard=True,pass
+ZONE-02,Transform / Zone movement,CS2_022|CS2_231,old minion set aside; Sheep in field; spell in graveyard,target_available=True;old_zone=SETASIDE;field=['CS2_tk1'];spell_zone=GRAVEYARD,pass
+ZONE-03,Bounce / Zone movement,EX1_049|CS2_231,Battlecry returns chosen friendly minion to hand,legal_target=True;wisp_zone=HAND;brewmaster_zone=PLAY,pass
+ZONE-04,Weapon / Zone movement,CS2_091|CS2_106,replaced weapon enters graveyard; new weapon occupies weapon slot,old_zone=GRAVEYARD;new_zone=PLAY;equipped=CS2_106,pass
+ZONE-05,Secret / Zone movement,EX1_287,played Secret leaves hand and enters secret zone,zone=SECRET;in_secret_slot=True,pass
+DEATH-01,Death processing,GVG_076|OG_256|CS2_182,all minions lethally damaged in the same batch leave play,"spawn=GRAVEYARD;sheep=GRAVEYARD;yeti=PLAY,health=1;field=['CS2_182']",confirmed_error
+DEATH-02,Death processing / Reborn,GVG_076|ULD_266|CS2_182,one 1-health Reborn copy after one death; same-batch Yeti dies,"source=GRAVEYARD;reborn_copies=2;yeti=GRAVEYARD,health=5",confirmed_error
+DEATH-03,Deathrattle tag / Draw,YOD_016,death draws one card,has_deathrattle=False;hand=4->4;deck=26->26,confirmed_error
+DEATH-04,Deathrattle tag / Damage,VAN_EX1_029,death deals 2 to enemy hero,has_deathrattle=False;enemy_health=30->30,confirmed_error
+DEATH-05,Deathrattle tag / Enchantment,UNG_999t2|UNG_999t2e,Living Spores buff summons two Plants when host dies,buff_attached=True;buff_has_deathrattle=False;plants=0,confirmed_error
+DEATH-06,Deathrattle tag / Enchantment,TB_PickYourFate_7_EnchMiniom2nd,death reduces a positive-cost card in hand to zero,buff_attached=True;buff_has_deathrattle=False;fireball_cost=4->4,confirmed_error
+TARGET-01,Targeting,CS2_022,invalid hero target rejected; card stays in hand,rejected=True;zone=HAND;enemy_in_targets=True,pass
+TARGET-02,Targeting / Random effects,NAX15_04,random enemy minion stolen without a manual target,requires_target=False;targets=0;result=AttributeError: 'NoneType' object has no attribute 'zone';enemy_controller=Player1,confirmed_error
+TARGET-03,Targeting / Silence,VAN_CS2_203,requires a minion target before play,targets_before=0;result=AttributeError: 'NoneType' object has no attribute 'type';card_zone=PLAY;enemy_silenced=False,confirmed_error
+CHOICE-01,Discover / Choice,LOE_006,3 unique Deathrattle options; invalid choice rejected; actions blocked; selected card enters hand,options=3;valid=True;invalid_rejected=True;blocked=True;still_open=True;resolved=True,pass
+RANDOM-01,Random effects,CS2_231,empty pool returns none; same seed repeats choice; sample without replacement caps at pool size,empty=0;first=['CS2_231'];replayed=['CS2_231'];sample_size=2;unique=2,pass

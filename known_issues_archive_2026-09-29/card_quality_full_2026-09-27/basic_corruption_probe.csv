@@ -1,0 +1,2 @@
+﻿case_id,card_id,mechanic,expected,observed,outcome
+BASIC-CORRUPTION-01,CS2_063,Spell resolution|Targeting|Trigger,Only enemy minion target; persists through opponent turn; destroyed at caster next turn start,target_restrictions=True;after_cast=True;opponent_turn_alive=True;caster_next_turn_destroyed=True,pass

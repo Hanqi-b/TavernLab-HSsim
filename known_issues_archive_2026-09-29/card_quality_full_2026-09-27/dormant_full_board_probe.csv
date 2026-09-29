@@ -1,0 +1,2 @@
+﻿case_id,mechanism,card_ids,expected,observed,outcome
+SECRET-BOARD-01,Secret / Summon / Dormant,EX1_136|EX1_110|BT_934,Cairne deathrattle fills sole open slot; Redemption stays set because board is full,"initial_field=7;dormant=True;after_field=7;after_ids=['EX1_110t', 'CS2_231', 'CS2_231', 'CS2_231', 'CS2_231', 'CS2_231', 'BT_934'];secret_zone=GRAVEYARD;secret_still_set=False",confirmed_error

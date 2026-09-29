@@ -1,0 +1,10 @@
+﻿card_id,case_id,expected,observed,outcome,notes
+CS2_196,CS2_196_boar,Battlecry summons exactly one 1/1 Beast Boar,hunter=PLAY;boar=CS2_boar:1/1:BEAST;field=2,pass,CardDefs.xml#CS2_196; fireplace/cards/classic/neutral_common.py:159; no prior effect test
+CS2_196,CS2_196_last_slot,Body fills seventh slot and Boar cannot exceed board limit,field=7;hunter=PLAY;boars=0,pass,CardDefs.xml#CS2_196; fireplace/cards/classic/neutral_common.py:159
+CS2_234,CS2_234_threshold,Only minions with at most 3 Attack targetable; selected one destroyed,"targets=(True, False, True, False);low=GRAVEYARD;high=PLAY;friendly=PLAY",pass,CardDefs.xml#CS2_234; fireplace/cards/classic/priest.py:189; tests/test_classic.py:2942 partial
+CS2_234,CS2_234_friendly,A friendly minion at threshold may also be destroyed,friendly_target=GRAVEYARD;spell=GRAVEYARD,pass,CardDefs.xml#CS2_234; fireplace/cards/classic/priest.py:189
+DS1_055,DS1_055_friendly_scope,Heal each friendly character by up to two; leave enemies unchanged,friendly_hero=27;enemy_hero=25;friendly_minions=4/5;enemy_minion=2;healer=PLAY,pass,CardDefs.xml#DS1_055; fireplace/cards/classic/neutral_common.py:187; no prior effect test
+EX1_360,EX1_360_high_attack,Set chosen minion Attack to one while leaving others unchanged,target_attack=1;untargeted_attack=4;spell=GRAVEYARD,pass,CardDefs.xml#EX1_360; fireplace/cards/classic/paladin.py:115; tests/test_classic.py:1638 partial
+EX1_360,EX1_360_zero_attack,Set a zero-Attack minion's Attack to one,totem_attack=1;zone=PLAY,pass,CardDefs.xml#EX1_360; fireplace/cards/classic/paladin.py:115
+EX1_371,EX1_371_absorb,Divine Shield absorbs first damage and then falls; second hit damages minion,"first_hit=(5, False);second_hit=(4, False);spell=GRAVEYARD",pass,CardDefs.xml#EX1_371; fireplace/cards/classic/paladin.py:150; no prior effect test
+EX1_371,EX1_371_friendly,Friendly minion can receive Divine Shield,friendly_shield=True;zone=PLAY,pass,CardDefs.xml#EX1_371; fireplace/cards/classic/paladin.py:150

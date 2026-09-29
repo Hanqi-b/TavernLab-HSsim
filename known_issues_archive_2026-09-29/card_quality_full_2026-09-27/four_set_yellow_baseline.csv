@@ -1,0 +1,316 @@
+﻿version,set,card_id,name_en,name_zh,status
+17.6.0.53261,Blackrock Mountain (BRM),BRM_001,Solemn Vigil,严正警戒,YELLOW
+17.6.0.53261,Blackrock Mountain (BRM),BRM_002,Flamewaker,火妖,YELLOW
+17.6.0.53261,Blackrock Mountain (BRM),BRM_003,Dragon's Breath,龙息术,YELLOW
+17.6.0.53261,Blackrock Mountain (BRM),BRM_004,Twilight Whelp,暮光雏龙,YELLOW
+17.6.0.53261,Blackrock Mountain (BRM),BRM_005,Demonwrath,恶魔之怒,YELLOW
+17.6.0.53261,Blackrock Mountain (BRM),BRM_006,Imp Gang Boss,小鬼首领,YELLOW
+17.6.0.53261,Blackrock Mountain (BRM),BRM_007,Gang Up,夜幕奇袭,YELLOW
+17.6.0.53261,Blackrock Mountain (BRM),BRM_008,Dark Iron Skulker,黑铁潜藏者,YELLOW
+17.6.0.53261,Blackrock Mountain (BRM),BRM_009,Volcanic Lumberer,火山邪木,YELLOW
+17.6.0.53261,Blackrock Mountain (BRM),BRM_010,Druid of the Flame,烈焰德鲁伊,YELLOW
+17.6.0.53261,Blackrock Mountain (BRM),BRM_011,Lava Shock,熔岩震击,YELLOW
+17.6.0.53261,Blackrock Mountain (BRM),BRM_012,Fireguard Destroyer,火焰驱逐者,YELLOW
+17.6.0.53261,Blackrock Mountain (BRM),BRM_013,Quick Shot,快速射击,YELLOW
+17.6.0.53261,Blackrock Mountain (BRM),BRM_014,Core Rager,熔火怒犬,YELLOW
+17.6.0.53261,Blackrock Mountain (BRM),BRM_015,Revenge,复仇打击,YELLOW
+17.6.0.53261,Blackrock Mountain (BRM),BRM_016,Axe Flinger,掷斧者,YELLOW
+17.6.0.53261,Blackrock Mountain (BRM),BRM_017,Resurrect,复活术,YELLOW
+17.6.0.53261,Blackrock Mountain (BRM),BRM_018,Dragon Consort,龙王配偶,YELLOW
+17.6.0.53261,Blackrock Mountain (BRM),BRM_019,Grim Patron,恐怖的奴隶主,YELLOW
+17.6.0.53261,Blackrock Mountain (BRM),BRM_020,Dragonkin Sorcerer,龙人巫师,YELLOW
+17.6.0.53261,Blackrock Mountain (BRM),BRM_022,Dragon Egg,龙蛋,YELLOW
+17.6.0.53261,Blackrock Mountain (BRM),BRM_024,Drakonid Crusher,龙人打击者,YELLOW
+17.6.0.53261,Blackrock Mountain (BRM),BRM_025,Volcanic Drake,火山幼龙,YELLOW
+17.6.0.53261,Blackrock Mountain (BRM),BRM_026,Hungry Dragon,饥饿的巨龙,YELLOW
+17.6.0.53261,Blackrock Mountain (BRM),BRM_027,Majordomo Executus,管理者埃克索图斯,YELLOW
+17.6.0.53261,Blackrock Mountain (BRM),BRM_029,Rend Blackhand,雷德·黑手,YELLOW
+17.6.0.53261,Blackrock Mountain (BRM),BRM_030,Nefarian,奈法利安,YELLOW
+17.6.0.53261,Blackrock Mountain (BRM),BRM_031,Chromaggus,克洛玛古斯,YELLOW
+17.6.0.53261,Blackrock Mountain (BRM),BRM_033,Blackwing Technician,黑翼技师,YELLOW
+17.6.0.53261,Blackrock Mountain (BRM),BRM_034,Blackwing Corruptor,黑翼腐蚀者,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_001,Flamecannon,烈焰轰击,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_002,Snowchugger,碎雪机器人,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_003,Unstable Portal,不稳定的传送门,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_004,Goblin Blastmage,地精炎术师,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_005,Echo of Medivh,麦迪文的残影,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_006,Mechwarper,机械跃迁者,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_007,Flame Leviathan,烈焰巨兽,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_008,Lightbomb,圣光炸弹,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_009,Shadowbomber,暗影投弹手,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_010,Velen's Chosen,维伦的恩泽,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_011,Shrinkmeister,缩小射线工程师,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_012,Light of the Naaru,纳鲁之光,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_013,Cogmaster,齿轮大师,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_014,Vol'jin,沃金,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_015,Darkbomb,暗色炸弹,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_016,Fel Reaver,魔能机甲,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_017,Call Pet,召唤宠物,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_018,Queen of Pain,痛苦女王,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_019,Demonheart,恶魔之心,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_020,Fel Cannon,邪能火炮,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_021,Mal'Ganis,玛尔加尼斯,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_022,Tinker's Sharpsword Oil,修补匠的磨刀油,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_023,Goblin Auto-Barber,地精自动理发装置,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_024,Cogmaster's Wrench,齿轮大师的扳手,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_025,One-eyed Cheat,独眼欺诈者,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_026,Feign Death,假死,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_027,Iron Sensei,钢铁武道家,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_028,Trade Prince Gallywix,加里维克斯,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_029,Ancestor's Call,先祖召唤,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_030,Anodized Robo Cub,电镀机械熊仔,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_031,Recycle,回收,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_032,Grove Tender,林地树妖,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_033,Tree of Life,生命之树,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_034,Mech-Bear-Cat,机械野兽,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_036,Powermace,动力战锤,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_037,Whirling Zap-o-matic,自动漩涡打击装置,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_038,Crackle,连环爆裂,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_039,Vitality Totem,活力图腾,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_040,Siltfin Spiritwalker,沙鳞灵魂行者,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_041,Dark Wispers,黑暗私语,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_042,Neptulon,耐普图隆,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_043,Glaivezooka,重型刃弩,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_045,Imp-losion,小鬼爆破,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_046,King of Beasts,百兽之王,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_047,Sabotage,暗中破坏,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_048,Metaltooth Leaper,金刚刃牙兽,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_049,Gahz'rilla,加兹瑞拉,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_050,Bouncing Blade,弹射之刃,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_051,Warbot,战斗机器人,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_052,Crush,重碾,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_053,Shieldmaiden,盾甲侍女,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_054,Ogre Warmaul,食人魔战槌,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_055,Screwjank Clunker,废旧螺栓机甲,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_056,Iron Juggernaut,钢铁战蝎,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_057,Seal of Light,光明圣印,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_058,Shielded Minibot,护盾机器人,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_059,Coghammer,齿轮光锤,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_060,Quartermaster,军需官,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_061,Muster for Battle,作战动员,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_062,Cobalt Guardian,钴制卫士,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_063,Bolvar Fordragon,伯瓦尔·弗塔根,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_065,Ogre Brute,食人魔步兵,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_066,Dunemaul Shaman,砂槌萨满祭司,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_067,Stonesplinter Trogg,碎石穴居人,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_068,Burly Rockjaw Trogg,石腭穴居人壮汉,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_069,Antique Healbot,老式治疗机器人,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_072,Shadowboxer,暗影打击装甲,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_073,Cobra Shot,眼镜蛇射击,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_074,Kezan Mystic,科赞秘术师,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_075,Ship's Cannon,船载火炮,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_076,Explosive Sheep,自爆绵羊,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_077,Anima Golem,心能魔像,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_078,Mechanical Yeti,机械雪人,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_079,Force-Tank MAX,强袭坦克,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_080,Druid of the Fang,尖牙德鲁伊,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_081,Gilblin Stalker,海地精猎手,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_082,Clockwork Gnome,发条侏儒,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_083,Upgraded Repair Bot,高级修理机器人,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_084,Flying Machine,飞行器,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_085,Annoy-o-Tron,吵吵机器人,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_086,Siege Engine,重型攻城战车,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_087,Steamwheedle Sniper,热砂港狙击手,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_088,Ogre Ninja,食人魔忍者,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_089,Illuminator,明光祭司,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_090,Madder Bomber,疯狂爆破者,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_091,Arcane Nullifier X-21,施法者克星X-21,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_092,Gnomish Experimenter,侏儒实验技师,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_093,Target Dummy,活动假人,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_094,Jeeves,基维斯,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_095,Goblin Sapper,地精工兵,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_096,Piloted Shredder,载人收割机,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_097,Lil' Exorcist,小个子驱魔者,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_098,Gnomeregan Infantry,诺莫瑞根步兵,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_099,Bomb Lobber,榴弹投手,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_100,Floating Watcher,漂浮观察者,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_101,Scarlet Purifier,血色净化者,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_102,Tinkertown Technician,工匠镇技师,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_103,Micro Machine,微型战斗机甲,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_104,Hobgoblin,大胖,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_105,Piloted Sky Golem,载人飞天魔像,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_106,Junkbot,回收机器人,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_107,Enhance-o Mechano,强化机器人,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_108,Recombobulator,侏儒变形师,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_109,Mini-Mage,小个子法师,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_110,Dr. Boom,砰砰博士,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_111,Mimiron's Head,米米尔隆的头部,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_112,Mogor the Ogre,食人魔勇士穆戈尔,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_113,Foe Reaper 4000,死神4000型,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_114,Sneed's Old Shredder,斯尼德的伐木机,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_115,Toshley,托什雷,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_116,Mekgineer Thermaplugg,瑟玛普拉格,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_117,Gazlowe,加兹鲁维,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_118,Troggzor the Earthinator,颤地者特罗格佐尔,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_119,Blingtron 3000,布林顿3000型,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_120,Hemet Nesingwary,赫米特·奈辛瓦里,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_121,Clockwork Giant,发条巨人,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_122,Wee Spellstopper,小个子扰咒师,YELLOW
+17.6.0.53261,Goblins vs Gnomes (GVG),GVG_123,Soot Spewer,煤烟喷吐装置,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_002,Forgotten Torch,老旧的火把,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_003,Ethereal Conjurer,虚灵巫师,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_006,Museum Curator,博物馆馆长,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_007,Curse of Rafaam,拉法姆的诅咒,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_009,Obsidian Destroyer,黑曜石毁灭者,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_010,Pit Snake,深渊巨蟒,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_011,Reno Jackson,雷诺·杰克逊,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_016,Rumbling Elemental,顽石元素,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_017,Keeper of Uldaman,奥达曼守护者,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_018,Tunnel Trogg,坑道穴居人,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_019,Unearthed Raptor,石化迅猛龙,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_020,Desert Camel,大漠沙驼,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_021,Dart Trap,毒镖陷阱,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_022,Fierce Monkey,凶暴猿猴,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_023,Dark Peddler,黑市摊贩,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_026,Anyfin Can Happen,亡者归来,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_027,Sacred Trial,审判,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_029,Jeweled Scarab,宝石甲虫,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_038,Naga Sea Witch,纳迦海巫,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_039,Gorillabot A-3,A3型机械金刚,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_046,Huge Toad,巨型蟾蜍,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_047,Tomb Spider,墓穴蜘蛛,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_050,Mounted Raptor,骑乘迅猛龙,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_051,Jungle Moonkin,丛林枭兽,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_053,Djinni of Zephyrs,西风灯神,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_073,Fossilized Devilsaur,石化魔暴龙,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_076,Sir Finley Mrrgglton,芬利·莫格顿爵士,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_077,Brann Bronzebeard,布莱恩·铜须,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_079,Elise Starseeker,伊莉斯·逐星,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_086,Summoning Stone,集合石,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_089,Wobbling Runts,摇摆的俾格米,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_092,Arch-Thief Rafaam,虚灵大盗拉法姆,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_104,Entomb,埋葬,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_105,Explorer's Hat,探险帽,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_107,Eerie Statue,诡异的雕像,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_110,Ancient Shade,远古暗影,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_111,Excavated Evil,极恶之咒,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_113,Everyfin is Awesome,鱼人恩典,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_115,Raven Idol,乌鸦神像,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_116,Reliquary Seeker,遗物搜寻者,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_118,Cursed Blade,诅咒之刃,YELLOW
+17.6.0.53261,League of Explorers (LOE),LOE_119,Animated Armor,复活的铠甲,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_001,Flame Lance,炎枪术,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_002,Effigy,轮回,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_004,Arcane Blast,奥术冲击,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_005,Polymorph: Boar,变形术：野猪,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_006,Dalaran Aspirant,达拉然铁骑士,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_007,Spellslinger,嗜法者,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_008,Coldarra Drake,考达拉幼龙,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_009,Rhonin,罗宁,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_010,Ram Wrangler,暴躁的牧羊人,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_011,Holy Champion,神圣勇士,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_012,Spawn of Shadows,暗影子嗣,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_013,Power Word: Glory,真言术：耀,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_014,Shadowfiend,暗影魔,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_015,Convert,策反,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_016,Confuse,迷乱,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_017,Twilight Guardian,暮光守护者,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_018,Confessor Paletress,银色神官帕尔崔丝,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_019,Dreadsteed,恐惧战马,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_021,Tiny Knight of Evil,小鬼骑士,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_022,Fist of Jaraxxus,加拉克苏斯之拳,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_023,Void Crusher,虚空碾压者,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_024,Demonfuse,恶魔融合,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_025,Dark Bargain,黑暗交易,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_026,Wrathguard,愤怒卫士,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_027,Wilfred Fizzlebang,威尔弗雷德·菲兹班,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_028,Shado-Pan Rider,影踪骁骑兵,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_029,Buccaneer,锈水海盗,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_030,Undercity Valiant,幽暗城勇士,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_031,Cutpurse,窃贼,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_032,Shady Dealer,走私商贩,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_033,Burgle,剽窃,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_034,Poisoned Blade,淬毒利刃,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_035,Beneath the Grounds,危机四伏,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_036,Anub'arak,阿努巴拉克,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_037,Living Roots,活体根须,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_038,Darnassus Aspirant,达纳苏斯豹骑士,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_039,Savage Combatant,狂野争斗者,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_040,Wildwalker,荒野行者,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_041,Knight of the Wild,荒野骑士,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_042,Druid of the Saber,刃牙德鲁伊,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_043,Astral Communion,星界沟通,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_044,Mulch,腐根,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_045,Aviana,艾维娜,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_046,Tuskarr Totemic,海象人图腾师,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_047,Draenei Totemcarver,德莱尼图腾师,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_048,Healing Wave,治疗波,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_049,Thunder Bluff Valiant,雷霆崖勇士,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_050,Charged Hammer,灌魔之锤,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_051,Elemental Destruction,元素毁灭,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_053,Ancestral Knowledge,先祖知识,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_054,The Mistcaller,唤雾者伊戈瓦尔,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_055,Flash Heal,快速治疗,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_056,Powershot,强风射击,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_057,Stablemaster,兽栏大师,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_058,King's Elekk,皇家雷象,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_059,Brave Archer,神勇弓箭手,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_060,Bear Trap,捕熊陷阱,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_061,Lock and Load,子弹上膛,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_062,Ball of Spiders,天降蛛群,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_063,Acidmaw,酸喉,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_063t,Dreadscale,恐鳞,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_064,Bash,怒袭,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_065,King's Defender,国王护卫者,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_066,Orgrimmar Aspirant,奥格瑞玛狼骑士,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_067,Magnataur Alpha,猛犸人头领,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_068,Bolster,加固,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_069,Sparring Partner,格斗陪练师,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_070,Skycap'n Kragg,天空上尉库拉格,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_071,Alexstrasza's Champion,阿莱克丝塔萨的勇士,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_072,Varian Wrynn,瓦里安·乌瑞恩,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_074,Seal of Champions,英勇圣印,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_075,Warhorse Trainer,战马训练师,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_076,Murloc Knight,鱼人骑士,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_077,Argent Lance,白银之枪,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_078,Enter the Coliseum,精英对决,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_079,Mysterious Challenger,神秘挑战者,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_080,Garrison Commander,要塞指挥官,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_081,Eadric the Pure,纯洁者耶德瑞克,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_082,Lowly Squire,低阶侍从,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_083,Dragonhawk Rider,龙鹰骑士,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_084,Lance Carrier,持枪侍从,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_085,Maiden of the Lake,湖之仙女,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_086,Saboteur,破坏者,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_087,Argent Horserider,银色骑手,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_088,Mogor's Champion,穆戈尔的勇士,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_089,Boneguard Lieutenant,白骨卫士军官,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_090,Mukla's Champion,穆克拉的勇士,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_091,Tournament Medic,赛场医师,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_093,Frigid Snobold,雪地狗头人,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_094,Flame Juggler,火焰杂耍者,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_095,Silent Knight,沉默的骑士,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_096,Clockwork Knight,发条骑士,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_097,Tournament Attendee,赛场观众,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_098,Sideshow Spelleater,杂耍吞法者,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_099,Kodorider,科多兽骑手,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_100,Silver Hand Regent,白银之手教官,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_103,North Sea Kraken,北海海怪,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_104,Tuskarr Jouster,海象人龟骑士,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_105,Injured Kvaldir,受伤的克瓦迪尔,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_106,Light's Champion,圣光勇士,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_108,Armored Warhorse,重甲战马,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_109,Argent Watchman,银色警卫,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_110,Coliseum Manager,角斗场主管,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_111,Refreshment Vendor,零食商贩,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_112,Master Jouster,大师级枪骑士,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_113,Recruiter,征募官,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_114,Evil Heckler,邪灵拷问者,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_115,Fencing Coach,击剑教头,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_116,Wyrmrest Agent,龙眠教官,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_117,Master of Ceremonies,庆典司仪,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_118,Grand Crusader,十字军统领,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_119,Kvaldir Raider,克瓦迪尔劫掠者,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_120,Frost Giant,冰霜巨人,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_121,Crowd Favorite,人气选手,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_122,Gormok the Impaler,穿刺者戈莫克,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_123,Chillmaw,冰喉,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_124,Bolf Ramshield,博尔夫·碎盾,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_125,Icehowl,冰吼,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_127,Nexus-Champion Saraad,虚灵勇士萨兰德,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_128,The Skeleton Knight,骷髅骑士,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_129,Fjola Lightbane,光明邪使菲奥拉,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_130,Sea Reaver,破海者,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_131,Eydis Darkbane,黑暗邪使艾蒂丝,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_132,Justicar Trueheart,裁决者图哈特,YELLOW
+17.6.0.53261,The Grand Tournament (TGT),AT_133,Gadgetzan Jouster,加基森枪骑士,YELLOW

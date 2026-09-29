@@ -188,7 +188,10 @@ class BaseGame(Entity):
     def process_deaths(self):
         type = BlockType.DEATHS
 
-        if any(card.dead for card in self.live_entities):
+        if any(
+            card.dead and not getattr(card, "_pending_death", False)
+            for card in self.live_entities
+        ):
             self.action_start(type, self, 0, None)
             self.trigger(self, [Death(self.live_entities)], event_args=None)
             self.action_end(type, self)

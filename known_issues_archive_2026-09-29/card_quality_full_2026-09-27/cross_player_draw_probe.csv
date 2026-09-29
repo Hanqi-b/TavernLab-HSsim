@@ -1,0 +1,2 @@
+﻿case_id,mechanism,card_ids,expected,observed,outcome
+DRAW-01,Draw / Discard,EX1_050,both players hand/deck +2/-2; each player's cards_drawn_this_turn +2,"actual_draw={'Player2': (2, 2), 'Player1': (2, 2)};counter_change={'Player2': 4, 'Player1': 0};oracle_zone=PLAY",confirmed_error

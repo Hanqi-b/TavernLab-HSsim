@@ -1,0 +1,539 @@
+﻿version,set,mechanism,candidate_entities,ordinary_collectible,green,yellow,red,red_card_ids,evidence_note
+17.6.0.53261,Basic (BASIC),Aura,7,7,7,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Basic (BASIC),Battlecry,25,25,23,0,2,BT_142|BT_323,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Basic (BASIC),Charge,6,6,6,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Basic (BASIC),Choose One,1,1,0,0,1,BT_323,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Basic (BASIC),Continuous effect / Update,7,7,7,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Basic (BASIC),Draw / Discard,15,15,14,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Basic (BASIC),Lifesteal,2,2,2,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Basic (BASIC),Random effects,8,8,8,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Basic (BASIC),Spell Damage,4,4,3,0,1,CS2_142,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Basic (BASIC),Spell resolution,73,73,71,1,1,EX1_194,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Basic (BASIC),Summon,8,8,8,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Basic (BASIC),Targeting,51,51,50,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Basic (BASIC),Taunt,9,9,9,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Basic (BASIC),Transform,2,2,2,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Basic (BASIC),Trigger,6,6,6,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Basic (BASIC),Vanilla,9,9,9,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Basic (BASIC),Weapon,6,6,6,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Classic (EXPERT1),Aura,9,9,9,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Classic (EXPERT1),Battlecry,55,55,54,0,1,EX1_584,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Classic (EXPERT1),Charge,4,4,4,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Classic (EXPERT1),Choose One,10,10,10,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Classic (EXPERT1),Combo,8,8,7,0,1,NEW1_005,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Classic (EXPERT1),Continuous effect / Update,14,14,13,0,1,EX1_560,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Classic (EXPERT1),Cost modification,11,11,11,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Classic (EXPERT1),Deathrattle,9,9,8,0,1,EX1_577,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Classic (EXPERT1),Divine Shield,7,7,7,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Classic (EXPERT1),Draw / Discard,22,22,20,1,1,NEW1_036,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Classic (EXPERT1),Overload,9,9,9,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Classic (EXPERT1),Poisonous,2,2,2,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Classic (EXPERT1),Random effects,24,24,22,0,2,EX1_182|EX1_407,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Classic (EXPERT1),Secret,14,14,12,0,2,EX1_130|EX1_136,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Classic (EXPERT1),Silence,5,5,4,0,1,EX1_332,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Classic (EXPERT1),Spell Damage,3,3,1,0,2,EX1_563|EX1_584,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Classic (EXPERT1),Spell resolution,81,81,75,1,5,EX1_130|EX1_182|EX1_332|EX1_407|NEW1_036,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Classic (EXPERT1),Stealth,6,6,6,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Classic (EXPERT1),Summon,33,33,29,1,3,EX1_130|EX1_509|EX1_577,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Classic (EXPERT1),Targeting,62,62,60,0,2,EX1_130|NEW1_005,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Classic (EXPERT1),Taunt,12,12,12,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Classic (EXPERT1),Transform,2,2,2,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Classic (EXPERT1),Trigger,53,53,46,3,4,EX1_080|EX1_130|EX1_136|EX1_509,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Classic (EXPERT1),Unclassified effect,5,5,5,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Classic (EXPERT1),Untargetable,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Classic (EXPERT1),Vanilla,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Classic (EXPERT1),Weapon,7,7,7,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Classic (EXPERT1),Windfury,6,6,6,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Hall of Fame (HOF),Battlecry,13,13,10,0,3,EX1_050|EX1_085|EX1_116,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Hall of Fame (HOF),Charge,3,3,2,0,1,EX1_116,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Hall of Fame (HOF),Conditional stats,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Hall of Fame (HOF),Continuous effect / Update,3,3,3,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Hall of Fame (HOF),Cost modification,2,2,2,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Hall of Fame (HOF),Deathrattle,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Hall of Fame (HOF),Draw / Discard,9,9,7,0,2,EX1_050|EX1_161,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Hall of Fame (HOF),Random effects,6,6,5,0,1,EX1_085,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Hall of Fame (HOF),Secret,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Hall of Fame (HOF),Silence,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Hall of Fame (HOF),Spell Damage,2,2,2,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Hall of Fame (HOF),Spell resolution,11,11,9,0,2,EX1_161|NEW1_004,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Hall of Fame (HOF),Summon,3,3,2,0,1,EX1_116,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Hall of Fame (HOF),Targeting,7,7,6,0,1,EX1_161,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Hall of Fame (HOF),Taunt,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Hall of Fame (HOF),Trigger,6,6,6,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Curse of Naxxramas (NAXX),Aura,2,2,2,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Curse of Naxxramas (NAXX),Battlecry,4,4,3,0,1,FP1_016,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Curse of Naxxramas (NAXX),Continuous effect / Update,2,2,2,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Curse of Naxxramas (NAXX),Cost modification,2,2,2,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Curse of Naxxramas (NAXX),Deathrattle,15,15,12,0,3,FP1_023|FP1_026|FP1_029,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Curse of Naxxramas (NAXX),Draw / Discard,1,1,0,0,1,FP1_029,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Curse of Naxxramas (NAXX),Poisonous,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Curse of Naxxramas (NAXX),Random effects,5,5,3,1,1,FP1_026,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Curse of Naxxramas (NAXX),Secret,2,2,2,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Curse of Naxxramas (NAXX),Silence,1,1,0,0,1,FP1_016,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Curse of Naxxramas (NAXX),Spell resolution,4,4,2,0,2,FP1_019|FP1_025,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Curse of Naxxramas (NAXX),Stealth,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Curse of Naxxramas (NAXX),Summon,13,13,11,0,2,FP1_019|FP1_025,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Curse of Naxxramas (NAXX),Targeting,1,1,0,0,1,FP1_025,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Curse of Naxxramas (NAXX),Taunt,3,3,3,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Curse of Naxxramas (NAXX),Trigger,7,7,7,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Curse of Naxxramas (NAXX),Untargetable,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Curse of Naxxramas (NAXX),Weapon,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Goblins vs Gnomes (GVG),Aura,3,3,3,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Goblins vs Gnomes (GVG),Battlecry,30,30,21,7,2,GVG_046|GVG_048,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Goblins vs Gnomes (GVG),Charge,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Goblins vs Gnomes (GVG),Choose One,3,3,3,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Goblins vs Gnomes (GVG),Combo,2,2,1,0,1,GVG_022,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Goblins vs Gnomes (GVG),Continuous effect / Update,7,7,6,0,1,GVG_087,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Goblins vs Gnomes (GVG),Cost modification,5,5,3,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Goblins vs Gnomes (GVG),Deathrattle,9,9,4,5,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Goblins vs Gnomes (GVG),Divine Shield,3,3,3,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Goblins vs Gnomes (GVG),Draw / Discard,5,5,5,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Goblins vs Gnomes (GVG),Lifesteal,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Goblins vs Gnomes (GVG),Overload,4,4,3,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Goblins vs Gnomes (GVG),Random effects,30,30,13,16,1,GVG_022,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Goblins vs Gnomes (GVG),Spell Damage,3,3,3,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Goblins vs Gnomes (GVG),Spell resolution,23,23,18,4,1,GVG_022,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Goblins vs Gnomes (GVG),Stealth,3,3,3,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Goblins vs Gnomes (GVG),Summon,16,16,12,4,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Goblins vs Gnomes (GVG),Targeting,19,19,17,1,1,GVG_087,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Goblins vs Gnomes (GVG),Taunt,7,7,6,0,1,GVG_046,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Goblins vs Gnomes (GVG),Transform,3,3,3,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Goblins vs Gnomes (GVG),Trigger,36,36,31,3,2,GVG_054|GVG_113,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Goblins vs Gnomes (GVG),Unclassified effect,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Goblins vs Gnomes (GVG),Untargetable,2,2,2,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Goblins vs Gnomes (GVG),Vanilla,4,4,4,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Goblins vs Gnomes (GVG),Weapon,5,5,2,2,1,GVG_054,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Goblins vs Gnomes (GVG),Windfury,3,3,3,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Blackrock Mountain (BRM),Battlecry,11,11,10,0,1,BRM_029,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Blackrock Mountain (BRM),Choose One,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Blackrock Mountain (BRM),Cost modification,6,6,6,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Blackrock Mountain (BRM),Deathrattle,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Blackrock Mountain (BRM),Draw / Discard,3,3,3,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Blackrock Mountain (BRM),Overload,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Blackrock Mountain (BRM),Random effects,4,4,4,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Blackrock Mountain (BRM),Spell resolution,8,8,8,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Blackrock Mountain (BRM),Summon,6,6,6,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Blackrock Mountain (BRM),Targeting,7,7,6,0,1,BRM_029,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Blackrock Mountain (BRM),Taunt,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Blackrock Mountain (BRM),Transform,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Blackrock Mountain (BRM),Trigger,8,8,7,0,1,BRM_002,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Grand Tournament (TGT),Aura,3,3,3,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Grand Tournament (TGT),Battlecry,38,38,37,0,1,AT_069,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Grand Tournament (TGT),Charge,3,3,3,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Grand Tournament (TGT),Choose One,2,2,2,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Grand Tournament (TGT),Combo,2,2,2,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Grand Tournament (TGT),Continuous effect / Update,5,5,4,0,1,AT_008,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Grand Tournament (TGT),Cost modification,14,14,14,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Grand Tournament (TGT),Deathrattle,7,7,7,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Grand Tournament (TGT),Divine Shield,2,2,2,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Grand Tournament (TGT),Draw / Discard,10,10,10,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Grand Tournament (TGT),Hero Power modification,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Grand Tournament (TGT),Overload,3,3,3,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Grand Tournament (TGT),Random effects,17,17,17,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Grand Tournament (TGT),Secret,3,3,3,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Grand Tournament (TGT),Silence,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Grand Tournament (TGT),Spell Damage,4,4,4,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Grand Tournament (TGT),Spell resolution,28,28,28,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Grand Tournament (TGT),Stealth,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Grand Tournament (TGT),Summon,19,19,19,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Grand Tournament (TGT),Targeting,25,25,24,0,1,AT_069,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Grand Tournament (TGT),Taunt,3,3,3,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Grand Tournament (TGT),Transform,2,2,2,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Grand Tournament (TGT),Trigger,23,23,22,0,1,AT_067,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Grand Tournament (TGT),Unclassified effect,14,14,11,0,3,AT_049|AT_090|AT_109,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Grand Tournament (TGT),Vanilla,4,4,4,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Grand Tournament (TGT),Weapon,4,4,4,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,League of Explorers (LOE),Aura,2,2,2,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,League of Explorers (LOE),Battlecry,17,17,17,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,League of Explorers (LOE),Choose One,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,League of Explorers (LOE),Continuous effect / Update,6,6,6,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,League of Explorers (LOE),Cost modification,2,2,2,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,League of Explorers (LOE),Deathrattle,5,5,4,0,1,LOE_061,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,League of Explorers (LOE),Discover / Choice,9,9,9,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,League of Explorers (LOE),Poisonous,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,League of Explorers (LOE),Random effects,15,15,13,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,League of Explorers (LOE),Secret,2,2,2,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,League of Explorers (LOE),Spell Damage,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,League of Explorers (LOE),Spell resolution,10,10,10,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,League of Explorers (LOE),Summon,6,6,5,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,League of Explorers (LOE),Targeting,5,5,5,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,League of Explorers (LOE),Taunt,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,League of Explorers (LOE),Trigger,8,8,7,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,League of Explorers (LOE),Vanilla,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,League of Explorers (LOE),Weapon,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Whispers of the Old Gods (OG),Aura,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Whispers of the Old Gods (OG),Battlecry,44,44,0,44,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Whispers of the Old Gods (OG),Choose One,4,4,0,4,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Whispers of the Old Gods (OG),Combo,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Whispers of the Old Gods (OG),Continuous effect / Update,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Whispers of the Old Gods (OG),Cost modification,5,5,0,5,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Whispers of the Old Gods (OG),Deathrattle,20,20,3,15,2,OG_158|OG_256,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Whispers of the Old Gods (OG),Discover / Choice,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Whispers of the Old Gods (OG),Divine Shield,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Whispers of the Old Gods (OG),Draw / Discard,6,6,0,6,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Whispers of the Old Gods (OG),Overload,2,2,2,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Whispers of the Old Gods (OG),Random effects,22,22,0,22,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Whispers of the Old Gods (OG),Spell Damage,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Whispers of the Old Gods (OG),Spell resolution,29,29,0,29,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Whispers of the Old Gods (OG),Stealth,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Whispers of the Old Gods (OG),Summon,29,29,0,29,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Whispers of the Old Gods (OG),Targeting,19,19,0,19,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Whispers of the Old Gods (OG),Taunt,13,13,0,13,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Whispers of the Old Gods (OG),Transform,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Whispers of the Old Gods (OG),Trigger,22,22,0,22,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Whispers of the Old Gods (OG),Unclassified effect,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Whispers of the Old Gods (OG),Untargetable,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Whispers of the Old Gods (OG),Vanilla,5,5,5,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Whispers of the Old Gods (OG),Weapon,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Whispers of the Old Gods (OG),Windfury,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,One Night in Karazhan (KARA),Aura,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,One Night in Karazhan (KARA),Battlecry,19,19,0,19,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,One Night in Karazhan (KARA),Continuous effect / Update,4,4,0,4,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,One Night in Karazhan (KARA),Cost modification,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,One Night in Karazhan (KARA),Deathrattle,4,4,3,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,One Night in Karazhan (KARA),Discover / Choice,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,One Night in Karazhan (KARA),Draw / Discard,5,5,0,5,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,One Night in Karazhan (KARA),Random effects,14,14,0,14,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,One Night in Karazhan (KARA),Secret,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,One Night in Karazhan (KARA),Silence,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,One Night in Karazhan (KARA),Spell Damage,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,One Night in Karazhan (KARA),Spell resolution,9,9,0,9,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,One Night in Karazhan (KARA),Stealth,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,One Night in Karazhan (KARA),Summon,20,20,0,20,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,One Night in Karazhan (KARA),Targeting,8,8,0,8,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,One Night in Karazhan (KARA),Taunt,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,One Night in Karazhan (KARA),Trigger,7,7,0,7,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,One Night in Karazhan (KARA),Vanilla,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,One Night in Karazhan (KARA),Weapon,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),Battlecry,56,56,0,56,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),Choose One,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),Combo,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),Continuous effect / Update,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),Cost modification,4,4,0,4,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),Deathrattle,11,11,3,8,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),Discover / Choice,6,6,0,6,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),Divine Shield,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),Draw / Discard,8,8,0,8,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),Lifesteal,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),Overload,3,3,3,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),Random effects,23,23,0,23,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),Secret,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),Silence,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),Spell Damage,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),Spell resolution,30,30,0,30,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),Stealth,4,4,0,4,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),Summon,23,23,0,23,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),Targeting,22,22,0,22,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),Taunt,11,11,0,11,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),Transform,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),Trigger,29,29,0,29,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),Vanilla,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),Weapon,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),Windfury,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Journey to Un'Goro (UNGORO),Aura,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Journey to Un'Goro (UNGORO),Battlecry,50,50,0,50,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Journey to Un'Goro (UNGORO),Charge,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Journey to Un'Goro (UNGORO),Choose One,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Journey to Un'Goro (UNGORO),Combo,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Journey to Un'Goro (UNGORO),Continuous effect / Update,5,5,0,5,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Journey to Un'Goro (UNGORO),Cost modification,4,4,0,4,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Journey to Un'Goro (UNGORO),Deathrattle,15,15,1,13,1,UNG_037,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Journey to Un'Goro (UNGORO),Discover / Choice,11,11,0,11,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Journey to Un'Goro (UNGORO),Draw / Discard,7,7,0,7,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Journey to Un'Goro (UNGORO),Overload,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Journey to Un'Goro (UNGORO),Poisonous,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Journey to Un'Goro (UNGORO),Quest,9,9,0,9,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Journey to Un'Goro (UNGORO),Random effects,21,21,0,21,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Journey to Un'Goro (UNGORO),Secret,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Journey to Un'Goro (UNGORO),Spell resolution,40,40,0,40,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Journey to Un'Goro (UNGORO),Stealth,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Journey to Un'Goro (UNGORO),Summon,24,24,0,24,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Journey to Un'Goro (UNGORO),Targeting,24,24,0,24,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Journey to Un'Goro (UNGORO),Taunt,16,16,0,16,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Journey to Un'Goro (UNGORO),Transform,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Journey to Un'Goro (UNGORO),Trigger,16,16,0,16,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Journey to Un'Goro (UNGORO),Unclassified effect,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Journey to Un'Goro (UNGORO),Untargetable,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Journey to Un'Goro (UNGORO),Vanilla,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Journey to Un'Goro (UNGORO),Weapon,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Journey to Un'Goro (UNGORO),Windfury,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Knights of the Frozen Throne (ICECROWN),Aura,5,5,0,5,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Knights of the Frozen Throne (ICECROWN),Battlecry,43,43,0,43,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Knights of the Frozen Throne (ICECROWN),Charge,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Knights of the Frozen Throne (ICECROWN),Choose One,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Knights of the Frozen Throne (ICECROWN),Combo,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Knights of the Frozen Throne (ICECROWN),Conditional stats,1,1,0,0,1,ICC_841,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Knights of the Frozen Throne (ICECROWN),Continuous effect / Update,7,7,0,6,1,ICC_841,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Knights of the Frozen Throne (ICECROWN),Cost modification,6,6,0,6,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Knights of the Frozen Throne (ICECROWN),Deathrattle,16,16,0,16,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Knights of the Frozen Throne (ICECROWN),Discover / Choice,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Knights of the Frozen Throne (ICECROWN),Divine Shield,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Knights of the Frozen Throne (ICECROWN),Draw / Discard,8,8,0,8,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Knights of the Frozen Throne (ICECROWN),Lifesteal,8,8,0,8,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Knights of the Frozen Throne (ICECROWN),Overload,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Knights of the Frozen Throne (ICECROWN),Poisonous,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Knights of the Frozen Throne (ICECROWN),Random effects,19,19,0,19,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Knights of the Frozen Throne (ICECROWN),Secret,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Knights of the Frozen Throne (ICECROWN),Spell Damage,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Knights of the Frozen Throne (ICECROWN),Spell resolution,31,31,0,31,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Knights of the Frozen Throne (ICECROWN),Summon,27,27,0,27,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Knights of the Frozen Throne (ICECROWN),Targeting,29,29,0,29,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Knights of the Frozen Throne (ICECROWN),Taunt,7,7,0,7,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Knights of the Frozen Throne (ICECROWN),Transform,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Knights of the Frozen Throne (ICECROWN),Trigger,26,26,0,26,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Knights of the Frozen Throne (ICECROWN),Untargetable,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Knights of the Frozen Throne (ICECROWN),Vanilla,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Knights of the Frozen Throne (ICECROWN),Weapon,4,4,0,4,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Kobolds & Catacombs (LOOTAPALOOZA),Battlecry,44,44,0,44,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Kobolds & Catacombs (LOOTAPALOOZA),Combo,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Kobolds & Catacombs (LOOTAPALOOZA),Continuous effect / Update,7,7,0,7,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Kobolds & Catacombs (LOOTAPALOOZA),Cost modification,6,6,0,6,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Kobolds & Catacombs (LOOTAPALOOZA),Deathrattle,19,19,0,19,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Kobolds & Catacombs (LOOTAPALOOZA),Discover / Choice,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Kobolds & Catacombs (LOOTAPALOOZA),Divine Shield,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Kobolds & Catacombs (LOOTAPALOOZA),Draw / Discard,8,8,0,8,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Kobolds & Catacombs (LOOTAPALOOZA),Lifesteal,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Kobolds & Catacombs (LOOTAPALOOZA),Overload,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Kobolds & Catacombs (LOOTAPALOOZA),Poisonous,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Kobolds & Catacombs (LOOTAPALOOZA),Random effects,23,23,0,23,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Kobolds & Catacombs (LOOTAPALOOZA),Secret,5,5,0,5,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Kobolds & Catacombs (LOOTAPALOOZA),Spell resolution,39,39,0,39,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Kobolds & Catacombs (LOOTAPALOOZA),Stealth,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Kobolds & Catacombs (LOOTAPALOOZA),Summon,30,30,0,30,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Kobolds & Catacombs (LOOTAPALOOZA),Targeting,24,24,0,24,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Kobolds & Catacombs (LOOTAPALOOZA),Taunt,10,10,0,10,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Kobolds & Catacombs (LOOTAPALOOZA),Transform,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Kobolds & Catacombs (LOOTAPALOOZA),Trigger,39,39,0,39,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Kobolds & Catacombs (LOOTAPALOOZA),Untargetable,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Kobolds & Catacombs (LOOTAPALOOZA),Vanilla,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Kobolds & Catacombs (LOOTAPALOOZA),Weapon,12,12,0,12,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Witchwood (GILNEAS),All tribes,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Witchwood (GILNEAS),Aura,4,4,0,4,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Witchwood (GILNEAS),Battlecry,45,45,0,45,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Witchwood (GILNEAS),Choose One,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Witchwood (GILNEAS),Combo,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Witchwood (GILNEAS),Continuous effect / Update,7,7,0,7,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Witchwood (GILNEAS),Cost modification,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Witchwood (GILNEAS),Deathrattle,11,11,0,10,1,GIL_608,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Witchwood (GILNEAS),Discover / Choice,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Witchwood (GILNEAS),Divine Shield,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Witchwood (GILNEAS),Draw / Discard,14,14,0,14,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Witchwood (GILNEAS),Echo,11,11,0,11,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Witchwood (GILNEAS),Lifesteal,5,5,1,4,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Witchwood (GILNEAS),Overload,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Witchwood (GILNEAS),Poisonous,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Witchwood (GILNEAS),Random effects,21,21,0,21,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Witchwood (GILNEAS),Rush,13,13,2,11,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Witchwood (GILNEAS),Secret,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Witchwood (GILNEAS),Spell Damage,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Witchwood (GILNEAS),Spell resolution,27,27,0,27,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Witchwood (GILNEAS),Stealth,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Witchwood (GILNEAS),Summon,15,15,0,15,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Witchwood (GILNEAS),Targeting,17,17,0,17,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Witchwood (GILNEAS),Taunt,9,9,0,9,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Witchwood (GILNEAS),Transform,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Witchwood (GILNEAS),Trigger,29,29,0,29,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Witchwood (GILNEAS),Weapon,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Boomsday Project (BOOMSDAY),Aura,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Boomsday Project (BOOMSDAY),Battlecry,42,42,0,42,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Boomsday Project (BOOMSDAY),Choose One,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Boomsday Project (BOOMSDAY),Combo,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Boomsday Project (BOOMSDAY),Continuous effect / Update,4,4,0,4,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Boomsday Project (BOOMSDAY),Cost modification,4,4,0,4,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Boomsday Project (BOOMSDAY),Deathrattle,19,19,2,17,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Boomsday Project (BOOMSDAY),Deck construction,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Boomsday Project (BOOMSDAY),Discover / Choice,6,6,0,6,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Boomsday Project (BOOMSDAY),Divine Shield,5,5,0,5,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Boomsday Project (BOOMSDAY),Draw / Discard,12,12,0,12,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Boomsday Project (BOOMSDAY),Echo,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Boomsday Project (BOOMSDAY),Lifesteal,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Boomsday Project (BOOMSDAY),Magnetic,12,12,0,12,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Boomsday Project (BOOMSDAY),Overload,2,2,2,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Boomsday Project (BOOMSDAY),Poisonous,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Boomsday Project (BOOMSDAY),Random effects,26,26,0,26,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Boomsday Project (BOOMSDAY),Rush,5,5,0,5,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Boomsday Project (BOOMSDAY),Secret,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Boomsday Project (BOOMSDAY),Spell Damage,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Boomsday Project (BOOMSDAY),Spell resolution,42,42,0,42,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Boomsday Project (BOOMSDAY),Stealth,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Boomsday Project (BOOMSDAY),Summon,34,34,0,34,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Boomsday Project (BOOMSDAY),Targeting,16,16,0,16,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Boomsday Project (BOOMSDAY),Taunt,6,6,0,6,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Boomsday Project (BOOMSDAY),Transform,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Boomsday Project (BOOMSDAY),Trigger,18,18,0,18,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Boomsday Project (BOOMSDAY),Untargetable,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Boomsday Project (BOOMSDAY),Vanilla,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,The Boomsday Project (BOOMSDAY),Weapon,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rastakhan's Rumble (TROLL),Aura,4,4,0,4,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rastakhan's Rumble (TROLL),Battlecry,48,48,0,48,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rastakhan's Rumble (TROLL),Choose One,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rastakhan's Rumble (TROLL),Combo,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rastakhan's Rumble (TROLL),Continuous effect / Update,4,4,0,4,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rastakhan's Rumble (TROLL),Cost modification,10,10,0,10,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rastakhan's Rumble (TROLL),Deathrattle,10,10,1,9,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rastakhan's Rumble (TROLL),Discover / Choice,8,8,0,8,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rastakhan's Rumble (TROLL),Divine Shield,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rastakhan's Rumble (TROLL),Draw / Discard,17,17,0,17,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rastakhan's Rumble (TROLL),Lifesteal,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rastakhan's Rumble (TROLL),Overload,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rastakhan's Rumble (TROLL),Random effects,18,18,0,18,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rastakhan's Rumble (TROLL),Rush,7,7,0,7,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rastakhan's Rumble (TROLL),Secret,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rastakhan's Rumble (TROLL),Silence,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rastakhan's Rumble (TROLL),Spell Damage,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rastakhan's Rumble (TROLL),Spell resolution,34,34,0,34,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rastakhan's Rumble (TROLL),Stealth,10,10,0,10,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rastakhan's Rumble (TROLL),Summon,26,26,0,26,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rastakhan's Rumble (TROLL),Targeting,27,27,0,27,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rastakhan's Rumble (TROLL),Taunt,7,7,0,7,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rastakhan's Rumble (TROLL),Transform,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rastakhan's Rumble (TROLL),Trigger,25,25,0,25,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rastakhan's Rumble (TROLL),Unclassified effect,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rastakhan's Rumble (TROLL),Weapon,7,7,0,7,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rise of Shadows (DALARAN),Aura,5,5,0,5,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rise of Shadows (DALARAN),Battlecry,45,45,0,45,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rise of Shadows (DALARAN),Choose One,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rise of Shadows (DALARAN),Combo,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rise of Shadows (DALARAN),Continuous effect / Update,8,8,0,8,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rise of Shadows (DALARAN),Cost modification,5,5,0,5,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rise of Shadows (DALARAN),Deathrattle,16,16,1,14,1,DAL_563,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rise of Shadows (DALARAN),Deck construction,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rise of Shadows (DALARAN),Discover / Choice,10,10,0,10,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rise of Shadows (DALARAN),Divine Shield,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rise of Shadows (DALARAN),Draw / Discard,8,8,0,8,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rise of Shadows (DALARAN),Lifesteal,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rise of Shadows (DALARAN),Overload,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rise of Shadows (DALARAN),Random effects,33,33,0,33,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rise of Shadows (DALARAN),Rush,5,5,0,5,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rise of Shadows (DALARAN),Secret,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rise of Shadows (DALARAN),Silence,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rise of Shadows (DALARAN),Spell Damage,6,6,0,6,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rise of Shadows (DALARAN),Spell resolution,39,39,0,39,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rise of Shadows (DALARAN),Stealth,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rise of Shadows (DALARAN),Summon,35,35,0,35,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rise of Shadows (DALARAN),Targeting,27,27,0,27,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rise of Shadows (DALARAN),Taunt,10,10,0,10,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rise of Shadows (DALARAN),Transform,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rise of Shadows (DALARAN),Trigger,26,26,0,26,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rise of Shadows (DALARAN),Twinspell,8,8,0,8,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rise of Shadows (DALARAN),Untargetable,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rise of Shadows (DALARAN),Vanilla,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rise of Shadows (DALARAN),Weapon,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Rise of Shadows (DALARAN),Windfury,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Saviors of Uldum (ULDUM),Aura,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Saviors of Uldum (ULDUM),Battlecry,47,47,0,47,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Saviors of Uldum (ULDUM),Choose One,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Saviors of Uldum (ULDUM),Combo,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Saviors of Uldum (ULDUM),Continuous effect / Update,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Saviors of Uldum (ULDUM),Cost modification,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Saviors of Uldum (ULDUM),Deathrattle,12,12,1,10,1,ULD_266,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Saviors of Uldum (ULDUM),Discover / Choice,9,9,0,9,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Saviors of Uldum (ULDUM),Divine Shield,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Saviors of Uldum (ULDUM),Draw / Discard,8,8,0,8,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Saviors of Uldum (ULDUM),Lifesteal,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Saviors of Uldum (ULDUM),Overload,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Saviors of Uldum (ULDUM),Poisonous,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Saviors of Uldum (ULDUM),Quest,9,9,0,9,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Saviors of Uldum (ULDUM),Random effects,33,33,0,33,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Saviors of Uldum (ULDUM),Reborn,13,13,1,12,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Saviors of Uldum (ULDUM),Rush,4,4,0,4,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Saviors of Uldum (ULDUM),Secret,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Saviors of Uldum (ULDUM),Silence,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Saviors of Uldum (ULDUM),Spell resolution,37,37,0,37,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Saviors of Uldum (ULDUM),Stealth,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Saviors of Uldum (ULDUM),Summon,37,37,0,37,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Saviors of Uldum (ULDUM),Targeting,20,20,0,20,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Saviors of Uldum (ULDUM),Taunt,11,11,0,11,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Saviors of Uldum (ULDUM),Transform,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Saviors of Uldum (ULDUM),Trigger,27,27,0,27,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Saviors of Uldum (ULDUM),Weapon,4,4,0,4,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Descent of Dragons (DRAGONS),Aura,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Descent of Dragons (DRAGONS),Battlecry,71,71,0,71,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Descent of Dragons (DRAGONS),Choose One,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Descent of Dragons (DRAGONS),Combo,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Descent of Dragons (DRAGONS),Conditional stats,2,2,0,0,2,DRG_058|DRG_088,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Descent of Dragons (DRAGONS),Continuous effect / Update,6,6,0,5,1,DRG_088,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Descent of Dragons (DRAGONS),Cost modification,6,6,0,6,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Descent of Dragons (DRAGONS),Deathrattle,8,8,1,7,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Descent of Dragons (DRAGONS),Discover / Choice,8,8,0,8,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Descent of Dragons (DRAGONS),Divine Shield,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Descent of Dragons (DRAGONS),Draw / Discard,17,17,0,17,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Descent of Dragons (DRAGONS),Lifesteal,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Descent of Dragons (DRAGONS),Overload,2,2,2,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Descent of Dragons (DRAGONS),Poisonous,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Descent of Dragons (DRAGONS),Random effects,27,27,0,27,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Descent of Dragons (DRAGONS),Rush,7,7,0,7,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Descent of Dragons (DRAGONS),Spell Damage,2,2,1,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Descent of Dragons (DRAGONS),Spell resolution,35,35,0,35,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Descent of Dragons (DRAGONS),Summon,29,29,0,29,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Descent of Dragons (DRAGONS),Targeting,25,25,0,25,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Descent of Dragons (DRAGONS),Taunt,6,6,0,6,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Descent of Dragons (DRAGONS),Transform,4,4,0,4,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Descent of Dragons (DRAGONS),Trigger,14,14,0,14,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Descent of Dragons (DRAGONS),Untargetable,4,4,0,4,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Descent of Dragons (DRAGONS),Vanilla,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Descent of Dragons (DRAGONS),Weapon,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Descent of Dragons (DRAGONS),Windfury,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Year of the Dragon (YEAR_OF_THE_DRAGON),Battlecry,14,14,0,14,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Year of the Dragon (YEAR_OF_THE_DRAGON),Choose One,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Year of the Dragon (YEAR_OF_THE_DRAGON),Combo,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Year of the Dragon (YEAR_OF_THE_DRAGON),Cost modification,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Year of the Dragon (YEAR_OF_THE_DRAGON),Deathrattle,2,2,0,1,1,YOD_016,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Year of the Dragon (YEAR_OF_THE_DRAGON),Discover / Choice,5,5,0,5,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Year of the Dragon (YEAR_OF_THE_DRAGON),Draw / Discard,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Year of the Dragon (YEAR_OF_THE_DRAGON),Hero Power modification,1,1,0,0,1,YOD_008,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Year of the Dragon (YEAR_OF_THE_DRAGON),Overload,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Year of the Dragon (YEAR_OF_THE_DRAGON),Random effects,10,10,0,10,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Year of the Dragon (YEAR_OF_THE_DRAGON),Reborn,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Year of the Dragon (YEAR_OF_THE_DRAGON),Spell resolution,9,9,0,9,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Year of the Dragon (YEAR_OF_THE_DRAGON),Stealth,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Year of the Dragon (YEAR_OF_THE_DRAGON),Summon,10,10,0,10,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Year of the Dragon (YEAR_OF_THE_DRAGON),Targeting,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Year of the Dragon (YEAR_OF_THE_DRAGON),Taunt,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Year of the Dragon (YEAR_OF_THE_DRAGON),Transform,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Year of the Dragon (YEAR_OF_THE_DRAGON),Trigger,6,6,0,6,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Year of the Dragon (YEAR_OF_THE_DRAGON),Twinspell,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Year of the Dragon (YEAR_OF_THE_DRAGON),Untargetable,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Year of the Dragon (YEAR_OF_THE_DRAGON),Weapon,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Ashes of Outland (BLACK_TEMPLE),Aura,4,4,0,4,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Ashes of Outland (BLACK_TEMPLE),Battlecry,33,33,0,33,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Ashes of Outland (BLACK_TEMPLE),Charge,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Ashes of Outland (BLACK_TEMPLE),Continuous effect / Update,8,8,0,8,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Ashes of Outland (BLACK_TEMPLE),Cost modification,15,15,0,15,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Ashes of Outland (BLACK_TEMPLE),Deathrattle,23,23,1,22,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Ashes of Outland (BLACK_TEMPLE),Discover / Choice,6,6,0,6,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Ashes of Outland (BLACK_TEMPLE),Divine Shield,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Ashes of Outland (BLACK_TEMPLE),Draw / Discard,14,14,1,13,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Ashes of Outland (BLACK_TEMPLE),Lifesteal,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Ashes of Outland (BLACK_TEMPLE),Outcast,3,3,1,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Ashes of Outland (BLACK_TEMPLE),Overload,1,1,1,0,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Ashes of Outland (BLACK_TEMPLE),Random effects,30,30,0,30,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Ashes of Outland (BLACK_TEMPLE),Rush,9,9,0,9,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Ashes of Outland (BLACK_TEMPLE),Secret,5,5,0,5,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Ashes of Outland (BLACK_TEMPLE),Spell Damage,4,4,0,4,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Ashes of Outland (BLACK_TEMPLE),Spell resolution,42,42,1,41,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Ashes of Outland (BLACK_TEMPLE),Stealth,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Ashes of Outland (BLACK_TEMPLE),Summon,32,32,0,32,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Ashes of Outland (BLACK_TEMPLE),Targeting,35,35,0,34,1,BT_731,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Ashes of Outland (BLACK_TEMPLE),Taunt,13,13,0,13,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Ashes of Outland (BLACK_TEMPLE),Transform,5,5,0,4,1,BT_731,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Ashes of Outland (BLACK_TEMPLE),Trigger,37,37,0,36,1,BT_731,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Ashes of Outland (BLACK_TEMPLE),Unclassified effect,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Ashes of Outland (BLACK_TEMPLE),Weapon,4,4,0,4,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Scholomance Academy (SCHOLOMANCE),Trigger,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Demon Hunter Initiate (DEMON_HUNTER_INITIATE),Battlecry,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Demon Hunter Initiate (DEMON_HUNTER_INITIATE),Continuous effect / Update,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Demon Hunter Initiate (DEMON_HUNTER_INITIATE),Cost modification,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Demon Hunter Initiate (DEMON_HUNTER_INITIATE),Deathrattle,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Demon Hunter Initiate (DEMON_HUNTER_INITIATE),Draw / Discard,2,2,0,1,1,BT_427,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Demon Hunter Initiate (DEMON_HUNTER_INITIATE),Lifesteal,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Demon Hunter Initiate (DEMON_HUNTER_INITIATE),Outcast,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Demon Hunter Initiate (DEMON_HUNTER_INITIATE),Random effects,3,3,0,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Demon Hunter Initiate (DEMON_HUNTER_INITIATE),Rush,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Demon Hunter Initiate (DEMON_HUNTER_INITIATE),Silence,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Demon Hunter Initiate (DEMON_HUNTER_INITIATE),Spell resolution,9,9,1,5,3,BT_427|BT_753|BT_801,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Demon Hunter Initiate (DEMON_HUNTER_INITIATE),Summon,4,4,1,3,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Demon Hunter Initiate (DEMON_HUNTER_INITIATE),Targeting,3,3,0,2,1,BT_801,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Demon Hunter Initiate (DEMON_HUNTER_INITIATE),Taunt,1,1,0,1,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Demon Hunter Initiate (DEMON_HUNTER_INITIATE),Trigger,8,8,0,8,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。
+17.6.0.53261,Demon Hunter Initiate (DEMON_HUNTER_INITIATE),Weapon,2,2,0,2,0,,文案、标签及源码均可产生候选；GREEN 须看 card_mechanism.csv 中的实际效果断言。

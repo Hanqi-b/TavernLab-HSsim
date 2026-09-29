@@ -94,7 +94,8 @@ class ICC_054:
         PlayReq.REQ_NUM_MINION_SLOTS: 1,
     }
     play = Summon(CONTROLLER, "ICC_832t4").then(
-        (Count(FRIENDLY_MINIONS) < Count(ENEMY_MINIONS)) & CastSpell("ICC_054")
+        (Count(FRIENDLY_BOARD_MINIONS) < Count(ENEMY_BOARD_MINIONS))
+        & CastSpell("ICC_054")
     )
 
 

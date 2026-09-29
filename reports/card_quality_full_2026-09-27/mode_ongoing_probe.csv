@@ -1,0 +1,4 @@
+﻿case_id,mechanism,card_ids,expected,observed,outcome
+MODE-01,Spell repeat,DALA_504|CS2_029,one Fireball cast twice deals 12 total to enemy hero,damage=6;source_zone=PLAY;spell_zone=GRAVEYARD,confirmed_error
+MODE-02,Aura,TB_BaconUps_008|CS2_168,recipient Attack becomes 6 while source is in play,recipient_attack=2;recipient_taunt=False;source_zone=PLAY;recipient_zone=PLAY,confirmed_error
+MODE-03,Aura,TB_BaconUps_038|CS1_042,recipient Attack becomes 5 while source is in play,recipient_attack=1;recipient_taunt=1;source_zone=PLAY;recipient_zone=PLAY,confirmed_error

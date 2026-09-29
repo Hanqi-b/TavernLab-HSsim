@@ -1,0 +1,6 @@
+﻿card_id,setup,target_count,killed_this_turn,outcome,exception_type,exception_message
+BT_427,normal_decks; 10 mana; Wisp on board,0,1,exception,KeyError,
+BT_753,normal_decks; 10 mana; Wisp on board,0,0,exception,AttributeError,'Destroy' object has no attribute 'at'
+BT_801,normal_decks; 10 mana; Wisp on board,0,0,exception,AttributeError,'NoneType' object has no attribute 'immune'
+UNG_035,normal_decks; 10 mana; Wisp on board,0,0,played,,
+DAL_059,normal_decks; 10 mana; Wisp on board,0,0,played,,

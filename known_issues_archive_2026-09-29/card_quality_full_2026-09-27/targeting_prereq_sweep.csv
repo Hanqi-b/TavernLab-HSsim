@@ -1,0 +1,426 @@
+﻿card_id,playable,requires_target,target_count,outcome,exception,zone_after,mana_after,invalid_self_outcome
+AT_001,True,True,2,rejected_no_target,<Spell ('Flame Lance')> requires a target to play.,HAND,10,rejected
+AT_004,True,True,2,rejected_no_target,<Spell ('Arcane Blast')> requires a target to play.,HAND,10,rejected
+AT_005,True,True,2,rejected_no_target,<Spell ('Polymorph: Boar')> requires a target to play.,HAND,10,rejected
+AT_013,True,True,2,rejected_no_target,<Spell ('Power Word: Glory')> requires a target to play.,HAND,10,rejected
+AT_015,True,True,1,rejected_no_target,<Spell ('Convert')> requires a target to play.,HAND,10,rejected
+AT_024,False,True,0,condition_not_met,,,,
+AT_030,True,False,4,condition_not_met,,,,
+AT_037,True,True,4,choice_required_first,"<Spell ('Living Roots')> requires a choice (one of [<Spell ('Grasping Roots')>, <Spell ('One, Two, Trees!')>])",HAND,10,
+AT_040,True,False,0,condition_not_met,,,,
+AT_044,True,True,2,rejected_no_target,<Spell ('Mulch')> requires a target to play.,HAND,10,rejected
+AT_048,True,True,4,rejected_no_target,<Spell ('Healing Wave')> requires a target to play.,HAND,10,rejected
+AT_055,True,True,4,rejected_no_target,<Spell ('Flash Heal')> requires a target to play.,HAND,10,rejected
+AT_056,True,True,2,rejected_no_target,<Spell ('Powershot')> requires a target to play.,HAND,10,rejected
+AT_057,True,False,0,condition_not_met,,,,
+AT_064,True,True,4,rejected_no_target,<Spell ('Bash')> requires a target to play.,HAND,10,rejected
+AT_069,True,True,2,rejected_no_target,<Minion ('Sparring Partner')> requires a target to play.,HAND,10,rejected
+AT_074,True,True,2,rejected_no_target,<Spell ('Seal of Champions')> requires a target to play.,HAND,10,rejected
+AT_084,True,True,1,rejected_no_target,<Minion ('Lance Carrier')> requires a target to play.,HAND,10,rejected
+AT_096,True,False,0,condition_not_met,,,,
+AT_103,True,True,4,rejected_no_target,<Minion ('North Sea Kraken')> requires a target to play.,HAND,10,rejected
+AT_106,True,False,0,condition_not_met,,,,
+AT_122,True,False,4,condition_not_met,,,,
+BOT_033,True,True,4,rejected_no_target,<Spell ('Bomb Toss')> requires a target to play.,HAND,10,rejected
+BOT_038,True,False,0,condition_not_met,,,,
+BOT_067,True,True,1,rejected_no_target,<Spell ('Rocket Boots')> requires a target to play.,HAND,10,rejected
+BOT_079,True,False,0,condition_not_met,,,,
+BOT_219,True,True,2,rejected_no_target,<Spell ('Extra Arms')> requires a target to play.,HAND,10,rejected
+BOT_222,True,True,2,rejected_no_target,<Spell ('Spirit Bomb')> requires a target to play.,HAND,10,rejected
+BOT_288,True,True,1,rejected_no_target,<Minion ('Lab Recruiter')> requires a target to play.,HAND,10,rejected
+BOT_308,True,True,4,rejected_no_target,<Minion ('Spring Rocket')> requires a target to play.,HAND,10,rejected
+BOT_437,True,True,1,rejected_no_target,<Spell ('Goblin Prank')> requires a target to play.,HAND,10,rejected
+BOT_453,True,True,2,rejected_no_target,<Spell ('Shooting Star')> requires a target to play.,HAND,10,rejected
+BOT_508,False,True,0,condition_not_met,,,,
+BOT_517,True,True,2,rejected_no_target,<Spell ('Topsy Turvy')> requires a target to play.,HAND,10,rejected
+BOT_529,True,True,1,rejected_no_target,<Spell ('Power Word: Replicate')> requires a target to play.,HAND,10,rejected
+BOT_540,True,False,0,condition_not_met,,,,
+BOT_576,True,False,1,condition_not_met,,,,
+BRM_003,True,True,4,rejected_no_target,"<Spell (""Dragon's Breath"")> requires a target to play.",HAND,10,rejected
+BRM_007,True,True,2,rejected_no_target,<Spell ('Gang Up')> requires a target to play.,HAND,10,rejected
+BRM_011,True,True,4,rejected_no_target,<Spell ('Lava Shock')> requires a target to play.,HAND,10,rejected
+BRM_013,True,True,4,rejected_no_target,<Spell ('Quick Shot')> requires a target to play.,HAND,10,rejected
+BRM_029,True,False,0,condition_not_met,,,,
+BRM_034,True,False,4,condition_not_met,,,,
+BT_024,True,True,4,rejected_no_target,<Spell ('Libram of Hope')> requires a target to play.,HAND,10,rejected
+BT_025,True,True,2,rejected_no_target,<Spell ('Libram of Wisdom')> requires a target to play.,HAND,10,rejected
+BT_072,True,True,2,rejected_no_target,<Spell ('Deep Freeze')> requires a target to play.,HAND,10,rejected
+BT_100,True,True,4,rejected_no_target,<Spell ('Serpentshrine Portal')> requires a target to play.,HAND,10,rejected
+BT_110,True,True,2,rejected_no_target,<Spell ('Torrent')> requires a target to play.,HAND,10,rejected
+BT_113,True,True,2,rejected_no_target,<Spell ('Totemic Reflection')> requires a target to play.,HAND,10,rejected
+BT_120,True,True,1,rejected_no_target,<Minion ('Warmaul Challenger')> requires a target to play.,HAND,10,rejected
+BT_129,True,True,1,rejected_no_target,<Spell ('Germination')> requires a target to play.,HAND,10,rejected
+BT_132,True,True,2,rejected_no_target,<Spell ('Ironbark')> requires a target to play.,HAND,10,rejected
+BT_134,True,True,2,rejected_no_target,<Spell ('Bogbeam')> requires a target to play.,HAND,10,rejected
+BT_196,True,True,2,rejected_no_target,"<Minion (""Keli'dan the Breaker"")> requires a target to play.",HAND,10,rejected
+BT_199,True,True,1,rejected_no_target,<Spell ('Unstable Felbolt')> requires a target to play.,HAND,10,rejected
+BT_205,True,True,4,rejected_no_target,<Spell ('Scrap Shot')> requires a target to play.,HAND,10,rejected
+BT_212,True,False,0,condition_not_met,,,,
+BT_230,True,True,1,rejected_no_target,<Minion ('The Lurker Below')> requires a target to play.,HAND,10,rejected
+BT_233,True,True,2,rejected_no_target,<Spell ('Sword and Board')> requires a target to play.,HAND,10,rejected
+BT_252,True,True,4,rejected_no_target,<Spell ('Renew')> requires a target to play.,HAND,10,rejected
+BT_253,True,True,2,rejected_no_target,<Spell ('Psyche Split')> requires a target to play.,HAND,10,rejected
+BT_257,True,True,2,rejected_no_target,<Spell ('Apotheosis')> requires a target to play.,HAND,10,rejected
+BT_291,True,True,4,rejected_no_target,<Spell ('Apexis Blast')> requires a target to play.,HAND,10,rejected
+BT_292,True,True,2,rejected_no_target,"<Spell (""Hand of A'dal"")> requires a target to play.",HAND,10,rejected
+BT_488,False,True,0,condition_not_met,,,,
+BT_490,True,True,2,rejected_no_target,<Spell ('Consume Magic')> requires a target to play.,HAND,10,rejected
+BT_495,True,False,4,condition_not_met,,,,
+BT_702,True,False,0,condition_not_met,,,,
+BT_711,True,False,2,condition_not_met,,,,
+BT_714,True,True,2,rejected_no_target,<Minion ('Frozen Shadoweaver')> requires a target to play.,HAND,10,rejected
+BT_717,True,True,4,rejected_no_target,<Minion ('Burrowing Scorpid')> requires a target to play.,HAND,10,rejected
+BT_722,True,True,2,rejected_no_target,<Minion ('Guardian Augmerchant')> requires a target to play.,HAND,10,rejected
+BT_723,True,True,2,rejected_no_target,<Minion ('Rocket Augmerchant')> requires a target to play.,HAND,10,rejected
+BT_724,True,True,2,rejected_no_target,<Minion ('Ethereal Augmerchant')> requires a target to play.,HAND,10,rejected
+BT_729,True,True,2,rejected_no_target,<Minion ('Waste Warden')> requires a target to play.,HAND,10,rejected
+BT_737,True,True,2,rejected_no_target,<Minion ('Maiev Shadowsong')> requires a target to play.,HAND,10,rejected
+CFM_021,True,True,2,rejected_no_target,<Spell ('Freezing Potion')> requires a target to play.,HAND,10,rejected
+CFM_061,True,True,4,rejected_no_target,<Minion ('Jinyu Waterspeaker')> requires a target to play.,HAND,10,rejected
+CFM_063,True,True,2,rejected_no_target,<Minion ('Kooky Chemist')> requires a target to play.,HAND,10,rejected
+CFM_067,True,True,2,rejected_no_target,<Minion ('Hozen Healer')> requires a target to play.,HAND,10,rejected
+CFM_335,True,True,4,rejected_no_target,<Minion ('Dispatch Kodo')> requires a target to play.,HAND,10,rejected
+CFM_603,True,True,1,rejected_no_target,<Spell ('Potion of Madness')> requires a target to play.,HAND,10,rejected
+CFM_604,True,True,2,rejected_no_target,<Spell ('Greater Healing Potion')> requires a target to play.,HAND,10,rejected
+CFM_608,True,True,2,rejected_no_target,<Spell ('Blastcrystal Potion')> requires a target to play.,HAND,10,rejected
+CFM_611,True,True,2,rejected_no_target,<Spell ('Bloodfury Potion')> requires a target to play.,HAND,10,rejected
+CFM_626,True,True,1,rejected_no_target,<Minion ('Kabal Talonpriest')> requires a target to play.,HAND,10,rejected
+CFM_647,True,True,4,rejected_no_target,<Minion ('Blowgill Sniper')> requires a target to play.,HAND,10,rejected
+CFM_657,True,True,2,rejected_no_target,<Minion ('Kabal Songstealer')> requires a target to play.,HAND,10,rejected
+CFM_659,True,True,4,rejected_no_target,<Minion ('Gadgetzan Socialite')> requires a target to play.,HAND,10,rejected
+CFM_660,True,True,1,rejected_no_target,<Minion ('Manic Soulcaster')> requires a target to play.,HAND,10,rejected
+CFM_667,True,True,1,rejected_no_target,<Minion ('Bomb Squad')> requires a target to play.,HAND,10,rejected
+CFM_672,True,True,1,rejected_no_target,<Minion ('Madam Goya')> requires a target to play.,HAND,10,rejected
+CFM_690,True,True,4,rejected_no_target,<Spell ('Jade Shuriken')> requires a target to play.,HAND,10,rejected
+CFM_693,True,False,1,condition_not_met,,,,
+CFM_694,True,False,0,condition_not_met,,,,
+CFM_707,True,True,4,rejected_no_target,<Spell ('Jade Lightning')> requires a target to play.,HAND,10,rejected
+CFM_816,True,False,0,condition_not_met,,,,
+CFM_855,True,False,0,condition_not_met,,,,
+CS1_113,True,True,1,rejected_no_target,<Spell ('Mind Control')> requires a target to play.,HAND,10,rejected
+CS1_129,True,True,2,rejected_no_target,<Spell ('Inner Fire')> requires a target to play.,HAND,10,rejected
+CS1_130,True,True,2,rejected_no_target,<Spell ('Holy Smite')> requires a target to play.,HAND,10,rejected
+CS2_004,True,True,2,rejected_no_target,<Spell ('Power Word: Shield')> requires a target to play.,HAND,10,rejected
+CS2_007,True,True,4,rejected_no_target,<Spell ('Healing Touch')> requires a target to play.,HAND,10,rejected
+CS2_008,True,True,4,rejected_no_target,<Spell ('Moonfire')> requires a target to play.,HAND,10,rejected
+CS2_009,True,True,2,rejected_no_target,<Spell ('Mark of the Wild')> requires a target to play.,HAND,10,rejected
+CS2_012,True,True,2,rejected_no_target,<Spell ('Swipe')> requires a target to play.,HAND,10,rejected
+CS2_022,True,True,2,rejected_no_target,<Spell ('Polymorph')> requires a target to play.,HAND,10,rejected
+CS2_024,True,True,4,rejected_no_target,<Spell ('Frostbolt')> requires a target to play.,HAND,10,rejected
+CS2_029,True,True,4,rejected_no_target,<Spell ('Fireball')> requires a target to play.,HAND,10,rejected
+CS2_031,True,True,4,rejected_no_target,<Spell ('Ice Lance')> requires a target to play.,HAND,10,rejected
+CS2_037,True,True,2,rejected_no_target,<Spell ('Frost Shock')> requires a target to play.,HAND,10,rejected
+CS2_038,True,True,2,rejected_no_target,<Spell ('Ancestral Spirit')> requires a target to play.,HAND,10,rejected
+CS2_039,True,True,2,rejected_no_target,<Spell ('Windfury')> requires a target to play.,HAND,10,rejected
+CS2_041,True,True,2,rejected_no_target,<Spell ('Ancestral Healing')> requires a target to play.,HAND,10,rejected
+CS2_042,True,True,4,rejected_no_target,<Minion ('Fire Elemental')> requires a target to play.,HAND,10,rejected
+CS2_045,True,True,2,rejected_no_target,<Spell ('Rockbiter Weapon')> requires a target to play.,HAND,10,rejected
+CS2_057,True,True,2,rejected_no_target,<Spell ('Shadow Bolt')> requires a target to play.,HAND,10,rejected
+CS2_061,True,True,4,rejected_no_target,<Spell ('Drain Life')> requires a target to play.,HAND,10,rejected
+CS2_063,True,True,1,rejected_no_target,<Spell ('Corruption')> requires a target to play.,HAND,10,rejected
+CS2_072,True,True,2,rejected_no_target,<Spell ('Backstab')> requires a target to play.,HAND,10,rejected
+CS2_073,True,True,2,rejected_no_target,<Spell ('Cold Blood')> requires a target to play.,HAND,10,rejected
+CS2_076,True,True,1,rejected_no_target,<Spell ('Assassinate')> requires a target to play.,HAND,10,rejected
+CS2_084,True,True,2,rejected_no_target,"<Spell (""Hunter's Mark"")> requires a target to play.",HAND,10,rejected
+CS2_087,True,True,2,rejected_no_target,<Spell ('Blessing of Might')> requires a target to play.,HAND,10,rejected
+CS2_089,True,True,4,rejected_no_target,<Spell ('Holy Light')> requires a target to play.,HAND,10,rejected
+CS2_092,True,True,2,rejected_no_target,<Spell ('Blessing of Kings')> requires a target to play.,HAND,10,rejected
+CS2_094,True,True,4,rejected_no_target,<Spell ('Hammer of Wrath')> requires a target to play.,HAND,10,rejected
+CS2_103,True,True,1,rejected_no_target,<Spell ('Charge')> requires a target to play.,HAND,10,rejected
+CS2_104,False,True,0,condition_not_met,,,,
+CS2_108,False,True,0,condition_not_met,,,,
+CS2_117,True,True,4,rejected_no_target,<Minion ('Earthen Ring Farseer')> requires a target to play.,HAND,10,rejected
+CS2_141,True,True,4,rejected_no_target,<Minion ('Ironforge Rifleman')> requires a target to play.,HAND,10,rejected
+CS2_150,True,True,4,rejected_no_target,<Minion ('Stormpike Commando')> requires a target to play.,HAND,10,rejected
+CS2_188,True,True,2,rejected_no_target,<Minion ('Abusive Sergeant')> requires a target to play.,HAND,10,rejected
+CS2_189,True,True,4,rejected_no_target,<Minion ('Elven Archer')> requires a target to play.,HAND,10,rejected
+CS2_203,True,True,2,rejected_no_target,<Minion ('Ironbeak Owl')> requires a target to play.,HAND,10,rejected
+CS2_234,True,True,2,rejected_no_target,<Spell ('Shadow Word: Pain')> requires a target to play.,HAND,10,rejected
+CS2_236,True,True,2,rejected_no_target,<Spell ('Divine Spirit')> requires a target to play.,HAND,10,rejected
+DAL_010,True,True,2,rejected_no_target,"<Spell (""Togwaggle's Scheme"")> requires a target to play.",HAND,10,rejected
+DAL_011,True,True,1,rejected_no_target,"<Spell (""Lazul's Scheme"")> requires a target to play.",HAND,10,rejected
+DAL_030,True,False,0,condition_not_met,,,,
+DAL_062,True,True,2,rejected_no_target,<Spell ('Sweeping Strikes')> requires a target to play.,HAND,10,rejected
+DAL_065,True,True,1,rejected_no_target,<Spell ('Unsleeping Soul')> requires a target to play.,HAND,10,rejected
+DAL_071,True,True,1,rejected_no_target,<Spell ('Mutate')> requires a target to play.,HAND,10,rejected
+DAL_077,True,False,0,condition_not_met,,,,
+DAL_078,True,True,4,rejected_no_target,<Minion ('Traveling Healer')> requires a target to play.,HAND,10,rejected
+DAL_177,True,True,2,rejected_no_target,"<Spell (""Conjurer's Calling"")> requires a target to play.",HAND,10,rejected
+DAL_350,True,True,4,choice_required_first,"<Spell ('Crystal Power')> requires a choice (one of [<Spell ('Piercing Thorns')>, <Spell ('Healing Blossom')>])",HAND,10,
+DAL_366,True,True,2,rejected_no_target,<Spell ('Unidentified Contract')> requires a target to play.,HAND,10,rejected
+DAL_371,True,True,2,rejected_no_target,<Spell ('Marked Shot')> requires a target to play.,HAND,10,rejected
+DAL_373,True,True,4,rejected_no_target,<Spell ('Rapid Fire')> requires a target to play.,HAND,10,rejected
+DAL_432,True,True,4,rejected_no_target,"<Spell (""Witch's Brew"")> requires a target to play.",HAND,10,rejected
+DAL_539,True,False,4,condition_not_met,,,,
+DAL_568,True,True,1,rejected_no_target,<Spell ('Lightforged Blessing')> requires a target to play.,HAND,10,rejected
+DAL_577,True,True,2,rejected_no_target,<Spell ('Ray of Frost')> requires a target to play.,HAND,10,rejected
+DAL_606,True,True,1,rejected_no_target,<Minion ('EVIL Genius')> requires a target to play.,HAND,10,rejected
+DAL_716,True,True,2,rejected_no_target,<Spell ('Vendetta')> requires a target to play.,HAND,10,rejected
+DAL_723,True,True,2,rejected_no_target,<Spell ('Forbidden Words')> requires a target to play.,HAND,10,rejected
+DAL_744,True,True,1,rejected_no_target,<Minion ('Faceless Rager')> requires a target to play.,HAND,10,rejected
+DAL_769,True,True,2,rejected_no_target,<Spell ('Improve Morale')> requires a target to play.,HAND,10,rejected
+DAL_770,True,True,2,rejected_no_target,<Minion ('Omega Devastator')> requires a target to play.,HAND,10,rejected
+DRG_006,True,True,2,rejected_no_target,<Spell ('Corrosive Breath')> requires a target to play.,HAND,10,rejected
+DRG_022,True,True,2,rejected_no_target,<Spell ('Ramming Speed')> requires a target to play.,HAND,10,rejected
+DRG_030,True,True,2,rejected_no_target,<Spell ('Praise Galakrond!')> requires a target to play.,HAND,10,rejected
+DRG_037,True,True,2,rejected_no_target,<Minion ('Flik Skyshiv')> requires a target to play.,HAND,10,rejected
+DRG_070,True,False,0,condition_not_met,,,,
+DRG_076,True,True,1,rejected_no_target,<Minion ('Faceless Corruptor')> requires a target to play.,HAND,10,rejected
+DRG_081,True,False,4,condition_not_met,,,,
+DRG_106,True,True,2,rejected_no_target,<Spell ('Arcane Breath')> requires a target to play.,HAND,10,rejected
+DRG_205,True,True,4,rejected_no_target,<Spell ('Nether Breath')> requires a target to play.,HAND,10,rejected
+DRG_219,True,False,2,condition_not_met,,,,
+DRG_223,True,False,4,condition_not_met,,,,
+DRG_226,True,True,4,rejected_no_target,<Minion ('Amber Watcher')> requires a target to play.,HAND,10,rejected
+DRG_233,True,True,2,rejected_no_target,<Spell ('Sand Breath')> requires a target to play.,HAND,10,rejected
+DRG_246,True,True,2,rejected_no_target,<Spell ('Time Rip')> requires a target to play.,HAND,10,rejected
+DRG_247,True,True,4,rejected_no_target,<Spell ('Seal Fate')> requires a target to play.,HAND,10,rejected
+DRG_248,True,True,2,rejected_no_target,<Spell ('Invocation of Frost')> requires a target to play.,HAND,10,rejected
+DRG_302,True,True,2,rejected_no_target,<Spell ('Grave Rune')> requires a target to play.,HAND,10,rejected
+DRG_308,True,True,2,rejected_no_target,<Minion ('Mindflayer Kaahrj')> requires a target to play.,HAND,10,rejected
+DRG_311,True,True,2,choice_required_first,"<Spell ('Treenforcements')> requires a choice (one of [<Spell (""Spin 'em Up"")>, <Spell ('Small Repairs')>])",HAND,10,
+DRG_321,True,True,2,rejected_no_target,<Spell ('Rolling Fireball')> requires a target to play.,HAND,10,rejected
+DRG_402,True,True,1,rejected_no_target,<Minion ('Sathrovarr')> requires a target to play.,HAND,10,rejected
+DRG_500,True,True,2,rejected_no_target,<Spell ('Molten Breath')> requires a target to play.,HAND,10,rejected
+DS1_070,True,False,0,condition_not_met,,,,
+DS1_185,True,True,4,rejected_no_target,<Spell ('Arcane Shot')> requires a target to play.,HAND,10,rejected
+EX1_002,True,False,0,condition_not_met,,,,
+EX1_005,True,False,0,condition_not_met,,,,
+EX1_011,True,True,4,rejected_no_target,<Minion ('Voodoo Doctor')> requires a target to play.,HAND,10,rejected
+EX1_019,True,True,1,rejected_no_target,<Minion ('Shattered Sun Cleric')> requires a target to play.,HAND,10,rejected
+EX1_046,True,True,2,rejected_no_target,<Minion ('Dark Iron Dwarf')> requires a target to play.,HAND,10,rejected
+EX1_048,True,True,2,rejected_no_target,<Minion ('Spellbreaker')> requires a target to play.,HAND,10,rejected
+EX1_049,True,True,1,rejected_no_target,<Minion ('Youthful Brewmaster')> requires a target to play.,HAND,10,rejected
+EX1_057,True,True,1,rejected_no_target,<Minion ('Ancient Brewmaster')> requires a target to play.,HAND,10,rejected
+EX1_059,True,True,2,rejected_no_target,<Minion ('Crazed Alchemist')> requires a target to play.,HAND,10,rejected
+EX1_091,True,True,1,rejected_no_target,<Minion ('Cabal Shadow Priest')> requires a target to play.,HAND,10,rejected
+EX1_124,True,True,4,rejected_no_target,<Spell ('Eviscerate')> requires a target to play.,HAND,10,rejected
+EX1_126,True,True,1,rejected_no_target,<Spell ('Betrayal')> requires a target to play.,HAND,10,rejected
+EX1_133,True,True,4,rejected_no_target,"<Weapon (""Perdition's Blade"")> requires a target to play.",HAND,10,rejected
+EX1_134,True,False,4,condition_not_met,,,,
+EX1_144,True,True,1,rejected_no_target,<Spell ('Shadowstep')> requires a target to play.,HAND,10,rejected
+EX1_154,True,True,2,choice_required_first,"<Spell ('Wrath')> requires a choice (one of [<Spell ('Solar Wrath')>, <Spell (""Nature's Wrath"")>])",HAND,10,
+EX1_155,True,True,2,choice_required_first,"<Spell ('Mark of Nature')> requires a choice (one of [<Spell (""Tiger's Fury"")>, <Spell ('Thick Hide')>])",HAND,10,
+EX1_161,True,True,2,rejected_no_target,<Spell ('Naturalize')> requires a target to play.,HAND,10,rejected
+EX1_166,True,True,4,choice_required_first,"<Minion ('Keeper of the Grove')> requires a choice (one of [<Spell ('Moonfire')>, <Spell ('Dispel')>])",HAND,10,
+EX1_173,True,True,4,rejected_no_target,<Spell ('Starfire')> requires a target to play.,HAND,10,rejected
+EX1_179,True,True,2,rejected_no_target,<Spell ('Icicle')> requires a target to play.,HAND,10,rejected
+EX1_191,True,True,1,rejected_no_target,<Minion ('Plaguebringer')> requires a target to play.,HAND,10,rejected
+EX1_194,True,True,2,rejected_no_target,<Spell ('Power Infusion')> requires a target to play.,HAND,10,rejected
+EX1_195,True,True,1,rejected_no_target,<Minion ('Kul Tiran Chaplain')> requires a target to play.,HAND,10,rejected
+EX1_196,True,True,1,rejected_no_target,<Minion ('Scarlet Subjugator')> requires a target to play.,HAND,10,rejected
+EX1_198,True,True,2,rejected_no_target,<Minion ('Natalie Seline')> requires a target to play.,HAND,10,rejected
+EX1_238,True,True,4,rejected_no_target,<Spell ('Lightning Bolt')> requires a target to play.,HAND,10,rejected
+EX1_241,True,True,4,rejected_no_target,<Spell ('Lava Burst')> requires a target to play.,HAND,10,rejected
+EX1_245,True,True,2,rejected_no_target,<Spell ('Earth Shock')> requires a target to play.,HAND,10,rejected
+EX1_246,True,True,2,rejected_no_target,<Spell ('Hex')> requires a target to play.,HAND,10,rejected
+EX1_275,True,True,2,rejected_no_target,<Spell ('Cone of Cold')> requires a target to play.,HAND,10,rejected
+EX1_278,True,True,4,rejected_no_target,<Spell ('Shiv')> requires a target to play.,HAND,10,rejected
+EX1_279,True,True,4,rejected_no_target,<Spell ('Pyroblast')> requires a target to play.,HAND,10,rejected
+EX1_283,True,True,4,rejected_no_target,<Minion ('Frost Elemental')> requires a target to play.,HAND,10,rejected
+EX1_302,True,True,2,rejected_no_target,<Spell ('Mortal Coil')> requires a target to play.,HAND,10,rejected
+EX1_303,True,True,1,rejected_no_target,<Spell ('Shadowflame')> requires a target to play.,HAND,10,rejected
+EX1_308,True,True,4,rejected_no_target,<Spell ('Soulfire')> requires a target to play.,HAND,10,rejected
+EX1_309,True,True,2,rejected_no_target,<Spell ('Siphon Soul')> requires a target to play.,HAND,10,rejected
+EX1_316,True,True,1,rejected_no_target,<Spell ('Power Overwhelming')> requires a target to play.,HAND,10,rejected
+EX1_320,True,True,4,rejected_no_target,<Spell ('Bane of Doom')> requires a target to play.,HAND,10,rejected
+EX1_332,True,True,2,rejected_no_target,<Spell ('Silence')> requires a target to play.,HAND,10,rejected
+EX1_334,True,True,1,rejected_no_target,<Spell ('Shadow Madness')> requires a target to play.,HAND,10,rejected
+EX1_354,True,True,4,rejected_no_target,<Spell ('Lay on Hands')> requires a target to play.,HAND,10,rejected
+EX1_355,True,True,2,rejected_no_target,<Spell ('Blessed Champion')> requires a target to play.,HAND,10,rejected
+EX1_360,True,True,2,rejected_no_target,<Spell ('Humility')> requires a target to play.,HAND,10,rejected
+EX1_362,True,True,1,rejected_no_target,<Minion ('Argent Protector')> requires a target to play.,HAND,10,rejected
+EX1_363,True,True,2,rejected_no_target,<Spell ('Blessing of Wisdom')> requires a target to play.,HAND,10,rejected
+EX1_365,True,True,4,rejected_no_target,<Spell ('Holy Wrath')> requires a target to play.,HAND,10,rejected
+EX1_371,True,True,2,rejected_no_target,<Spell ('Hand of Protection')> requires a target to play.,HAND,10,rejected
+EX1_382,True,True,1,rejected_no_target,<Minion ('Aldor Peacekeeper')> requires a target to play.,HAND,10,rejected
+EX1_391,True,True,2,rejected_no_target,<Spell ('Slam')> requires a target to play.,HAND,10,rejected
+EX1_408,True,True,4,rejected_no_target,<Spell ('Mortal Strike')> requires a target to play.,HAND,10,rejected
+EX1_410,True,True,2,rejected_no_target,<Spell ('Shield Slam')> requires a target to play.,HAND,10,rejected
+EX1_537,True,True,2,rejected_no_target,<Spell ('Explosive Shot')> requires a target to play.,HAND,10,rejected
+EX1_539,True,True,4,rejected_no_target,<Spell ('Kill Command')> requires a target to play.,HAND,10,rejected
+EX1_549,False,True,0,condition_not_met,,,,
+EX1_561,True,True,2,rejected_no_target,<Minion ('Alexstrasza')> requires a target to play.,HAND,10,rejected
+EX1_564,True,True,2,rejected_no_target,<Minion ('Faceless Manipulator')> requires a target to play.,HAND,10,rejected
+EX1_578,True,True,2,rejected_no_target,<Spell ('Savagery')> requires a target to play.,HAND,10,rejected
+EX1_581,True,True,1,rejected_no_target,<Spell ('Sap')> requires a target to play.,HAND,10,rejected
+EX1_587,True,True,1,rejected_no_target,<Minion ('Windspeaker')> requires a target to play.,HAND,10,rejected
+EX1_596,True,True,2,rejected_no_target,<Spell ('Demonfire')> requires a target to play.,HAND,10,rejected
+EX1_603,True,True,2,rejected_no_target,<Minion ('Cruel Taskmaster')> requires a target to play.,HAND,10,rejected
+EX1_607,True,True,2,rejected_no_target,<Spell ('Inner Rage')> requires a target to play.,HAND,10,rejected
+EX1_622,False,True,0,condition_not_met,,,,
+EX1_623,True,True,1,rejected_no_target,<Minion ('Temple Enforcer')> requires a target to play.,HAND,10,rejected
+EX1_624,True,True,4,rejected_no_target,<Spell ('Holy Fire')> requires a target to play.,HAND,10,rejected
+FP1_025,True,True,2,rejected_no_target,<Spell ('Reincarnate')> requires a target to play.,HAND,10,rejected
+GIL_134,True,True,2,rejected_no_target,<Spell ('Holy Water')> requires a target to play.,HAND,10,rejected
+GIL_145,True,True,2,rejected_no_target,<Spell ('Sound the Bells!')> requires a target to play.,HAND,10,rejected
+GIL_506,True,True,2,rejected_no_target,<Spell ('Cheap Shot')> requires a target to play.,HAND,10,rejected
+GIL_515,True,True,1,rejected_no_target,<Minion ('Ratcatcher')> requires a target to play.,HAND,10,rejected
+GIL_518,True,True,2,rejected_no_target,<Spell ('Wing Blast')> requires a target to play.,HAND,10,rejected
+GIL_530,True,True,4,rejected_no_target,<Minion ('Murkspark Eel')> requires a target to play.,HAND,10,rejected
+GIL_543,True,True,2,rejected_no_target,<Spell ('Dark Possession')> requires a target to play.,HAND,10,rejected
+GIL_586,True,True,2,rejected_no_target,<Spell ('Earthen Might')> requires a target to play.,HAND,10,rejected
+GIL_600,True,True,2,rejected_no_target,<Spell ('Zap!')> requires a target to play.,HAND,10,rejected
+GIL_614,True,True,2,rejected_no_target,<Minion ('Voodoo Doll')> requires a target to play.,HAND,10,rejected
+GIL_658,True,True,1,rejected_no_target,<Minion ('Splintergraft')> requires a target to play.,HAND,10,rejected
+GIL_687,True,True,2,rejected_no_target,<Spell ('WANTED!')> requires a target to play.,HAND,10,rejected
+GIL_801,True,True,2,rejected_no_target,<Spell ('Snap Freeze')> requires a target to play.,HAND,10,rejected
+GIL_813,True,True,1,rejected_no_target,<Spell ('Vivid Nightmare')> requires a target to play.,HAND,10,rejected
+GIL_815,True,True,1,rejected_no_target,<Minion ('Baleful Banker')> requires a target to play.,HAND,10,rejected
+GIL_828,False,True,0,condition_not_met,,,,
+GIL_835,True,True,4,rejected_no_target,<Minion ('Squashling')> requires a target to play.,HAND,10,rejected
+GVG_010,True,True,2,rejected_no_target,"<Spell (""Velen's Chosen"")> requires a target to play.",HAND,10,rejected
+GVG_011,True,True,2,rejected_no_target,<Minion ('Shrinkmeister')> requires a target to play.,HAND,10,rejected
+GVG_012,True,True,4,rejected_no_target,<Spell ('Light of the Naaru')> requires a target to play.,HAND,10,rejected
+GVG_014,True,True,2,rejected_no_target,"<Minion (""Vol'jin"")> requires a target to play.",HAND,10,rejected
+GVG_015,True,True,4,rejected_no_target,<Spell ('Darkbomb')> requires a target to play.,HAND,10,rejected
+GVG_019,True,True,2,rejected_no_target,<Spell ('Demonheart')> requires a target to play.,HAND,10,rejected
+GVG_031,True,True,1,rejected_no_target,<Spell ('Recycle')> requires a target to play.,HAND,10,rejected
+GVG_038,True,True,4,rejected_no_target,<Spell ('Crackle')> requires a target to play.,HAND,10,rejected
+GVG_041,True,True,2,choice_required_first,"<Spell ('Dark Wispers')> requires a choice (one of [<Spell ('Call the Guardians')>, <Spell (""Nature's Defense"")>])",HAND,10,
+GVG_045,True,True,2,rejected_no_target,<Spell ('Imp-losion')> requires a target to play.,HAND,10,rejected
+GVG_052,True,True,2,rejected_no_target,<Spell ('Crush')> requires a target to play.,HAND,10,rejected
+GVG_055,True,False,0,condition_not_met,,,,
+GVG_073,True,True,2,rejected_no_target,<Spell ('Cobra Shot')> requires a target to play.,HAND,10,rejected
+GVG_083,True,False,0,condition_not_met,,,,
+GVG_108,True,True,1,rejected_no_target,<Minion ('Recombobulator')> requires a target to play.,HAND,10,rejected
+GVG_120,True,False,0,condition_not_met,,,,
+ICC_039,True,True,2,rejected_no_target,<Spell ('Dark Conviction')> requires a target to play.,HAND,10,rejected
+ICC_049,True,True,2,rejected_no_target,<Spell ('Toxic Arrow')> requires a target to play.,HAND,10,rejected
+ICC_052,False,True,0,condition_not_met,,,,
+ICC_055,True,True,2,rejected_no_target,<Spell ('Drain Soul')> requires a target to play.,HAND,10,rejected
+ICC_056,True,True,2,rejected_no_target,<Spell ('Cryostasis')> requires a target to play.,HAND,10,rejected
+ICC_058,True,True,2,rejected_no_target,<Minion ('Brrrloc')> requires a target to play.,HAND,10,rejected
+ICC_078,True,True,2,rejected_no_target,<Spell ('Avalanche')> requires a target to play.,HAND,10,rejected
+ICC_085,True,True,4,rejected_no_target,<Spell ('Ultimate Infestation')> requires a target to play.,HAND,10,rejected
+ICC_092,True,True,1,rejected_no_target,<Minion ('Acherus Veteran')> requires a target to play.,HAND,10,rejected
+ICC_093,True,True,1,rejected_no_target,<Minion ('Tuskarr Fisherman')> requires a target to play.,HAND,10,rejected
+ICC_094,True,True,1,rejected_no_target,<Minion ('Fallen Sun Cleric')> requires a target to play.,HAND,10,rejected
+ICC_206,True,True,1,rejected_no_target,<Spell ('Treachery')> requires a target to play.,HAND,10,rejected
+ICC_233,False,True,2,condition_not_met,,,,
+ICC_244,True,True,2,rejected_no_target,<Spell ('Desperate Stand')> requires a target to play.,HAND,10,rejected
+ICC_257,True,True,1,rejected_no_target,<Minion ('Corpse Raiser')> requires a target to play.,HAND,10,rejected
+ICC_467,True,True,1,rejected_no_target,<Minion ('Deathspeaker')> requires a target to play.,HAND,10,rejected
+ICC_469,True,True,1,rejected_no_target,<Spell ('Unwilling Sacrifice')> requires a target to play.,HAND,10,rejected
+ICC_705,True,True,1,rejected_no_target,<Minion ('Bonemare')> requires a target to play.,HAND,10,rejected
+ICC_809,True,False,1,condition_not_met,,,,
+ICC_849,True,True,1,rejected_no_target,<Spell ('Embrace Darkness')> requires a target to play.,HAND,10,rejected
+ICC_852,True,True,2,rejected_no_target,<Minion ('Prince Taldaram')> requires a target to play.,HAND,10,rejected
+ICC_903,True,True,1,rejected_no_target,<Minion ('Sanguine Reveler')> requires a target to play.,HAND,10,rejected
+ICC_910,True,False,4,condition_not_met,,,,
+KAR_013,True,True,1,rejected_no_target,<Spell ('Purify')> requires a target to play.,HAND,10,rejected
+KAR_033,True,True,1,rejected_no_target,<Minion ('Book Wyrm')> requires a target to play.,HAND,10,rejected
+KAR_041,True,True,2,rejected_no_target,<Minion ('Moat Lurker')> requires a target to play.,HAND,10,rejected
+KAR_065,True,False,0,condition_not_met,,,,
+KAR_075,True,True,4,rejected_no_target,<Spell ('Moonglade Portal')> requires a target to play.,HAND,10,rejected
+KAR_076,True,True,4,rejected_no_target,<Spell ('Firelands Portal')> requires a target to play.,HAND,10,rejected
+KAR_077,True,True,2,rejected_no_target,<Spell ('Silvermoon Portal')> requires a target to play.,HAND,10,rejected
+KAR_092,True,False,4,condition_not_met,,,,
+LOE_002,True,True,4,rejected_no_target,<Spell ('Forgotten Torch')> requires a target to play.,HAND,10,rejected
+LOE_017,True,True,2,rejected_no_target,<Minion ('Keeper of Uldaman')> requires a target to play.,HAND,10,rejected
+LOE_019,True,False,0,condition_not_met,,,,
+LOE_104,True,True,1,rejected_no_target,<Spell ('Entomb')> requires a target to play.,HAND,10,rejected
+LOE_105,True,True,2,rejected_no_target,"<Spell (""Explorer's Hat"")> requires a target to play.",HAND,10,rejected
+LOOT_017,True,True,1,rejected_no_target,<Spell ('Dark Pact')> requires a target to play.,HAND,10,rejected
+LOOT_043,True,True,2,rejected_no_target,<Spell ('Lesser Amethyst Spellstone')> requires a target to play.,HAND,10,rejected
+LOOT_047,True,True,2,rejected_no_target,<Spell ('Barkskin')> requires a target to play.,HAND,10,rejected
+LOOT_051,True,True,2,rejected_no_target,<Spell ('Lesser Jasper Spellstone')> requires a target to play.,HAND,10,rejected
+LOOT_060,True,True,2,rejected_no_target,<Spell ('Crushing Hand')> requires a target to play.,HAND,10,rejected
+LOOT_064,True,True,1,rejected_no_target,<Spell ('Lesser Sapphire Spellstone')> requires a target to play.,HAND,10,rejected
+LOOT_077,True,True,2,rejected_no_target,<Spell ('Flanking Strike')> requires a target to play.,HAND,10,rejected
+LOOT_088,True,True,2,rejected_no_target,<Spell ('Potion of Heroism')> requires a target to play.,HAND,10,rejected
+LOOT_111,True,True,2,rejected_no_target,<Minion ('Scorp-o-matic')> requires a target to play.,HAND,10,rejected
+LOOT_132,True,False,0,condition_not_met,,,,
+LOOT_150,True,True,1,rejected_no_target,<Minion ('Furbolg Mossbinder')> requires a target to play.,HAND,10,rejected
+LOOT_161,True,True,1,rejected_no_target,<Minion ('Carnivorous Cube')> requires a target to play.,HAND,10,rejected
+LOOT_278,True,True,2,rejected_no_target,<Spell ('Unidentified Elixir')> requires a target to play.,HAND,10,rejected
+LOOT_291,True,True,4,rejected_no_target,<Minion ('Shroom Brewer')> requires a target to play.,HAND,10,rejected
+LOOT_504,True,True,1,rejected_no_target,<Spell ('Unstable Evolution')> requires a target to play.,HAND,10,rejected
+LOOT_516,True,True,1,rejected_no_target,<Minion ('Zola the Gorgon')> requires a target to play.,HAND,10,rejected
+LOOT_528,True,False,2,condition_not_met,,,,
+NEW1_003,False,True,0,condition_not_met,,,,
+NEW1_005,True,False,2,condition_not_met,,,,
+NEW1_007,True,True,2,choice_required_first,"<Spell ('Starfall')> requires a choice (one of [<Spell ('Stellar Drift')>, <Spell ('Starlord')>])",HAND,10,
+NEW1_008,True,True,4,choice_required_first,"<Minion ('Ancient of Lore')> requires a choice (one of [<Spell ('Ancient Teachings')>, <Spell ('Ancient Secrets')>])",HAND,10,
+NEW1_014,True,True,1,rejected_no_target,<Minion ('Master of Disguise')> requires a target to play.,HAND,10,rejected
+NEW1_017,True,False,0,condition_not_met,,,,
+OG_023,True,True,2,rejected_no_target,<Spell ('Primal Fusion')> requires a target to play.,HAND,10,rejected
+OG_048,True,True,2,rejected_no_target,"<Spell (""Mark of Y'Shaarj"")> requires a target to play.",HAND,10,rejected
+OG_061,True,True,4,rejected_no_target,<Spell ('On the Hunt')> requires a target to play.,HAND,10,rejected
+OG_081,False,True,0,condition_not_met,,,,
+OG_086,True,True,2,rejected_no_target,<Spell ('Forbidden Flame')> requires a target to play.,HAND,10,rejected
+OG_094,True,True,2,rejected_no_target,<Spell ('Power Word: Tentacles')> requires a target to play.,HAND,10,rejected
+OG_102,True,True,1,rejected_no_target,<Minion ('Darkspeaker')> requires a target to play.,HAND,10,rejected
+OG_162,True,True,4,rejected_no_target,"<Minion (""Disciple of C'Thun"")> requires a target to play.",HAND,10,rejected
+OG_174,True,True,1,rejected_no_target,<Minion ('Faceless Shambler')> requires a target to play.,HAND,10,rejected
+OG_176,True,True,4,rejected_no_target,<Spell ('Shadow Strike')> requires a target to play.,HAND,10,rejected
+OG_198,True,True,4,rejected_no_target,<Spell ('Forbidden Healing')> requires a target to play.,HAND,10,rejected
+OG_206,True,True,2,rejected_no_target,<Spell ('Stormcrack')> requires a target to play.,HAND,10,rejected
+OG_223,True,True,2,rejected_no_target,<Spell ('Divine Strength')> requires a target to play.,HAND,10,rejected
+OG_234,True,True,4,rejected_no_target,<Minion ('Darkshire Alchemist')> requires a target to play.,HAND,10,rejected
+OG_282,True,True,2,rejected_no_target,"<Minion (""Blade of C'Thun"")> requires a target to play.",HAND,10,rejected
+OG_291,True,True,1,rejected_no_target,<Minion ('Shadowcaster')> requires a target to play.,HAND,10,rejected
+OG_309,True,False,0,condition_not_met,,,,
+OG_314,True,True,2,rejected_no_target,<Spell ('Blood To Ichor')> requires a target to play.,HAND,10,rejected
+OG_328,True,True,1,rejected_no_target,<Minion ('Master of Evolution')> requires a target to play.,HAND,10,rejected
+TRL_012,True,True,4,rejected_no_target,<Spell ('Totemic Smash')> requires a target to play.,HAND,10,rejected
+TRL_059,True,True,1,rejected_no_target,<Minion ('Bog Slosher')> requires a target to play.,HAND,10,rejected
+TRL_082,True,True,1,rejected_no_target,<Spell ('Big Bad Voodoo')> requires a target to play.,HAND,10,rejected
+TRL_097,True,True,2,rejected_no_target,<Spell ('Seance')> requires a target to play.,HAND,10,rejected
+TRL_119,False,True,0,condition_not_met,,,,
+TRL_128,True,True,4,rejected_no_target,<Spell ('Regenerate')> requires a target to play.,HAND,10,rejected
+TRL_157,True,True,2,rejected_no_target,<Spell ('Walk the Plank')> requires a target to play.,HAND,10,rejected
+TRL_240,True,True,1,rejected_no_target,<Minion ('Savage Striker')> requires a target to play.,HAND,10,rejected
+TRL_249,True,True,1,rejected_no_target,<Spell ('Grim Rally')> requires a target to play.,HAND,10,rejected
+TRL_254,True,True,2,choice_required_first,"<Spell ('Mark of the Loa')> requires a choice (one of [<Spell (""Gonk's Resilience"")>, <Spell ('Raptor Pack')>])",HAND,10,
+TRL_307,True,True,4,rejected_no_target,<Spell ('Flash of Light')> requires a target to play.,HAND,10,rejected
+TRL_313,True,True,2,rejected_no_target,<Spell ('Scorch')> requires a target to play.,HAND,10,rejected
+TRL_321,False,True,0,condition_not_met,,,,
+TRL_326,True,False,0,condition_not_met,,,,
+TRL_347,True,True,4,rejected_no_target,<Spell ('Baited Arrow')> requires a target to play.,HAND,10,rejected
+TRL_512,True,True,4,rejected_no_target,<Minion ('Cheaty Anklebiter')> requires a target to play.,HAND,10,rejected
+TRL_522,True,False,4,condition_not_met,,,,
+TRL_524,True,False,0,condition_not_met,,,,
+TRL_555,True,True,2,rejected_no_target,<Spell ('Demonbolt')> requires a target to play.,HAND,10,rejected
+TRL_569,True,True,1,rejected_no_target,<Minion ('Crowd Roaster')> requires a target to play.,HAND,10,rejected
+ULD_134,True,True,2,rejected_no_target,<Spell ('BEEEES!!!')> requires a target to play.,HAND,10,rejected
+ULD_135,True,True,4,choice_required_first,"<Spell ('Hidden Oasis')> requires a choice (one of [<Spell ('Befriend the Ancient')>, <Spell ('Drink the Water')>])",HAND,10,
+ULD_143,True,True,2,rejected_no_target,"<Spell (""Pharaoh's Blessing"")> requires a target to play.",HAND,10,rejected
+ULD_162,True,False,0,condition_not_met,,,,
+ULD_165,True,True,2,rejected_no_target,<Minion ('Riftcleaver')> requires a target to play.,HAND,10,rejected
+ULD_170,True,False,4,condition_not_met,,,,
+ULD_190,True,True,4,rejected_no_target,<Minion ('Pit Crocolisk')> requires a target to play.,HAND,10,rejected
+ULD_191,True,True,1,rejected_no_target,<Minion ('Beaming Sidekick')> requires a target to play.,HAND,10,rejected
+ULD_265,True,True,2,rejected_no_target,<Spell ('Embalming Ritual')> requires a target to play.,HAND,10,rejected
+ULD_269,True,True,1,rejected_no_target,<Minion ('Wretched Reclaimer')> requires a target to play.,HAND,10,rejected
+ULD_286,True,True,2,rejected_no_target,<Spell ('Shadow of Death')> requires a target to play.,HAND,10,rejected
+ULD_293,True,False,4,condition_not_met,,,,
+ULD_324,True,True,2,rejected_no_target,<Spell ('Impbalming')> requires a target to play.,HAND,10,rejected
+ULD_714,True,True,2,rejected_no_target,<Spell ('Penance')> requires a target to play.,HAND,10,rejected
+ULD_720,True,False,0,condition_not_met,,,,
+ULD_728,True,True,2,rejected_no_target,<Spell ('Subdue')> requires a target to play.,HAND,10,rejected
+UNG_004,True,True,2,rejected_no_target,<Spell ('Dinosize')> requires a target to play.,HAND,10,rejected
+UNG_018,True,True,4,rejected_no_target,<Spell ('Flame Geyser')> requires a target to play.,HAND,10,rejected
+UNG_022,True,True,1,rejected_no_target,<Minion ('Mirage Caller')> requires a target to play.,HAND,10,rejected
+UNG_030,True,True,2,rejected_no_target,<Spell ('Binding Heal')> requires a target to play.,HAND,10,rejected
+UNG_047,True,True,1,rejected_no_target,<Minion ('Ravenous Pterrordax')> requires a target to play.,HAND,10,rejected
+UNG_064,True,False,2,condition_not_met,,,,
+UNG_073,True,False,0,condition_not_met,,,,
+UNG_084,True,True,4,rejected_no_target,<Minion ('Fire Plume Phoenix')> requires a target to play.,HAND,10,rejected
+UNG_108,True,True,1,rejected_no_target,<Spell ('Earthen Scales')> requires a target to play.,HAND,10,rejected
+UNG_205,True,True,2,rejected_no_target,<Minion ('Glacial Shard')> requires a target to play.,HAND,10,rejected
+UNG_800,True,False,0,condition_not_met,,,,
+UNG_807,True,False,0,condition_not_met,,,,
+UNG_817,True,True,2,rejected_no_target,<Spell ('Tidal Surge')> requires a target to play.,HAND,10,rejected
+UNG_834,True,True,2,rejected_no_target,<Spell ('Feeding Time')> requires a target to play.,HAND,10,rejected
+UNG_847,True,False,4,condition_not_met,,,,
+UNG_910,True,True,2,rejected_no_target,<Spell ('Grievous Bite')> requires a target to play.,HAND,10,rejected
+UNG_915,True,False,0,condition_not_met,,,,
+UNG_938,True,True,4,rejected_no_target,<Minion ('Hot Spring Guardian')> requires a target to play.,HAND,10,rejected
+UNG_948,True,True,1,rejected_no_target,<Spell ('Molten Reflection')> requires a target to play.,HAND,10,rejected
+UNG_952,True,True,2,rejected_no_target,<Spell ('Spikeridged Steed')> requires a target to play.,HAND,10,rejected
+UNG_955,True,True,2,rejected_no_target,<Spell ('Meteor')> requires a target to play.,HAND,10,rejected
+UNG_961,True,True,1,rejected_no_target,<Spell ('Adaptation')> requires a target to play.,HAND,10,rejected
+YOD_005,False,True,0,condition_not_met,,,,
+YOD_014,True,True,2,rejected_no_target,<Minion ('Aeon Reaver')> requires a target to play.,HAND,10,rejected
+YOD_020,True,True,2,rejected_no_target,<Spell ('Explosive Evolution')> requires a target to play.,HAND,10,rejected

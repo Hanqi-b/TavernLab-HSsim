@@ -1,0 +1,21 @@
+﻿card_id,status,mechanic_scope,reason,probe_file,notes
+EX1_578,GREEN,Spell resolution|Targeting,法术按英雄当前攻击力对所选随从造成伤害。,classic_probe_middle_b.csv,目标为敌方随从；同时保留友方随从作为未受影响对照。
+EX1_583,GREEN,Battlecry,战吼为自己的英雄恢复4点生命。,classic_probe_middle_b.csv,己方英雄预先受伤；对手英雄作为未受影响对照。
+EX1_595,GREEN,Draw / Discard|Trigger,己方随从死亡后抽一张牌；敌方死亡不触发。,classic_probe_middle_b.csv,同局先令敌方随从死亡作负例，再令己方随从死亡验证抽牌。
+EX1_596,GREEN,Spell resolution|Targeting,对随从造成2点伤害；仅友方恶魔改为+2/+2。,classic_probe_middle_b.csv,分别覆盖友方恶魔强化和敌方非恶魔伤害。
+EX1_597,GREEN,Summon|Trigger,己方回合结束时自身受1伤并召唤1/1小鬼。,classic_probe_middle_b.csv,覆盖正常结束回合和七随从容量边界。
+EX1_584,RED,Battlecry|Spell Damage,左右相邻随从确实获得 EX1_584e 附魔，但法术伤害都仍为0；月火术只造成1点，而非应有的3点。,classic_probe_middle_b.csv,已确认的行为不匹配，具体断言与现场状态见 probe CSV。
+EX1_586,GREEN,Cost modification,每有一个其他场上随从，费用减少1。,classic_probe_middle_b.csv,同时计数两方场面并验证费用随死亡更新。
+EX1_594,GREEN,Secret|Spell resolution|Trigger,仅敌方随从攻击己方英雄时触发并消灭攻击者。,classic_probe_middle_b.csv,覆盖触发攻击与英雄攻击不触发两个真实战斗分支。
+EX1_590,GREEN,Battlecry,移除全场圣盾；每移除一个，自身获得+3/+3。,classic_probe_middle_b.csv,己方/敌方圣盾均计数；无圣盾随从和自身体型作对照。
+EX1_603,GREEN,Battlecry|Targeting,对任意一个随从造成1点伤害并使其获得+2攻击力。,classic_probe_middle_b.csv,分别对敌方与己方4/5随从施放战吼。
+EX1_604,GREEN,Trigger,任意随从受到伤害后，暴乱狂战士获得+1攻击力。,classic_probe_middle_b.csv,Whirlwind 同时命中自身、双方随从并击杀双方随从。
+EX1_607,GREEN,Spell resolution|Targeting,对一个随从造成1点伤害并使其获得+2攻击力。,classic_probe_middle_b.csv,对敌方和己方随从分别实放。
+EX1_608,GREEN,Aura|Continuous effect / Update|Cost modification,己方法术费用减少1，多个来源叠加并随来源离场恢复。,classic_probe_middle_b.csv,检查火球术和0费Moonfire及两名学徒的叠加/退场。
+EX1_609,GREEN,Secret|Spell resolution|Trigger,对手打出随从后，狙击对该随从造成4点伤害。,classic_probe_middle_b.csv,分别覆盖己方不触发与敌方打出触发。
+EX1_610,GREEN,Secret|Spell resolution|Trigger,英雄受到攻击时，奥秘对所有敌人造成2点伤害。,classic_probe_middle_b.csv,验证随从攻击和英雄攻击触发，以及敌方角色范围。
+EX1_611,GREEN,Cost modification|Secret|Spell resolution|Trigger,敌方随从攻击时，将攻击者移回其拥有者手牌并使其费用增加2。,classic_probe_middle_b.csv,以敌方随从攻击己方随从触发，并用英雄攻击作负例。
+EX1_612,GREEN,Battlecry,本回合下一张奥秘的法力值消耗为0。,classic_probe_middle_b.csv,以两张奥秘验证一次性消耗，并以火球术作非奥秘对照。
+EX1_613,GREEN,Combo,连击：本回合每打出一张其他牌，获得+2/+2。,classic_probe_middle_b.csv,分别验证两张先前牌逐次叠加以及无先前牌分支。
+EX1_614,GREEN,Summon|Trigger,己方打出牌后召唤一个2/1萨特。,classic_probe_middle_b.csv,验证己方/对手打牌触发范围和满场容量上限。
+EX1_616,GREEN,Aura|Continuous effect / Update|Cost modification,所有玩家手牌中的随从费用增加1。,classic_probe_middle_b.csv,实测双方手牌的随从/法术差异及 aura 离场恢复。

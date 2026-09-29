@@ -1,0 +1,84 @@
+﻿card_id,status,mechanic_scope,reason,probe_file,notes
+CS2_093,GREEN,Spell resolution,敌方英雄和随从各受到2点伤害；友方角色未受伤且法术正常入墓。,basic_card_probe_e.csv,逐卡实测敌我角色范围与伤害值。
+CS2_094,GREEN,Draw / Discard|Spell resolution|Targeting,敌方随从、敌方英雄和友方随从均可指定并实际受3伤；每次从已知牌库抽到一张牌。,basic_card_probe_e.csv,逐卡实测敌方随从、敌方英雄、友方随从目标及抽牌落区。
+CS2_103,GREEN,Spell resolution|Targeting,仅友方随从可被指定；本回合获得即时随从攻击资格但不能攻击英雄；下一回合英雄攻击限制解除。,basic_card_probe_e.csv,逐卡实测目标范围、攻击限制和跨回合状态。
+CS2_108,GREEN,Spell resolution|Targeting,仅受伤敌方随从合法；受伤友方随从仍非法，强制指定会在扣费前拒绝；合法目标摧毁入墓。,basic_card_probe_e.csv,逐卡实测未受伤与友方目标限制以及销毁落区。
+CS2_114,GREEN,Random effects|Spell resolution,三名敌方随从中恰有两名不同随从各受2点伤害；友方不受影响；零目标不能出牌且单目标正确受伤。,basic_card_probe_e.csv,逐卡实测随机目标数与候选池边界。
+EX1_169,GREEN,Spell resolution,本回合临时法力恰增1且不增加永久水晶；回合结束清零；满法力时不会超过上限。,basic_card_probe_f.csv,逐卡实测正常使用与满法力边界。
+EX1_192,GREEN,Spell resolution,受伤的友方英雄恢复5点且敌方不变；满血时不会超过上限。,basic_card_probe_f.csv,逐卡实测治疗目标与满血边界。
+EX1_593,GREEN,Battlecry,战吼对敌方英雄造成3点伤害；护甲先吸收伤害；随从正确入场。,basic_card_probe_f.csv,逐卡实测无护甲与有护甲分支。
+EX1_606,GREEN,Draw / Discard|Spell resolution,获得5点护甲并从牌库抽取已知牌；空牌库时仍获得护甲且不生成手牌。,basic_card_probe_f.csv,逐卡实测护甲与抽牌的两个分支。
+EX1_581,GREEN,Spell resolution|Targeting,仅可指定敌方随从；目标回到敌方手牌且控制者不变；满手牌时目标入墓而不溢出。,basic_card_probe_f.csv,逐卡实测目标限制、回手区域和满手牌边界。
+CS2_141,GREEN,Battlecry|Targeting,战吼可指定敌方英雄或友方随从并恰造成1点伤害；有合法目标时漏选会在付费和入场前拒绝。,basic_card_probe_g.csv,逐卡实测伤害数值、目标范围和缺目标状态。
+CS2_150,GREEN,Battlecry|Targeting,战吼可指定敌方英雄或友方随从并恰造成2点伤害；有合法目标时漏选会在付费和入场前拒绝。,basic_card_probe_g.csv,逐卡实测伤害数值、目标范围和缺目标状态。
+CS2_189,GREEN,Battlecry|Targeting,战吼可指定敌方英雄或友方随从并恰造成1点伤害；有合法目标时漏选会在付费和入场前拒绝。,basic_card_probe_g.csv,逐卡实测伤害数值、目标范围和缺目标状态。
+EX1_015,GREEN,Battlecry|Draw / Discard,战吼从牌库抽取已知牌到手牌；空牌库时不生成牌且随从正常入场。,basic_card_probe_g.csv,逐卡实测抽牌实体与空牌库分支。
+EX1_025,GREEN,Battlecry|Summon,战吼召唤且仅召唤一只2/1机械幼龙；已有六个随从时本体占满第七格且不额外召唤。,basic_card_probe_g.csv,逐卡实测衍生随从属性种族与满场边界。
+EX1_066,GREEN,Battlecry,敌我双方装备武器后战吼只摧毁敌方武器且己方武器保留；敌方无武器时不会误伤己方。,basic_card_probe_a.csv,逐卡实测装备与摧毁落区。
+EX1_302,GREEN,Draw / Discard|Spell resolution|Targeting,1点伤害致死时目标入墓并抽到已知顶牌；非致死时目标存活且不抽；随从目标合法而英雄非法。,basic_card_probe_a.csv,逐卡实测致死与非致死和目标范围。
+DS1_184,YELLOW,Draw / Discard|Spell resolution,牌库顶三张实体、选择入手及另两张移出游戏均通过；但卡面“抽取一张”的选择未增加本回合抽牌计数，而正常抽牌会增加。该选择是否应触发抽牌事件尚缺可信规则证据。,basic_card_probe_a.csv,阻碍：需核实 17.6 追踪术的抽牌事件语义；目前记录为 inconclusive，不凭手牌落区直接判 GREEN。
+EX1_565,GREEN,Aura|Continuous effect / Update,仅相邻随从获得2点攻击力；邻位随从死亡后光环更新；图腾沉默后增益移除。,basic_card_probe_a.csv,逐卡实测插入位置、死亡后邻位与沉默移除。
+BT_323,RED,Battlecry|Choose One,按本轮人工确认的规则，同卡号的两张牌均可作为独立候选；牌库有四张物理牌、两种卡号时应提供三张候选，实际仅出现两张，未满足战吼效果。,basic_card_probe_a.csv,用户已确认重复卡副本可以分别被检索；basic_card_probe_a.csv#watcher_duplicate_ids_suppress_physical_choice 为真实出牌后的确认错误。
+BT_142,RED,Battlecry,战吼打出后英雄攻击力仍为0而非应增加到1；+1攻击附魔被施加到玩家对象而没有作用于英雄。,basic_card_probe_b.csv,"正常出牌确认 Buff(CONTROLLER, atk=1) 未使英雄获得攻击；非 Basic 的 BT_351 使用相似写法，仅列待测候选，不改其评级。"
+CS2_196,GREEN,Battlecry|Summon,战吼召唤恰好一只1/1野兽野猪；本体占据第七格时不越过场位上限。,basic_card_probe_i.csv,逐卡实测衍生随从属性与满场边界。
+CS2_234,GREEN,Spell resolution|Targeting,仅攻击力不超过3的随从可指定；施放后目标入墓；友方低攻击随从也可合法指定。,basic_card_probe_i.csv,逐卡实测阈值、友敌目标与摧毁落区。
+DS1_055,GREEN,Battlecry,战吼为受伤的友方英雄和随从各恢复至多2点生命；满血友方与敌方角色状态不变。,basic_card_probe_i.csv,逐卡实测友方角色范围、治疗量与敌方排除。
+EX1_360,GREEN,Spell resolution|Targeting,可指定友方或敌方随从并将攻击力变为1；既验证高攻击力下降也验证零攻击力上升。,basic_card_probe_i.csv,逐卡实测目标域与高低两类攻击力。
+EX1_371,GREEN,Spell resolution|Targeting,可赋予友方或敌方随从圣盾；第一次伤害被吸收且圣盾消失，第二次伤害正常扣血。,basic_card_probe_i.csv,逐卡实测目标域与两次伤害结果。
+BT_035,GREEN,Draw / Discard|Spell resolution,英雄本回合攻击力加2并从牌库抽到已知牌；回合结束攻击力恢复且法术正常入墓。,basic_card_probe_b.csv,逐卡实测抽牌实体、攻击力与回合结束状态。
+BT_036,GREEN,Spell resolution|Summon,召唤恰好三只1/1突袭伊利达雷且可立即攻击随从不能攻击英雄；仅余一格时只召唤一只。,basic_card_probe_b.csv,逐卡实测召唤数量、突袭攻击与满场边界。
+BT_235,GREEN,Spell resolution,对双方所有随从各造成4点伤害并正确处理致死入墓；双方英雄不受伤。,basic_card_probe_b.csv,逐卡实测全场范围、数值与死亡区域。
+BT_352,GREEN,Summon|Trigger,己方英雄攻击后召唤一只2/2萨特；己方随从及对方英雄攻击时均不触发。,basic_card_probe_b.csv,逐卡实测触发来源、时机与召唤结果。
+BT_495,GREEN,Battlecry|Targeting,英雄本回合未攻击时即使指定目标亦无伤害；已攻击时目标受4伤；前一回合攻击不满足条件。,basic_card_probe_b.csv,逐卡实测条件两分支与目标伤害。
+BT_512,GREEN,Spell resolution,英雄本回合获得8点攻击力并实际造成8点攻击伤害；回合结束攻击力恢复。,basic_card_probe_b.csv,逐卡实测攻击数值、实际战斗与持续时间。
+CS1_130,GREEN,Spell resolution|Targeting,敌我随从均可指定并准确承受3点伤害；致死随从入墓；英雄非法且拒绝时不消耗法术。,basic_card_probe_c.csv,逐卡实测伤害、死亡落区与目标限制。
+CS2_003,GREEN,Random effects|Spell resolution,从对手手牌随机复制卡到己方手牌而不移走原牌；空手牌不产卡；不同随机种子可选出不同候选。,basic_card_probe_c.csv,逐卡实测复制实体、区域和候选池边界。
+CS2_004,GREEN,Spell resolution|Targeting,随从获得2点最大及当前生命且攻击不变；不抽牌；英雄不可指定且非法出牌无资源变化。,basic_card_probe_c.csv,逐卡实测生命增益、目标限制和手牌牌库状态。
+CS2_005,GREEN,Spell resolution,英雄本回合获得2点攻击力及2点护甲；攻击力回合结束消失而护甲保留并可吸收后续伤害。,basic_card_probe_c.csv,逐卡实测临时攻击、护甲持续与实际吸伤。
+CS2_007,GREEN,Spell resolution|Targeting,友方英雄恢复8点生命；敌方随从也可指定且治疗不超过最大生命。,basic_card_probe_c.csv,逐卡实测治疗数值、目标范围与上限。
+CS2_008,GREEN,Spell resolution|Targeting,敌方随从和友方英雄均可指定并准确受到1点伤害。,basic_card_probe_c.csv,逐卡实测伤害数值与两类合法目标。
+CS2_024,GREEN,Spell resolution|Targeting,敌方随从受3点伤害并冻结；友方英雄也可指定且受伤冻结；漏选目标会被拒绝且不消耗法术。,basic_card_probe_c.csv,逐卡实测伤害、冻结、目标范围与非法出牌状态。
+CS2_027,GREEN,Spell resolution|Summon,召唤两只0/2嘲讽镜像且实际阻挡敌方攻击英雄；余一格只召唤一只；满场不可施放。,basic_card_probe_c.csv,逐卡实测衍生属性、战斗约束与场位边界。
+CS2_032,GREEN,Spell resolution,对全部敌方随从各造成4点伤害；致死入墓且圣盾吸收一次伤害；友方随从和双方英雄不受伤。,basic_card_probe_c.csv,逐卡实测敌方全场范围、伤害与死亡状态。
+CS2_033,GREEN,Targeting|Trigger,该随从攻击英雄及防守反击造成伤害时均冻结受伤角色；伤害被圣盾完全阻止时不冻结。,basic_card_probe_c.csv,逐卡实测触发方向、实际伤害与未造成伤害分支。
+CS2_037,GREEN,Spell resolution|Targeting,敌方随从和英雄各可指定并受1点伤害及冻结；友方角色非法且拒绝时状态不变。,basic_card_probe_c.csv,逐卡实测敌方目标域、伤害、冻结与非法目标。
+CS2_045,GREEN,Spell resolution|Targeting,友方英雄和随从均可指定并获得本回合3点攻击力；敌方目标拒绝且不耗资源；增益在回合结束移除。,basic_card_probe_d.csv,逐卡实测两种合法目标、非法目标与临时效果。
+CS2_046,GREEN,Spell resolution,施法时己方场上随从均获得本回合3点攻击力；敌方与英雄不变；施法后才入场的随从不追溯增益。,basic_card_probe_d.csv,逐卡实测场上范围与回合结束移除。
+CS2_057,GREEN,Spell resolution|Targeting,敌我随从都可指定并受准确4点伤害；致死入墓且未选随从不变；英雄目标被拒绝。,basic_card_probe_d.csv,逐卡实测伤害、目标限制与致死落区。
+CS2_061,GREEN,Spell resolution|Targeting,敌方随从、友方随从及敌方英雄均可指定并受2伤，己方英雄恢复2；致死和满血治疗边界通过。,basic_card_probe_d.csv,逐卡实测随从、英雄、致死及治疗上限。
+CS2_062,GREEN,Spell resolution,双方英雄和所有随从各受3点伤害；多个低血随从死亡离场且存活随从保留剩余生命。,basic_card_probe_d.csv,逐卡实测全角色范围、伤害数值和死亡区域。
+CS2_072,GREEN,Spell resolution|Targeting,仅未受伤随从可指定并受2点伤害；已受伤目标拒绝且不耗资源；友敌随从均可指定。,basic_card_probe_d.csv,逐卡实测受伤门槛、伤害与目标范围。
+CS2_075,GREEN,Spell resolution,无目标施法后仅敌方英雄受3点伤害；己方英雄和双方随从不变。,basic_card_probe_d.csv,逐卡实测自动目标与伤害范围。
+CS2_076,GREEN,Spell resolution|Targeting,仅敌方随从可指定并被摧毁入墓；圣盾不能阻止摧毁；友方随从与英雄目标拒绝且不耗资源。,basic_card_probe_d.csv,逐卡实测目标规则、圣盾与销毁落区。
+CS2_077,GREEN,Draw / Discard|Spell resolution,从已知牌库按序抽4张；短牌库抽完后按次序产生疲劳；满手牌时多余卡被移出且手牌不越上限。,basic_card_probe_d.csv,逐卡实测抽牌数量顺序、疲劳与满手牌边界。
+CS2_088,GREEN,Battlecry,随从正常入场并使受伤英雄恢复6点生命；满血时不超过生命上限。,basic_card_probe_d.csv,逐卡实测战吼治疗与满血边界。
+CS2_089,GREEN,Spell resolution|Targeting,己方英雄恢复6点；敌方随从也可指定且只恢复至最大生命。,basic_card_probe_d.csv,逐卡实测治疗数值、目标范围与治疗上限。
+CS2_092,GREEN,Spell resolution|Targeting,友方受伤随从攻击及最大生命各加4且原有伤害保留；跨回合持续；敌方随从也可指定而英雄非法。,basic_card_probe_d.csv,逐卡实测属性增益、持续时间与目标限制。
+CS1_112,GREEN,Spell resolution,所有敌方随从各受2点伤害且低血随从死亡入墓；所有受伤友方角色恢复2点且不溢疗；敌方英雄不受伤。,basic_card_probe_b.csv,逐卡实测伤害、治疗双方范围与死亡区域。
+CS1_113,GREEN,Spell resolution|Targeting,仅敌方随从可指定；目标转入己方战场且控制者变化并保持属性与疲劳状态；友方非法目标拒绝且不耗资源。,basic_card_probe_b.csv,逐卡实测控制权、场地与非法目标。
+BT_740,GREEN,Lifesteal|Random effects|Spell resolution,两名敌随从时各受2点伤害并共恢复4点生命；仅一名敌随从时按确认规则只命中一次、造成2点且恢复2点；无敌随从不能施放。,basic_card_probe_b.csv,用户确认单一合格随从只受一次伤害；三个逐卡 testcase 的伤害、吸血和施放门槛均通过。
+EX1_011,GREEN,Battlecry|Targeting,受伤友方英雄恢复2点；满血随从可选但不溢疗；缺目标拒绝且不扣费。,basic_card_probe_h.csv,逐卡实际行为断言：3 个独立 testcase 全部通过。
+EX1_084,GREEN,Aura|Continuous effect / Update,己方冲锋随从获得攻击增益并实际攻击；沉默移除冲锋后增益消失。,basic_card_probe_h.csv,逐卡实际行为断言：2 个独立 testcase 全部通过。
+EX1_129,GREEN,Draw / Discard|Spell resolution,所有敌随从受1伤且抽到已知牌；无敌随从仍抽牌。,basic_card_probe_h.csv,逐卡实际行为断言：2 个独立 testcase 全部通过。
+EX1_173,GREEN,Draw / Discard|Spell resolution|Targeting,敌方及友方英雄各可指定并受5伤后抽牌；随从致死仍抽牌。,basic_card_probe_h.csv,逐卡实际行为断言：3 个独立 testcase 全部通过。
+EX1_191,GREEN,Battlecry|Targeting,友方随从获剧毒并在实际战斗中消灭高血目标。,basic_card_probe_h.csv,逐卡实际行为断言：1 个独立 testcase 全部通过。
+EX1_193,GREEN,Battlecry,复制对方牌库一张牌入己方手牌且不移除原牌；空牌库不生成。,basic_card_probe_h.csv,逐卡实际行为断言：2 个独立 testcase 全部通过。
+EX1_244,GREEN,Spell resolution,当前己方图腾获得生命增益，非图腾及敌方随从不变。,basic_card_probe_h.csv,逐卡实际行为断言：1 个独立 testcase 全部通过。
+EX1_246,GREEN,Spell resolution|Targeting|Transform,敌方及友方随从可变形为青蛙；原随从离场且亡语不触发；英雄非法。,basic_card_probe_h.csv,逐卡实际行为断言：2 个独立 testcase 全部通过。
+EX1_277,GREEN,Random effects|Spell resolution,24个固定种子下每局结算3次伤害，敌方英雄及两只随从均可命中；法术伤害提升总伤害。,basic_card_probe_h.csv,逐卡实际行为断言：2 个独立 testcase 全部通过。
+EX1_278,GREEN,Draw / Discard|Spell resolution|Targeting,敌方及友方英雄各可指定并受1伤后抽牌；随从致死仍抽牌。,basic_card_probe_h.csv,逐卡实际行为断言：3 个独立 testcase 全部通过。
+CS2_237,GREEN,Draw / Discard|Summon|Trigger,己方野兽入场抽牌；敌方野兽及己方非野兽不触发；秃鹫死亡后不再触发。,basic_card_probe_j.csv,逐卡实际行为断言：2 个独立 testcase 全部通过。
+DS1_178,GREEN,Aura|Continuous effect / Update,己方野兽含自身与后续入场者获冲锋并可立即攻击；非野兽及敌方野兽不受益；沉默后失效。,basic_card_probe_j.csv,逐卡实际行为断言：2 个独立 testcase 全部通过。
+DS1_183,GREEN,Random effects|Spell resolution,12个固定种子下每局两名不同敌随从各受3伤且候选对子变化；单目标仅受一次伤；零目标不可施放。,basic_card_probe_j.csv,逐卡实际行为断言：3 个独立 testcase 全部通过。
+DS1_185,GREEN,Spell resolution|Targeting,敌随从及友方英雄均可指定并准确受2伤；缺目标拒绝且留手。,basic_card_probe_j.csv,逐卡实际行为断言：3 个独立 testcase 全部通过。
+EX1_306,GREEN,Battlecry|Draw / Discard|Random effects,12个种子下从剩余手牌随机弃一张且候选变化；无其他手牌正常入场不弃牌。,basic_card_probe_j.csv,逐卡实际行为断言：2 个独立 testcase 全部通过。
+EX1_308,GREEN,Draw / Discard|Random effects|Spell resolution|Targeting,敌方与友方英雄均可指定并受4伤；从其余手牌随机弃一张且三个候选均曾出现；无余牌仍伤害；缺目标拒绝。,basic_card_probe_j.csv,逐卡实际行为断言：4 个独立 testcase 全部通过。
+EX1_399,GREEN,Trigger,每次实际受伤独立加3攻击；圣盾吸收伤害不触发，随后受伤才触发。,basic_card_probe_j.csv,逐卡实际行为断言：2 个独立 testcase 全部通过。
+EX1_400,GREEN,Spell resolution,友敌所有随从各受1伤；低血随从入墓、圣盾吸伤、受伤触发正常；英雄不受伤。,basic_card_probe_j.csv,逐卡实际行为断言：1 个独立 testcase 全部通过。
+EX1_506,GREEN,Battlecry|Summon,本体2/1鱼人入场并召唤己方1/1鱼人斥候；先有六随从时本体占第七格，不越界召唤斥候。,basic_card_probe_k.csv,逐卡实际行为断言：2 个独立 testcase 全部通过。
+EX1_508,GREEN,Aura|Continuous effect / Update,其他己方鱼人含后续入场者获1攻击；自身、非鱼人、敌方不受益；沉默后移除。,basic_card_probe_k.csv,逐卡实际行为断言：1 个独立 testcase 全部通过。
+EX1_539,GREEN,Spell resolution|Targeting,无己方野兽时对敌方或友方随从准确造成3伤；己方野兽在场时对敌方或友方英雄造成5伤，野兽离场后恢复3伤。,basic_card_probe_k.csv,逐卡实际行为断言：4 个独立 testcase 全部通过。
+EX1_587,GREEN,Battlecry|Targeting,敌方目标被拒不扣费；友方随从获风怒后实际攻击两次，第三次被拒；本体入场。,basic_card_probe_k.csv,逐卡实际行为断言：1 个独立 testcase 全部通过。
+EX1_622,GREEN,Spell resolution|Targeting,4攻目标非法且不扣费；5攻友方及7攻敌方随从均可指定并被摧毁入墓。,basic_card_probe_k.csv,逐卡实际行为断言：1 个独立 testcase 全部通过。
+NEW1_003,GREEN,Spell resolution|Targeting,仅己方恶魔可指定并摧毁，英雄恢复5；敌方恶魔及己方非恶魔拒绝；满血不溢疗。,basic_card_probe_k.csv,逐卡实际行为断言：2 个独立 testcase 全部通过。
+NEW1_031,GREEN,Random effects|Spell resolution|Summon,固定种子覆盖雷欧克光环、米莎实际嘲讽攻击限制、霍弗冲锋即时攻击；七格满场时施放拒绝且资源不变。,basic_card_probe_k.csv,逐卡实际行为断言：5 个独立 testcase 全部通过。

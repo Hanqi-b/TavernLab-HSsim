@@ -1,0 +1,11 @@
+﻿case_id,mechanism,card_ids,expected,observed,outcome
+STATS-01,Conditional stats / Continuous effect,DRG_058|EX1_284,"Attack follows 1,2,1,0 Dragons in hand: (4, 6, 4, 2)","attack_sequence=(4, 4, 4, 4);commander_zone=PLAY;dragon_zones=REMOVEDFROMGAME,REMOVEDFROMGAME",confirmed_error
+STATS-02,Conditional stats / Continuous effect,DRG_088,"0,1,2 other Ravens -> ((3,), (6, 6), (9, 9, 9))","attack_sequence=((6,), (6, 6), (6, 6, 6));field=3",confirmed_error
+STATS-03,Conditional stats / Continuous effect,TB_KTRAF_5|CS2_231,"Attack before/with/after relevant entity: (0, 1, 0)","attack_sequence=(5, 5, 5);subject_zone=PLAY;partner_zone=REMOVEDFROMGAME",confirmed_error
+STATS-04,Conditional stats / Continuous effect,TB_BaconUps_036|CS2_168,"Attack before/with/after relevant entity: (4, 6, 4)","attack_sequence=(4, 4, 4);subject_zone=PLAY;partner_zone=GRAVEYARD",confirmed_error
+STATS-05,Conditional stats / Continuous effect,ULDA_501|CS2_231,"Attack before/with/after relevant entity: (3, 5, 3)","attack_sequence=(3, 3, 3);subject_zone=PLAY;partner_zone=GRAVEYARD",confirmed_error
+STATS-06,Conditional stats / Continuous effect,EX1_062|CS2_168,"Attack before/with/after relevant entity: (2, 3, 2)","attack_sequence=(2, 3, 2);subject_zone=PLAY;partner_zone=GRAVEYARD",pass
+STATS-07,Conditional stats / Continuous effect,ICC_841|CS2_231,"0,1,2 discarded cards -> [1, 2, 3]","attack_sequence=[1, 1, 1];queen_zone=PLAY",confirmed_error
+STATS-08,Conditional stats / Continuous effect,DALA_503,one Guard 1 Attack; two Guards each 2 Attack,"alone=1;pair=(1, 1);field=2",confirmed_error
+STATS-09,Conditional stats / Continuous effect,GILA_403|CS2_172,friendly Beast death grows Butch from 1/1 to 2/2,"butch=(1, 1)->(1, 1);beast_zone=GRAVEYARD;butch_zone=PLAY",confirmed_error
+STATS-10,Conditional stats / Continuous effect,GILA_907|GAME_005,"0,1,2 spells cast -> stats 1/1,2/2,3/3","stats_sequence=[(1, 1), (1, 1), (1, 1)];assistant_zone=PLAY",confirmed_error

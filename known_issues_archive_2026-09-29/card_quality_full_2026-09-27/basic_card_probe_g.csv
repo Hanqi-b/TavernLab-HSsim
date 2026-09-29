@@ -1,0 +1,14 @@
+﻿card_id,case_id,expected,observed,outcome,notes
+CS2_141,CS2_141_enemy,Battlecry deals one to chosen enemy hero,target=enemy_hero;health=30->29;minion=PLAY,pass,CardDefs.xml#CS2_141; fireplace/cards/classic/neutral_common.py:110; no prior effect assertion
+CS2_141,CS2_141_friendly,Battlecry can choose friendly minion and deal one,target=friendly_minion;health=5->4;minion=PLAY,pass,CardDefs.xml#CS2_141; fireplace/cards/classic/neutral_common.py:110
+CS2_141,CS2_141_no_target,Available target requires selection; omission rejects before payment or entry,heroes=30/30;minion=HAND;mana=10,pass,CardDefs.xml#CS2_141; fireplace/cards/classic/neutral_common.py:110
+CS2_150,CS2_150_enemy,Battlecry deals two to chosen enemy hero,target=enemy_hero;health=30->28;minion=PLAY,pass,CardDefs.xml#CS2_150; fireplace/cards/classic/neutral_common.py:129; no prior effect assertion
+CS2_150,CS2_150_friendly,Battlecry can choose friendly minion and deal two,target=friendly_minion;health=5->3;minion=PLAY,pass,CardDefs.xml#CS2_150; fireplace/cards/classic/neutral_common.py:129
+CS2_150,CS2_150_no_target,Available target requires selection; omission rejects before payment or entry,heroes=30/30;minion=HAND;mana=10,pass,CardDefs.xml#CS2_150; fireplace/cards/classic/neutral_common.py:129
+CS2_189,CS2_189_enemy,Battlecry deals one to chosen enemy hero,target=enemy_hero;health=30->29;minion=PLAY,pass,CardDefs.xml#CS2_189; fireplace/cards/classic/neutral_common.py:142; prior tests use card contextually
+CS2_189,CS2_189_friendly,Battlecry can choose friendly minion and deal one,target=friendly_minion;health=5->4;minion=PLAY,pass,CardDefs.xml#CS2_189; fireplace/cards/classic/neutral_common.py:142
+CS2_189,CS2_189_no_target,Available target requires selection; omission rejects before payment or entry,heroes=30/30;minion=HAND;mana=10,pass,CardDefs.xml#CS2_189; fireplace/cards/classic/neutral_common.py:142
+EX1_015,EX1_015_known_deck,Battlecry draws one known card from deck into hand,drawn=CS2_231:HAND;deck=0;novice=PLAY,pass,CardDefs.xml#EX1_015; fireplace/cards/classic/neutral_common.py:42; tests/test_mechanics.py:111 partial
+EX1_015,EX1_015_empty_deck,Empty deck creates no card but minion enters board,hand=0;deck=0;novice=PLAY,pass,CardDefs.xml#EX1_015; fireplace/cards/classic/neutral_common.py:42
+EX1_025,EX1_025_token,Battlecry summons exactly one 2/1 Mechanical Dragonling,mechanic=PLAY;token=EX1_025t:2/1:MECHANICAL;field=2,pass,CardDefs.xml#EX1_025; fireplace/cards/classic/neutral_common.py:213; no prior effect assertion
+EX1_025,EX1_025_full_board,"When Mechanic fills seventh slot, no token is summoned",field=7;mechanic=PLAY;tokens=0,pass,CardDefs.xml#EX1_025; fireplace/cards/classic/neutral_common.py:213

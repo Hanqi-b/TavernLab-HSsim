@@ -1,0 +1,25 @@
+﻿version,set,collectible_cards,applicable_entities,ordinary_collectible,mechanism_rows,green,yellow,red,tested_yes,tested_partial,tested_no,implementation_none,implementation_partial,smoke_played,smoke_not_playable,smoke_exception,red_card_ids,no_implementation_ids,confirmed_issue_ids,coverage_reconciled,next_review
+17.6.0.53261,Basic (BASIC),143,143,143,239,138,1,4,141,2,0,0,4,139,4,0,BT_142|BT_323|CS2_142|EX1_194,,SILENCE-001,yes,核对 RED 复现与无实现卡；其余 YELLOW 按该扩展包高频机制补核心效果断言。
+17.6.0.53261,Classic (EXPERT1),240,240,240,475,224,3,13,236,4,0,1,12,237,3,0,EX1_080|EX1_130|EX1_136|EX1_182|EX1_332|EX1_407|EX1_509|EX1_560|EX1_563|EX1_577|EX1_584|NEW1_005|NEW1_036,EX1_563,BOARD-001|BOARD-002|BOUNCE-001|DEATH-001|RANDOM-001|SILENCE-001|SPELLPOWER-001|TIME-001|TRIGGER-002,yes,本轮原始 YELLOW 已逐卡运行；复核保留的 YELLOW 具体阻碍，并针对已确认的共享问题修复后回归。
+17.6.0.53261,Hall of Fame (HOF),35,35,35,70,30,0,5,35,0,0,0,5,33,2,0,EX1_050|EX1_085|EX1_116|EX1_161|NEW1_004,,BOARD-002|BOARD-003|BOUNCE-001|DRAW-001,yes,本轮原始 YELLOW 已逐卡运行；复核保留的 YELLOW 具体阻碍，并针对已确认的共享问题修复后回归。
+17.6.0.53261,Curse of Naxxramas (NAXX),30,30,30,66,24,0,6,29,1,0,0,6,30,0,0,FP1_016|FP1_019|FP1_023|FP1_025|FP1_026|FP1_029,,BOARD-002|CONTROL-001|DEATH-001|DRAW-001,yes,本轮原始 YELLOW 已逐卡运行；复核保留的 YELLOW 具体阻碍，并针对已确认的共享问题修复后回归。
+17.6.0.53261,Goblins vs Gnomes (GVG),123,123,123,228,99,18,6,105,18,0,0,6,122,1,0,GVG_022|GVG_046|GVG_048|GVG_054|GVG_087|GVG_113,,CLEAVE-001|FORGETFUL-001|HEROPOWER-002,yes,本轮原始 YELLOW 已逐卡运行；复核保留的 YELLOW 具体阻碍，并针对已确认的共享问题修复后回归。
+17.6.0.53261,Blackrock Mountain (BRM),31,31,31,58,29,0,2,31,0,0,0,2,30,1,0,BRM_002|BRM_029,,RANDOM-002|READY-001,yes,本轮原始 YELLOW 已逐卡运行；复核保留的 YELLOW 具体阻碍，并针对已确认的共享问题修复后回归。
+17.6.0.53261,The Grand Tournament (TGT),132,132,132,238,126,0,6,132,0,0,0,6,131,1,0,AT_008|AT_049|AT_067|AT_069|AT_090|AT_109,,ATTACK-001|CLEAVE-001,yes,本轮原始 YELLOW 已逐卡运行；复核保留的 YELLOW 具体阻碍，并针对已确认的共享问题修复后回归。
+17.6.0.53261,League of Explorers (LOE),45,45,45,93,43,1,1,43,2,0,0,1,45,0,0,LOE_061,,DEATH-001,yes,本轮原始 YELLOW 已逐卡运行；复核保留的 YELLOW 具体阻碍，并针对已确认的共享问题修复后回归。
+17.6.0.53261,Whispers of the Old Gods (OG),134,134,134,241,6,126,2,7,127,0,0,2,133,1,0,OG_158|OG_256,,DEATH-001,yes,核对 RED 复现与无实现卡；其余 YELLOW 按该扩展包高频机制补核心效果断言。
+17.6.0.53261,One Night in Karazhan (KARA),45,45,45,104,2,43,0,2,43,0,0,0,44,1,0,,,,yes,核对 RED 复现与无实现卡；其余 YELLOW 按该扩展包高频机制补核心效果断言。
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),132,132,132,253,2,130,0,2,130,0,0,0,132,0,0,,,,yes,核对 RED 复现与无实现卡；其余 YELLOW 按该扩展包高频机制补核心效果断言。
+17.6.0.53261,Journey to Un'Goro (UNGORO),135,135,135,265,1,133,1,1,134,0,0,1,133,1,1,UNG_037,,DEATH-001,yes,核对 RED 复现与无实现卡；其余 YELLOW 按该扩展包高频机制补核心效果断言。
+17.6.0.53261,Knights of the Frozen Throne (ICECROWN),135,135,135,260,1,133,1,1,134,0,0,1,130,5,0,ICC_841,,STATS-001,yes,核对 RED 复现与无实现卡；其余 YELLOW 按该扩展包高频机制补核心效果断言。
+17.6.0.53261,Kobolds & Catacombs (LOOTAPALOOZA),135,135,135,281,1,134,0,1,134,0,0,0,133,2,0,,,,yes,核对 RED 复现与无实现卡；其余 YELLOW 按该扩展包高频机制补核心效果断言。
+17.6.0.53261,The Witchwood (GILNEAS),129,129,129,253,2,126,1,2,127,0,0,1,127,2,0,GIL_608,,DEATH-001,yes,核对 RED 复现与无实现卡；其余 YELLOW 按该扩展包高频机制补核心效果断言。
+17.6.0.53261,The Boomsday Project (BOOMSDAY),136,136,136,274,1,135,0,1,135,0,0,0,134,2,0,,,,yes,核对 RED 复现与无实现卡；其余 YELLOW 按该扩展包高频机制补核心效果断言。
+17.6.0.53261,Rastakhan's Rumble (TROLL),135,135,135,279,1,134,0,1,134,0,0,0,129,6,0,,,,yes,核对 RED 复现与无实现卡；其余 YELLOW 按该扩展包高频机制补核心效果断言。
+17.6.0.53261,Rise of Shadows (DALARAN),136,136,136,307,1,134,1,1,135,0,0,1,133,2,1,DAL_563,,DEATH-001,yes,核对 RED 复现与无实现卡；其余 YELLOW 按该扩展包高频机制补核心效果断言。
+17.6.0.53261,Saviors of Uldum (ULDUM),135,135,135,295,1,133,1,1,134,0,0,1,135,0,0,ULD_266,,DEATH-001|DEATH-002,yes,核对 RED 复现与无实现卡；其余 YELLOW 按该扩展包高频机制补核心效果断言。
+17.6.0.53261,Descent of Dragons (DRAGONS),140,140,140,287,2,136,2,3,137,0,0,2,140,0,0,DRG_058|DRG_088,,STATS-001,yes,核对 RED 复现与无实现卡；其余 YELLOW 按该扩展包高频机制补核心效果断言。
+17.6.0.53261,Year of the Dragon (YEAR_OF_THE_DRAGON),35,35,35,81,0,33,2,1,34,0,0,2,34,1,0,YOD_008|YOD_016,,DATA-002|DEATH-003,yes,核对 RED 复现与无实现卡；其余 YELLOW 按该扩展包高频机制补核心效果断言。
+17.6.0.53261,Ashes of Outland (BLACK_TEMPLE),135,135,135,330,1,133,1,2,133,0,0,1,135,0,0,BT_731,,TARGET-004,yes,核对 RED 复现与无实现卡；其余 YELLOW 按该扩展包高频机制补核心效果断言。
+17.6.0.53261,Scholomance Academy (SCHOLOMANCE),1,1,1,1,0,1,0,0,1,0,0,0,1,0,0,,,,yes,核对 RED 复现与无实现卡；其余 YELLOW 按该扩展包高频机制补核心效果断言。
+17.6.0.53261,Demon Hunter Initiate (DEMON_HUNTER_INITIATE),20,20,20,46,1,16,3,3,17,0,0,3,16,1,3,BT_427|BT_753|BT_801,,SPELL-001|TARGET-001|TRIGGER-001,yes,核对 RED 复现与无实现卡；其余 YELLOW 按该扩展包高频机制补核心效果断言。

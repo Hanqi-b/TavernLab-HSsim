@@ -1142,6 +1142,7 @@ class Minion(Character):
         "secret_deathrattle",
         "has_overkill",
         "reborn",
+        "spellpower",
     )
 
     def __init__(self, data):

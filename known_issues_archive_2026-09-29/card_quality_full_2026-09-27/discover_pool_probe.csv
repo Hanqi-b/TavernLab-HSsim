@@ -1,0 +1,2 @@
+﻿case_id,mechanism,card_ids,expected,observed,outcome
+DISCOVER-POOL-01,Discover / Choice,CS2_231,one-card eligible pool returns one choice without exception,IndexError: list index out of range,confirmed_error

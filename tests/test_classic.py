@@ -900,7 +900,8 @@ def test_cult_master_board_clear():
     assert len(game.player1.field) == 5
     # Whirlwind the board
     game.player1.give("EX1_400").play()
-    assert len(game.player1.hand) == 4
+    # Cult Master dies in the same batch and cannot observe those deaths.
+    assert len(game.player1.hand) == 0
 
     game = prepare_game()
     game.player1.discard_hand()
@@ -1915,7 +1916,7 @@ def test_knife_juggler_swipe():
     assert juggler.dead
     assert creeper.dead
     assert len(game.player2.field) == 2
-    assert game.player1.hero.health == 28
+    assert game.player1.hero.health == 30
 
     game = prepare_game()
     juggler = game.player2.summon("NEW1_019")

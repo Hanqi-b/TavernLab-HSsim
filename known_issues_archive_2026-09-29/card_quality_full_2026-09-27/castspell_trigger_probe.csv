@@ -1,0 +1,4 @@
+﻿case_id,mechanism,card_ids,expected,observed,outcome
+CAST-TRIGGER-01,CastSpell / Trigger,LOOT_414|EX1_559|CS2_023|GAME_005,observe minion-cast versus player-cast event behavior; caster identity semantics need confirmation,effect_cast_spell_zone=GRAVEYARD;effect_cast_draws=2;effect_cast_deck_change=3;effect_cast_fireballs=0;hand_play_coin_zone=GRAVEYARD;hand_play_fireballs=1,inconclusive
+CAST-TRIGGER-02,CastSpell / Trigger,LOOT_414|NEW1_012|CS2_023,observe whether minion-cast spell counts as player casting for Mana Wyrm,spell_zone=GRAVEYARD;draws=2;wyrm_attack=1->1;wyrm_zone=PLAY,inconclusive
+CAST-SECRET-01,CastSpell / Secret,LOOT_414|EX1_287|CS2_023,observe whether Counterspell reacts to a minion-cast opponent spell,spell_zone=GRAVEYARD;opponent_draws=2;counterspell_zone=SECRET;secret_still_set=True,inconclusive

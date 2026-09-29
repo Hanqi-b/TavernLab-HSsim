@@ -1,0 +1,3 @@
+﻿case_id,mechanism,card_ids,expected,observed,outcome
+SPORE-01,Targeting / Trigger / Transform,BT_731,Damaged minion becomes BT_731; opposing hero stays in PLAY,target_health=5->5;target_zone=SETASIDE;morphed_into=BT_731;opponent_hero_zone=PLAY;opponent_field=BT_731,pass
+SPORE-02,Targeting / Trigger / Transform,BT_731,Damaged hero loses 1 Health and remains HERO in PLAY; no transform,target_health=30->29;target_zone=SETASIDE;morphed_into=BT_731;opponent_hero_zone=SETASIDE;opponent_field=BT_731,confirmed_error

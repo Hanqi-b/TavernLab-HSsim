@@ -1,0 +1,66 @@
+﻿card_id,status,mechanic_scope,reason,probe_file,notes
+EX1_313,GREEN,Battlecry,己方英雄恰受5点战吼伤害，对手英雄不变；5/6本体正常入场并扣除4点法力。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_315,GREEN,Aura|Continuous effect / Update|Cost modification,己方随从费用减少2且下限为1，对手费用不变；沉默 Portal 后两张手牌费用恢复。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_317,GREEN,Draw / Discard|Spell resolution,两张、仅一张和没有恶魔的牌库分支均按数量结算；非恶魔不会被抽走。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_319,GREEN,Battlecry,己方英雄恰受3点战吼伤害，对手英雄不变；3/2本体正常入场并扣除1点法力。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_320,GREEN,Random effects|Spell resolution|Summon|Targeting,致死分支消灭目标并召唤恶魔；非致死分支只造成2点伤害。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_323,GREEN,Battlecry|Summon,战吼将英雄替换为15生命的加拉克苏斯大王，并赋予对应技能和3/8武器。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_334,GREEN,Spell resolution|Targeting,3攻合法随从获得临时控制与冲锋、攻击后回归；4攻目标不合法且不扣费、不移区。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_335,GREEN,Continuous effect / Update,光耀之子初始攻击力等于生命值；受到1点实际法术伤害后两者仍相等。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_339,GREEN,Spell resolution,将对手牌库中两张已知卡牌的副本加入己方手牌；原牌仍留在对手牌库。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_341,GREEN,Trigger,己方回合开始時治疗唯一受伤角色；两名受伤随从候选时仅治疗一名且不同随机种子可触达两者。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_345,GREEN,Random effects|Spell resolution|Summon,复制对手牌库中唯一随从并置入己方场上；没有敌方随从牌时召唤“虚无之影”。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_354,GREEN,Draw / Discard|Spell resolution|Targeting,友方英雄、友方随从及敌方随从目标均可恢复生命，同时抽三张牌。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_355,GREEN,Spell resolution|Targeting,友方与敌方随从均可成为目标；目标攻击力翻倍且生命值不变。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_362,GREEN,Battlecry|Targeting,目标友方随从获得圣盾，圣盾实际抵挡攻击且不损失生命；场上无友军时无目标正常入场。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_363,GREEN,Draw / Discard|Spell resolution|Targeting|Trigger,友方随从攻击后抽牌；附魔敌方随从并由其攻击时，抽牌归施法者且不消耗对手牌库。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_365,GREEN,Draw / Discard|Spell resolution|Targeting,先抽取已知4费牌，再对目标造成等于该牌费用的4点伤害。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_366,GREEN,Summon|Trigger|Weapon,武器装备后每次召唤令新随从获得+1/+1并消耗1耐久；已在场随从不受影响。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_379,GREEN,Secret|Spell resolution|Trigger,对手打出随从后奥秘揭示，使该随从当前生命值降为1。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_382,GREEN,Battlecry|Targeting,敌方随从攻击力改为1，生命值、区域和控制者保持不变。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_383,GREEN,Deathrattle|Divine Shield|Summon|Taunt,弗丁拥有圣盾和嘲讽；圣盾挡住首次伤害，死亡后装备5/3灰烬使者。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_384,GREEN,Random effects|Spell resolution,8次随机伤害合计正好8点，范围仅限敌方角色，友方随从与英雄不受伤。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_390,GREEN,Taunt,牛头人战士具有嘲讽；受伤时攻击力+3，恢复满血后增益消失。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_391,GREEN,Draw / Discard|Spell resolution|Targeting,2点伤害的存活分支抽1张；致死分支不抽牌。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_392,GREEN,Draw / Discard|Spell resolution,每名受伤友方角色各抽一张；未受伤随从不计入，抽牌来自己方牌库而对手牌库不变。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_393,GREEN,Unclassified effect,阿曼尼狂战士受伤时攻击力+3，恢复满血后回到原攻击力。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_396,GREEN,Taunt,魔古山守望者嘲讽迫使冲锋随从攻击它，阻止其攻击英雄。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_398,GREEN,Battlecry|Summon,阿拉希武器匠战吼装备2/2武器，本体正常入场。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_402,GREEN,Trigger,旋风斩使铸甲师与另一友方随从各受伤时，护甲增加2点；死亡随从的受伤事件也计入。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_405,GREEN,Taunt,持盾卫士嘲讽阻止冲锋随从攻击英雄，并迫使其攻击嘲讽随从。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_407,RED,Random effects|Spell resolution,"乱斗留在场上的敌方随从仍存活时，阿努巴拉克伏兵的亡语却把同批被乱斗摧毁的友方随从带回手牌。 实测：Brawl's enemy survivor remains, but Anub'ar Ambusher returns its same-batch-destroyed ally: seed=2;ambusher=GRAVEYARD;ally=HAND;enemy=PLAY;board=['CS2_200']",classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_408,GREEN,Spell resolution|Targeting,己方生命值30时造成4点伤害，恰为12时造成6点伤害。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_409,GREEN,Spell resolution|Summon,无武器时装备1/3武器；已有武器时攻击力和耐久各增加1。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_410,GREEN,Spell resolution|Targeting,以盾牌格挡获得5点护甲后，盾牌猛击对目标造成5点伤害。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_411,GREEN,Continuous effect / Update|Trigger|Weapon,攻随从后血吼攻击力减1但耐久不变；随后攻击英雄才消耗最后1点耐久。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_412,GREEN,Unclassified effect,暴怒的狼人受伤后获得+1攻击和风怒；下一回合实际攻击两次后耗尽攻击次数。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_414,GREEN,Charge,格罗玛什具有冲锋；受伤后攻击力+6并立即攻击，恢复满血后攻击力增益消失。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_507,GREEN,Aura|Continuous effect / Update,仅其他友方鱼人获得+2攻击；领军自身和敌方鱼人不变，沉默后光环移除。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_509,RED,Summon|Trigger,对手在自己的回合合法打出鱼人后，鱼人招潮者仍额外获得+1攻击，触发范围超出文本的‘你召唤’。 实测：base=1;after_self_summon=1;after_friendly_murloc=2;after_enemy_murloc=3;ally=PLAY,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_522,GREEN,Poisonous|Stealth,耐心的刺客初始潜行且剧毒；准备就绪后仅造成1点战斗伤害也能消灭4/5随从。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_531,GREEN,Trigger,友方野兽死亡使土狼获得+2/+1；敌方野兽死亡不触发。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_533,GREEN,Random effects|Secret|Spell resolution|Trigger,敌方冲锋随从攻击英雄时，唯一可重定向目标是攻击者自己的英雄；原英雄不受伤且 Misdirection 消耗。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_534,GREEN,Deathrattle|Summon,6/5 Savannah Highmane 被火球术击杀后进入墓地，并召唤两只友方2/2土狼。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_536,GREEN,Trigger|Weapon,友方冰箱奥秘揭示使鹰角弓耐久从2增至3；敌方奥秘揭示不增加耐久。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_537,GREEN,Spell resolution|Targeting,目标大个随从受5伤，左右相邻各受2伤，更远的随从不受伤。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_538,GREEN,Spell resolution|Summon,敌方无随从时卡牌因前置条件不可打出且不耗法力；敌方有两随从时召唤两只可立即攻击的1/1冲锋猎犬。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_543,GREEN,Charge,暴龙王以8/8冲锋入场并在当回合攻击敌方英雄造成8点伤害，消耗9点法力。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_544,GREEN,Draw / Discard|Spell resolution,照明弹同时移除双方随从潜行、摧毁两张敌方奥秘但保留己方奥秘，并在抽牌阶段后再抽一张已知牌。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_549,GREEN,Spell resolution|Targeting,友方野兽获得+2攻击并以免疫状态攻击敵方隨從而不受反擊傷害；回合结束后攻击和免疫均消失。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_554,GREEN,Secret|Spell resolution|Summon|Trigger,友方随从被攻击时召唤三条1/1蛇；仅攻击英雄不会触发，奥秘继续待命。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_556,GREEN,Deathrattle|Summon,2/3收割傀儡受三次真实法术伤害死亡后召唤一个2/1受损傀儡。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_557,GREEN,Draw / Discard|Trigger,固定随机种子分别实测到纳特·帕格回合开始时正常抽1张和额外抽1张的两种分支。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_558,GREEN,Battlecry|Draw / Discard,摧毁敌方1/4武器后按耐久抽4张（另计回合开始自然抽牌）；无敌方武器时不抽牌。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_559,YELLOW,Trigger,两次从手牌施放法术各生成一张火球术；直接由效果 CastSpell 而非从手牌施放的事件分支仍未验证（CAST-001）。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_560,RED,Continuous effect / Update,"打出并保留诺兹多姆时双方序列化 timeout 都仍为75，源码声明的TIMEOUT aura没有生效。 实测：before_serialized=(75, 75);aura_timeout_tags=(None, None);while_nozdormu_serialized=(75, 75);after_silence_serialized=(75, 75);silenced=True",classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_561,GREEN,Battlecry|Targeting,阿莱克丝塔萨可指定任一英雄：友方8血与敌方22血均被设为15，双方最大生命值保持30。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_562,GREEN,Battlecry|Summon,已有0/5/6个友方随从时，奥妮克希亚分别补6/1/0只1/1雏龙，己方场面恰好填至7个。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_563,RED,Spell Damage,"沉默标记已生效但玛里苟斯的法术伤害仍为+5，月火术继续造成6点；独立的科布尔地精也在沉默后保留+1法强。 实测：malygos=PLAY:4/12;silenced=True;spellpower=5->5;moonfire_damage=(6, 6);enemy_hero=30->18;kobold_silenced=True;kobold_spellpower=1->1",classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_564,GREEN,Battlecry|Targeting,无面操纵者可选择友方受伤且有嘲讽增益的随从或敌方随从，复制其当前攻防及嘲讽；英雄不在目标列表。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_567,GREEN,Overload|Weapon|Windfury,毁灭之锤本回合实际攻击两次后耐久8→6，英雄不能再攻；过载2使下回合锁定2点法力。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_570,GREEN,Spell resolution,撕咬使英雄获得4攻击和4护甲并实际造成4点攻击伤害；回合结束攻击归零，护甲保留。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_571,GREEN,Spell resolution|Summon,自然之力在空场召唤3个2/2树人；已有5个友方随从时只补2个至场面上限。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_572,GREEN,Random effects|Trigger,双方各自的伊瑟拉仅在其控制者回合结束时加入一张梦境牌，另一方回合结束不会触发。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_573,GREEN,Choose One|Summon,抉择两分支均实测：友方其他随从+2/+2（不增强塞纳留斯），或召唤两只2/2嘲讽树人。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_575,GREEN,Draw / Discard|Trigger,双方潮汐图腾在各自控制者回合结束时只从本方牌库抽牌；另一方图腾不会跨玩家抽牌。,classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。
+EX1_577,RED,Deathrattle|Summon,"芬克·恩霍尔正常召唤分支通过，但敌方满7场死亡时仍被召唤，场面增至8个随从。 实测：normal=empty_board=beast:GRAVEYARD;opponent_field=[('EX1_finkle', 3, 3)];full_board_before=7;beast=GRAVEYARD;opponent_field_after=8;finkles=[('EX1_finkle', 3, 3)]",classic_probe_second.csv,逐卡实际出牌与状态断言；状态仅依据本卡已列核心分支。

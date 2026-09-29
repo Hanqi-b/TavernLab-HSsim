@@ -492,6 +492,9 @@ IN_DECK = EnumSelector(Zone.DECK)
 IN_HAND = EnumSelector(Zone.HAND)
 IN_SECRET = EnumSelector(Zone.SECRET)
 DISCARDED = AttrValue(enums.DISCARDED) == True
+PENDING_DEATH = FilterSelector(
+    lambda entity, source: getattr(entity, "_pending_death", False)
+)
 KILLED = EnumSelector(Zone.GRAVEYARD) - DISCARDED
 
 GAME = EnumSelector(CardType.GAME)
@@ -529,8 +532,10 @@ LEGENDARY = EnumSelector(Rarity.LEGENDARY)
 
 ALL_PLAYERS = IN_PLAY + PLAYER
 ALL_HEROES = IN_PLAY + HERO
-ALL_MINIONS = IN_PLAY + MINION - DORMANT
-ALL_CHARACTERS = IN_PLAY + CHARACTER - DORMANT
+# A pending corpse is outside ordinary battlefield selection while the batch
+# is being collected. Every member is in the graveyard before effects resolve.
+ALL_MINIONS = IN_PLAY + MINION - DORMANT - PENDING_DEATH
+ALL_CHARACTERS = IN_PLAY + CHARACTER - DORMANT - PENDING_DEATH
 ALL_WEAPONS = IN_PLAY + WEAPON
 ALL_SECRETS = IN_SECRET + SECRET
 ALL_QUESTS = IN_SECRET + QUEST

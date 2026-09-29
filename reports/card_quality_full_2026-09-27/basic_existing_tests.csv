@@ -1,0 +1,19 @@
+﻿card_id,mechanic,test_node,coverage_level,outcome,pytest_summary,source_sha256
+CS2_011,Spell resolution,tests/test_classic.py::test_savage_roar,full_candidate,pass,"18 passed, 1 warning in 5.75s",43930025b29843b656d356261d04cdf5acbc0de5a5c23f8c42cb40691039fdcf
+CS2_064,Battlecry,tests/test_classic.py::test_dread_infernal,full_candidate,pass,"18 passed, 1 warning in 5.75s",43930025b29843b656d356261d04cdf5acbc0de5a5c23f8c42cb40691039fdcf
+CS2_074,Spell resolution,tests/test_classic.py::test_deadly_poison,full_candidate,pass,"18 passed, 1 warning in 5.75s",43930025b29843b656d356261d04cdf5acbc0de5a5c23f8c42cb40691039fdcf
+CS2_084,Spell resolution|Targeting,tests/test_classic.py::test_hunters_mark,full_candidate,pass,"18 passed, 1 warning in 5.75s",43930025b29843b656d356261d04cdf5acbc0de5a5c23f8c42cb40691039fdcf
+CS2_105,Spell resolution,tests/test_classic.py::test_heroic_strike,full_candidate,pass,"18 passed, 1 warning in 5.75s",43930025b29843b656d356261d04cdf5acbc0de5a5c23f8c42cb40691039fdcf
+CS2_122,Aura|Continuous effect / Update,tests/test_classic.py::test_raid_leader,full_candidate,pass,"18 passed, 1 warning in 5.75s",43930025b29843b656d356261d04cdf5acbc0de5a5c23f8c42cb40691039fdcf
+CS2_222,Aura|Continuous effect / Update,tests/test_classic.py::test_stormwind_champion,full_candidate,pass,"18 passed, 1 warning in 5.75s",43930025b29843b656d356261d04cdf5acbc0de5a5c23f8c42cb40691039fdcf
+DS1_070,Battlecry|Targeting,tests/test_classic.py::test_houndmaster,full_candidate,pass,"18 passed, 1 warning in 5.75s",43930025b29843b656d356261d04cdf5acbc0de5a5c23f8c42cb40691039fdcf
+DS1_175,Aura|Continuous effect / Update,tests/test_mechanics.py::test_auras,full_candidate,pass,"18 passed, 1 warning in 5.75s",43930025b29843b656d356261d04cdf5acbc0de5a5c23f8c42cb40691039fdcf
+EX1_019,Battlecry|Targeting,tests/test_classic.py::test_shattered_sun_cleric,full_candidate,pass,"18 passed, 1 warning in 5.75s",43930025b29843b656d356261d04cdf5acbc0de5a5c23f8c42cb40691039fdcf
+CS2_013,Spell resolution,tests/test_classic.py::test_wild_growth,full_candidate,pass,"18 passed, 1 warning in 5.75s",43930025b29843b656d356261d04cdf5acbc0de5a5c23f8c42cb40691039fdcf
+CS2_039,Spell resolution|Targeting,tests/test_mechanics.py::test_windfury,full_candidate,pass,"18 passed, 1 warning in 5.75s",43930025b29843b656d356261d04cdf5acbc0de5a5c23f8c42cb40691039fdcf
+CS2_041,Spell resolution|Targeting,tests/test_classic.py::test_ancestral_healing,full_candidate,pass,"18 passed, 1 warning in 5.75s",43930025b29843b656d356261d04cdf5acbc0de5a5c23f8c42cb40691039fdcf
+CS2_087,Spell resolution|Targeting,tests/test_mechanics.py::test_silence_multiple_buffs,full_candidate,pass,"18 passed, 1 warning in 5.75s",43930025b29843b656d356261d04cdf5acbc0de5a5c23f8c42cb40691039fdcf
+CS2_012,Spell resolution|Targeting,tests/test_classic.py::test_knife_juggler_swipe,partial,pass,"18 passed, 1 warning in 5.75s",43930025b29843b656d356261d04cdf5acbc0de5a5c23f8c42cb40691039fdcf
+CS2_097,Trigger|Weapon,tests/test_classic.py::test_truesilver_champion,partial,pass,"18 passed, 1 warning in 5.75s",43930025b29843b656d356261d04cdf5acbc0de5a5c23f8c42cb40691039fdcf
+CS2_226,Battlecry,tests/test_classic.py::test_frostwolf_warlord,partial,pass,"18 passed, 1 warning in 5.75s",43930025b29843b656d356261d04cdf5acbc0de5a5c23f8c42cb40691039fdcf
+EX1_565,Aura|Continuous effect / Update,tests/test_mechanics.py::test_positioning,partial,pass,"18 passed, 1 warning in 5.75s",43930025b29843b656d356261d04cdf5acbc0de5a5c23f8c42cb40691039fdcf

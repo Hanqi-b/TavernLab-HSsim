@@ -1,0 +1,108 @@
+﻿card_id,case_id,expected,observed,outcome,notes
+OG_133,returns_duplicate_friendly_deathrattle_corpses,"Return each eligible friendly dead Deathrattle minion, including duplicate IDs; exclude plain and enemy corpses.","field=['OG_133', 'OG_147', 'OG_147', 'OG_147'], copies=3, originals=['GRAVEYARD', 'GRAVEYARD', 'GRAVEYARD'], plain=GRAVEYARD, enemy=GRAVEYARD, played=PLAY",pass,
+OG_133,resurrection_respects_seven_minion_cap,N'Zoth returns no more copies than fit on the seven-minion board.,"field_count=7; returned_healbots=2; field=['CS2_231', 'CS2_231', 'CS2_231', 'CS2_231', 'OG_133', 'OG_147', 'OG_147']",pass,
+OG_138,hand_cost_reduction_each_own_turn,"While in hand, cost decreases once at each own-turn start; it can then be played.","cost_sequence=[6,5,4]; played_zone=PLAY",pass,
+OG_145,taunt_and_shield_in_combat,Taunt redirects the attack and Divine Shield absorbs the first hit.,taunt=1; shield_after_hit=False; defender_hp=4/4; hero_attack_allowed=False,pass,
+OG_147,deathrattle_heals_enemy_hero,"On death, restore exactly 8 health to the enemy hero, not the friendly hero.",enemy_hp=18->26; friendly_hp=20; healbot_zone=GRAVEYARD,pass,
+OG_149,battlecry_other_minions_excludes_self,"Deal 1 damage to every other minion on both sides, excluding Ravaging Ghoul and heroes.","Ravaging Ghoul Battlecry scope: expected 'deal 1 to all other minions; preserve Ghoul itself and both heroes', observed (1, 2, 2, 30, 30)",confirmed_error,
+OG_150,damage_and_heal_enrage,Attack is +2 while damaged and returns to base when fully healed.,attack=3->5->3; hp=5/5,pass,
+OG_151,deathrattle_all_minions_not_heroes,"On death, deal 1 to all minions on both sides and no damage to heroes.","minions_hp=(1, 1); heroes_hp=(28, 27); dead=GRAVEYARD",pass,
+OG_153,taunt_blocks_hero_attack,An enemy attacker cannot attack the hero while Bog Creeper with Taunt is alive.,taunt=1; hero_attack=False; hero_hp=30,pass,
+OG_156,battlecry_summons_taunt_ooze,Battlecry summons one 1/1 Taunt Ooze alongside the printed body.,"field=[('OG_156', 2, 1, False), ('OG_156a', 1, 1, 1)]",pass,fresh isolated rerun of OG_156 only; seed=156
+OG_161,battlecry_non_murloc_filter_both_sides,"Battlecry damages all non-Murloc minions on both sides, excludes Murlocs and self.","health=[3, 1, 3, 1, 3]",pass,
+OG_173,two_copies_merge_only_at_own_turn_end,Two copies merge at end of your turn into a 30/30 Ancient One; both source cards die.,"ancient_count=1; stats=(30, 30); blood_zones=('GRAVEYARD', 'GRAVEYARD')",pass,
+OG_173,single_copy_does_not_merge,A lone Blood of the Ancient One remains in play at your turn end.,field=['OG_173']; blood_zone=PLAY,pass,
+OG_188,cthun_at_least_10_grants_five_health,"At 10+ C'Thun Attack, gain +5 Health; verify exact printed-text amount.","Klaxxi Amber-Weaver threshold: expected ""at 10+ C'Thun Attack, Klaxxi gains +5 Health (base 4/5 to 4/10)"", observed (4, 9, 9)",confirmed_error,
+OG_188,cthun_below_10_no_health_buff,"At 9 or less C'Thun Attack, no bonus health.",cthun_atk=8; weaver_hp=5/5,pass,
+OG_198,four_mana_spent_for_eight_healing,All available mana is spent and target is healed for twice that amount.,hero_hp=20->28; mana=4->0; spell_zone=GRAVEYARD,pass,
+OG_198,overheal_capped_but_mana_spent,Healing is capped at maximum health while all mana is still spent.,hero_hp=30; mana=0,pass,
+OG_200,start_of_own_turn_sets_attack_seven,Start of your turn sets Attack to 7 and repeated triggers do not stack.,attack=0->7->7,pass,
+OG_206,deal_four_to_minion_and_overload_one,Deal 4 to a minion and incur Overload (1).,victim_zone=GRAVEYARD; overloaded=0; next_turn_locked=1,pass,
+OG_209,friendly_spell_damage_heals_hero,Damage dealt by your spell restores the same amount of health to your hero.,enemy_hp=30->29; own_hp=20->21; hallazeal=PLAY,pass,
+OG_209,multi_target_spell_damage_is_summed,Healing equals total damage dealt to multiple enemy characters by one spell.,victim_hp=1; enemy_hero=30->29; own_hero=20->25,pass,
+OG_209,minion_damage_is_not_spell_damage,A minion attack does not trigger Hallazeal's spell-only effect.,enemy_hp=30->27; own_hp=20,pass,
+OG_216,deathrattle_summons_two_spiders,"On death, summon exactly two 1/1 Spiders for its controller.","wolf_zone=GRAVEYARD; spiders=[('OG_216a', 1, 1), ('OG_216a', 1, 1)]",pass,
+OG_218,taunt_and_plus_three_while_damaged,Bloodhoof Brave has Taunt and gains 3 Attack only while damaged.,"base=(2, 1); damaged_attack=5; healed_attack=2",pass,
+OG_222,battlecry_buffs_friendly_divine_shield_minions,Rallying Blade equips a 3/2 weapon and buffs only friendly minions with Divine Shield by +1/+1.,"before=(1, 1, 1, 1, 1, 1); after=(2, 2, 1, 1, 1, 1); blade=(3, 2)",pass,
+OG_223,spell_gives_plus_one_plus_two_to_minion,Divine Strength gives a chosen minion +1/+2.,"enemy_target=(2, 3, 3)",pass,
+OG_239,destroy_both_boards_and_draw_predeath_count,Destroy all minions on both sides and draw one card for each of the three destroyed minions.,"zones=('GRAVEYARD', 'GRAVEYARD', 'GRAVEYARD'); draws=3; deck=3->0",pass,
+OG_239,deathrattle_token_and_draw_snapshot,Check count/timing when a destroyed minion's Deathrattle summons a token.,"original_zones=('GRAVEYARD', 'GRAVEYARD'); draws=2; deck=2->0; tokens=[('OG_241a', 'PLAY')]",pass,
+OG_241,deathrattle_summons_one_shadowbeast,"On death, summon a 1/1 Shadowbeast for its controller.","villager=GRAVEYARD; shadowbeasts=[('OG_241a', 1, 1)]",pass,
+OG_247,stealth_blocks_targeting_then_ends_on_attack,Stealth prevents enemy targeting until Worgen attacks; its attack removes Stealth.,stealth=1->False; enemy_spell_legal=False; enemy_hp=27,pass,
+OG_249,taunt_body_death_summons_two_two,Infested Tauren has Taunt and its deathrattle summons a 2/2 Slime.,"tauren_taunt=1; tauren_zone=GRAVEYARD; slimes=[(2, 2)]",pass,
+OG_254,destroy_enemy_secrets_gain_per_secret,Destroy each enemy Secret and gain +1/+1 for each destroyed.,"enemy_secrets=3-> 0; eater=(5, 7)",pass,
+OG_254,no_secrets_no_stat_bonus,"With no enemy Secrets, Eater keeps its printed stats.","eater=(2, 4)",pass,
+OG_255,battlecry_buffs_cthun_wherever,Battlecry buffs the owner's live C'Thun by +2/+2 wherever it is.,"cthun=(6, 6)->(8, 8) zone=SETASIDE; doom=PLAY",pass,
+OG_255,buff_cthun_inside_deck,The wherever clause also buffs C'Thun while in deck.,"cthun=(6, 6)->(8, 8) zone=DECK; deck=['OG_280']",pass,
+OG_255,dead_cthun_buffed_and_shuffled_back,"If C'Thun has died, buff and shuffle it into the owner's deck.","cthun_graveyard_at_start=(6, 6); deck_cthuns=[('DECK', 8, 8)]",pass,
+OG_267,deathrattle_buffs_equipped_weapon,Deathrattle gives the equipped friendly weapon +2 Attack.,"weapon=(1, 4)->(3, 4); squid=GRAVEYARD",pass,
+OG_267,death_without_weapon,"Without a friendly weapon, deathrattle does not create one or error.",squid=GRAVEYARD; weapon=None,pass,
+OG_271,attack_doubles_each_own_turn_start,Scaled Nightmare doubles its Attack at each start of your turn.,attack=2->4->8; health=8/8,pass,
+OG_134,zero_prior_spells,"With zero spells previously played, Yogg resolves zero random spells.",yogg_zone=PLAY; spell_history=0; field=['OG_134'],pass,
+OG_134,two_prior_spells,"Two prior spells trigger two random spell attempts, subject to Yogg's death/leave-play stopping rule.","live Yogg Battlecry crashes with two prior spells at game.random seed 1341: AttributeError: 'Destroy' object has no attribute 'at'; prior_spell_plays=2; yogg_zone=PLAY; enemy_hp=29; traceback=Traceback (most recent call last):
+  File ""/home/hanqi/Desktop/卡牌大对战/TavernLab-HSsim/reports/card_quality_full_2026-09-27/og_probe_b.py"", line 204, in two_previous_spells
+    yogg.play()
+  File ""/home/hanqi/Desktop/卡牌大对战/TavernLab-HSsim/fireplace/card.py"", line 584, in play
+    self.game.play_card(self, target, index, choose)
+  File ""/home/hanqi/Desktop/卡牌大对战/TavernLab-HSsim/fireplace/game.py"", line 186, in play_card
+    return self.action_block(player, actions, type, index, target)
+  File ""/home/hanqi/Desktop/卡牌大对战/TavernLab-HSsim/fireplace/game.py"", line 152, in action_block
+    ret = self.queue_actions(source, actions, event_args)
+  File ""/home/hanqi/Desktop/卡牌大对战/TavernLab-HSsim/fireplace/game.py"", line 243, in queue_actions
+    ret = self.trigger_actions(source, actions)
+  File ""/home/hanqi/Desktop/卡牌大对战/TavernLab-HSsim/fireplace/game.py"", line 266, in trigger_actions
+    ret.append(action.trigger(source))
+  File ""/home/hanqi/Desktop/卡牌大对战/TavernLab-HSsim/fireplace/actions.py"", line 222, in trigger
+    self.do(source, *args)
+  File ""/home/hanqi/Desktop/卡牌大对战/TavernLab-HSsim/fireplace/actions.py"", line 538, in do
+    summon_action.broadcast(
+  File ""/home/hanqi/Desktop/卡牌大对战/TavernLab-HSsim/fireplace/actions.py"", line 168, in broadcast
+    self._broadcast(entity, source, at, *args)
+  File ""/home/hanqi/Desktop/卡牌大对战/TavernLab-HSsim/fireplace/actions.py"", line 1668, in _broadcast
+    return super()._broadcast(entity, source, at, *args)
+  File ""/home/hanqi/Desktop/卡牌大对战/TavernLab-HSsim/fireplace/actions.py"", line 150, in _broadcast
+    if event.at != at:
+AttributeError: 'Destroy' object has no attribute 'at'
+",confirmed_error,
+OG_176,five_damage_to_undamaged_character,An undamaged minion can be targeted and takes 5 damage.,target_zone=PLAY; target_health=2,pass,
+OG_176,damaged_target_not_legal,A previously damaged minion is not a legal target and the spell stays in hand.,damaged_hp=4; legal_target=False; accepted=False; spell_zone=HAND; mana=10,pass,
+OG_179,random_enemy_character_seed_17,Deathrattle hits exactly one enemy character for 1; sample random target domain.,"seed=17; damage={'enemy_minion': 1, 'enemy_hero': 0, 'friendly_minion': 0}; bat_zone=GRAVEYARD",pass,
+OG_179,random_enemy_character_seed_29,Deathrattle hits exactly one enemy character for 1; sample random target domain.,"seed=29; damage={'enemy_minion': 0, 'enemy_hero': 1, 'friendly_minion': 0}; bat_zone=GRAVEYARD",pass,
+OG_179,random_enemy_character_seed_41,Deathrattle hits exactly one enemy character for 1; sample random target domain.,"seed=41; damage={'enemy_minion': 1, 'enemy_hero': 0, 'friendly_minion': 0}; bat_zone=GRAVEYARD",pass,
+OG_179,random_enemy_character_seed_53,Deathrattle hits exactly one enemy character for 1; sample random target domain.,"seed=53; damage={'enemy_minion': 0, 'enemy_hero': 1, 'friendly_minion': 0}; bat_zone=GRAVEYARD",pass,
+OG_179,random_enemy_character_seed_67,Deathrattle hits exactly one enemy character for 1; sample random target domain.,"seed=67; damage={'enemy_minion': 0, 'enemy_hero': 1, 'friendly_minion': 0}; bat_zone=GRAVEYARD",pass,
+OG_179,random_enemy_character_seed_79,Deathrattle hits exactly one enemy character for 1; sample random target domain.,"seed=79; damage={'enemy_minion': 0, 'enemy_hero': 1, 'friendly_minion': 0}; bat_zone=GRAVEYARD",pass,
+OG_179,random_enemy_character_seed_83,Deathrattle hits exactly one enemy character for 1; sample random target domain.,"seed=83; damage={'enemy_minion': 1, 'enemy_hero': 0, 'friendly_minion': 0}; bat_zone=GRAVEYARD",pass,
+OG_179,random_enemy_character_seed_97,Deathrattle hits exactly one enemy character for 1; sample random target domain.,"seed=97; damage={'enemy_minion': 0, 'enemy_hero': 1, 'friendly_minion': 0}; bat_zone=GRAVEYARD",pass,
+OG_195,choose_one_seven_wisps,Summon branch creates exactly seven 1/1 Wisps.,"wisp_count=7; stats=[(1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1)]",pass,
+OG_195,buff_choice_no_fandral,Buff branch gives +2/+2 to existing minions without summoning Wisps.,"existing=(3, 3); wisps=0",pass,
+OG_195,fandral_combines_choices_board_cap,"Fandral combines both effects, limited by open board spaces.","existing=(3, 3); wisps=5x3/3",pass,
+OG_202,choose_summons_single_two_two,Summon choice creates one 2/2 Slime.,"field=[('OG_202', 3, 3), ('OG_202c', 2, 2)]",pass,
+OG_202,choose_gain_empty_mana_crystal,Crystal choice increases max Mana by one and creates no Slime.,max_mana=5->6; mana=5->1; field=['OG_202'],pass,
+OG_207,random_three_cost_minion_seed_7,Summon one random 3-Cost minion; test generated card cost and zone over fixed seeds.,"seed=7; summoned=[('CFM_853', 3, 'PLAY')]",pass,
+OG_207,random_three_cost_minion_seed_19,Summon one random 3-Cost minion; test generated card cost and zone over fixed seeds.,"seed=19; summoned=[('TRL_326', 3, 'PLAY')]",pass,
+OG_207,random_three_cost_minion_seed_31,Summon one random 3-Cost minion; test generated card cost and zone over fixed seeds.,"seed=31; summoned=[('BT_721', 3, 'PLAY')]",pass,
+OG_207,random_three_cost_minion_seed_43,Summon one random 3-Cost minion; test generated card cost and zone over fixed seeds.,"seed=43; summoned=[('CFM_755', 3, 'PLAY')]",pass,
+OG_211,summon_all_three_animal_companions,"Call of the Wild summons Huffer, Misha and Leokk with correct stats and abilities.","companions={'NEW1_034': (5, 2, False, 1), 'NEW1_033': (2, 4, False, False), 'NEW1_032': (5, 4, 1, False)}",pass,
+OG_220,random_weapon_equipped_seed_11,Battlecry equips a random weapon to the player who controls Malkorok.,"seed=11; minion=PLAY; weapon=('ULD_285', 2, 2)",pass,
+OG_220,random_weapon_equipped_seed_23,Battlecry equips a random weapon to the player who controls Malkorok.,"seed=23; minion=PLAY; weapon=('GVG_024', 1, 3)",pass,
+OG_220,random_weapon_equipped_seed_37,Battlecry equips a random weapon to the player who controls Malkorok.,"seed=37; minion=PLAY; weapon=('BT_921', 2, 2)",pass,
+OG_220,random_weapon_equipped_seed_49,Battlecry equips a random weapon to the player who controls Malkorok.,"seed=49; minion=PLAY; weapon=('LOOT_209', 0, 3)",pass,
+OG_221,random_friendly_minion_shield_seed_13,Deathrattle gives one friendly minion Divine Shield and excludes the enemy board.,seed=13; friendly_shielded=['CS2_182']; enemy_shield=False,pass,
+OG_221,random_friendly_minion_shield_seed_29,Deathrattle gives one friendly minion Divine Shield and excludes the enemy board.,seed=29; friendly_shielded=['CS2_231']; enemy_shield=False,pass,
+OG_221,random_friendly_minion_shield_seed_47,Deathrattle gives one friendly minion Divine Shield and excludes the enemy board.,seed=47; friendly_shielded=['CS2_182']; enemy_shield=False,pass,
+OG_221,random_friendly_minion_shield_seed_61,Deathrattle gives one friendly minion Divine Shield and excludes the enemy board.,seed=61; friendly_shielded=['CS2_182']; enemy_shield=False,pass,
+OG_221,no_friendly_target,"With no other friendly minion, deathrattle resolves without an invalid target.",hero_zone=GRAVEYARD; friendly_field=[],pass,
+OG_229,own_end_random_friendly_heal_seed_5,"At end of your turn, heal one damaged friendly character (up to 8), not the enemy.","seed=5; heal_delta=(0, 3, 0); rag=PLAY",pass,
+OG_229,own_end_random_friendly_heal_seed_17,"At end of your turn, heal one damaged friendly character (up to 8), not the enemy.","seed=17; heal_delta=(0, 3, 0); rag=PLAY",pass,
+OG_229,own_end_random_friendly_heal_seed_31,"At end of your turn, heal one damaged friendly character (up to 8), not the enemy.","seed=31; heal_delta=(8, 0, 0); rag=PLAY",pass,
+OG_229,own_end_random_friendly_heal_seed_47,"At end of your turn, heal one damaged friendly character (up to 8), not the enemy.","seed=47; heal_delta=(0, 3, 0); rag=PLAY",pass,
+OG_152,windfury_two_attacks_same_turn,Windfury allows two attacks in one turn and each deals printed attack damage.,enemy_hp=30->25->20; windfury=1,pass,
+OG_162,battlecry_target_damage_and_cthun_buff,Deal 2 damage to chosen target and grant the owner's C'Thun +2/+2 while set aside.,"target_hp=2; cthun=((6, 6), (8, 8), 'SETASIDE'); disciple=PLAY",pass,
+OG_162,enemy_hero_target_buffs_cthun_in_deck,Enemy hero is a legal character target; deal 2 damage and buff C'Thun +2/+2 while C'Thun is in deck.,"enemy_hero=30->28; cthun=(6, 6)->(8, 8) zone=DECK; disciple=PLAY",pass,
+OG_174,battlecry_copies_friendly_stats_and_keeps_taunt,An undamaged friendly minion's Attack and Health are copied; Shambler keeps Taunt.,"target=(4, 5, 5); copy=(4, 5, 5, 1)",pass,
+OG_174,copies_damaged_friendly_current_health,A damaged friendly target's current Health is copied along with its Attack.,"target=(4, 3, 5); copy=(4, 3, 3, 1)",pass,
+OG_174,enemy_target_rejected,"Enemy minions are not legal targets and rejected selection preserves card, mana and board state.",friendly_legal=True; enemy_legal=False; accepted=False; card=HAND; mana=10,pass,
+OG_234,battlecry_restores_five_to_chosen_character,Restore 5 Health to the chosen character.,target_hp=1->5/5; alchemist=PLAY,pass,
+OG_234,non_capped_hero_heal_exactly_five,"A 20/30 friendly hero heals to 25/30, proving the exact +5 amount and selected target.",friendly_hero=20->25/30; enemy_hero=30; alchemist=PLAY,pass,
+OG_234,full_health_target_capped,Healing a full-health target does not exceed maximum Health.,target_hp=30; cap=30,pass,

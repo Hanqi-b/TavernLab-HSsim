@@ -1,0 +1,2 @@
+﻿case_id,card_id,mechanic,expected,observed,outcome
+BASIC-INFUSION-01,EX1_194,Spell resolution|Targeting,A minion gains +2 Attack and +6 current/max Health; spell enters graveyard,"legal_target=True;stats=(3, 5, 5)->(5, 7, 7);expected=(5, 11, 11);target_zone=PLAY;spell_zone=GRAVEYARD",confirmed_error

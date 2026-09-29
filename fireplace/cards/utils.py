@@ -45,7 +45,13 @@ CLEAVE = Hit(TARGET_ADJACENT, ATK(SELF))
 COINFLIP = RandomNumber(0, 1) == 1
 EMPTY_BOARD = Count(FRIENDLY_MINIONS) == 0
 EMPTY_HAND = Count(FRIENDLY_HAND) == 0
-FULL_BOARD = Count(FRIENDLY_MINIONS) == 7
+# Dormant minions are excluded from FRIENDLY_MINIONS because they are not
+# valid targets for ordinary minion effects, but they still occupy a board
+# slot.  Keep that selector semantic intact and use an explicit in-play
+# selector for board-capacity checks.
+FRIENDLY_BOARD_MINIONS = IN_PLAY + MINION + FRIENDLY
+ENEMY_BOARD_MINIONS = IN_PLAY + MINION + ENEMY
+FULL_BOARD = Count(FRIENDLY_BOARD_MINIONS) >= 7
 FULL_HAND = Count(FRIENDLY_HAND) == Attr(CONTROLLER, GameTag.MAXHANDSIZE)
 HOLDING_DRAGON = Find(FRIENDLY_HAND + DRAGON - SELF)
 ELEMENTAL_PLAYED_LAST_TURN = Attr(CONTROLLER, enums.ELEMENTAL_PLAYED_LAST_TURN) > 0

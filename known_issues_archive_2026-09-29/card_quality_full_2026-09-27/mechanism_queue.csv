@@ -1,0 +1,44 @@
+﻿phase,mechanism,candidate_entities,ordinary_collectible,green,yellow,red,review_state,next_action
+1,Targeting,476,476,436,3,37,foundation_audit_partial,扩展已确认问题到跨版本边界场景
+1,Random effects,432,432,387,8,37,foundation_audit_partial,扩展已确认问题到跨版本边界场景
+1,Deathrattle,234,234,213,0,21,specialty_audit_partial,扩展已确认问题到跨版本边界场景
+1,Reborn,15,15,14,1,0,foundation_audit_partial,扩展已确认问题到跨版本边界场景
+1,Death processing,0,0,0,0,0,foundation_audit_partial,跨卡/跨机制底层路径；详见 foundation_probes.csv 与 mechanism_issues.csv
+1,Zone movement,0,0,0,0,0,foundation_audit_partial,跨卡/跨机制底层路径；详见 foundation_probes.csv 与 mechanism_issues.csv
+2,Battlecry,797,797,720,2,75,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+2,Spell resolution,690,690,633,2,55,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+2,Summon,479,479,423,2,54,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+2,Draw / Discard,202,202,181,3,18,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+2,Transform,45,45,41,0,4,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+2,Silence,16,16,13,0,3,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+3,Trigger,477,477,414,7,56,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+3,Cost modification,119,119,115,1,3,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+3,Continuous effect / Update,114,114,100,1,13,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+3,Discover / Choice,88,88,84,0,4,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+3,Aura,60,60,56,1,3,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+3,Secret,46,46,38,0,8,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+3,Choose One,39,39,35,0,4,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+3,Quest,18,18,12,0,6,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+3,Conditional stats,4,4,1,0,3,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+4,Weapon,80,80,74,0,6,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+4,Overload,35,35,34,0,1,ordinary_collectible_verified,验证同一张卡的其他机制
+4,Combo,27,27,23,0,4,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+4,Deck construction,2,2,2,0,0,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+4,Hero Power modification,2,2,1,0,1,ordinary_collectible_verified,验证同一张卡的其他机制
+5,Taunt,161,161,149,1,11,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+5,Rush,52,52,48,0,4,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+5,Spell Damage,42,42,37,0,5,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+5,Stealth,40,40,34,2,4,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+5,Divine Shield,36,36,34,0,2,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+5,Lifesteal,32,32,29,2,1,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+5,Vanilla,32,32,32,0,0,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+5,Unclassified effect,26,26,23,0,3,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+5,Charge,20,20,19,0,1,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+5,Untargetable,16,16,14,0,2,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+5,Poisonous,14,14,14,0,0,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+5,Windfury,14,14,14,0,0,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+5,Echo,12,12,12,0,0,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+5,Magnetic,12,12,12,0,0,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+5,Twinspell,11,11,11,0,0,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+5,Outcast,6,6,5,1,0,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现
+5,All tribes,1,1,1,0,0,sampled_runtime_audit_partial,逐 set 读取现有断言并运行机制专属正例/边界复现

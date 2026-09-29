@@ -1,0 +1,21 @@
+﻿card_id,status,mechanic_scope,reason,probe_file,notes
+NEW1_017,GREEN,Battlecry|Targeting,友敌鱼人均可作为战吼目标并被摧毁，螃蟹准确获得+2/+2；非鱼人非法；无鱼人时本体可无目标入场且保持1/2。,classic_probe_tail.csv,"逐卡真实对局：3 个独立 case；pass,pass,pass。"
+NEW1_018,GREEN,Battlecry,战吼读取己方武器攻击力并准确增攻；敌方武器不计入。,classic_probe_tail.csv,"逐卡真实对局：2 个独立 case；pass,pass。"
+NEW1_019,GREEN,Random effects|Summon|Trigger,友方召唤后随机对敌方角色造成恰好1点，多个随机种子覆盖敌方英雄和两名随从；敌方召唤和本体入场不触发。,classic_probe_tail.csv,"逐卡真实对局：3 个独立 case；pass,pass,pass。"
+NEW1_020,GREEN,Trigger,己方法术后对友敌所有随从各造成1点，排除英雄；敌方法术不触发。,classic_probe_tail.csv,"逐卡真实对局：2 个独立 case；pass,pass。"
+NEW1_021,GREEN,Trigger,在持有者下一回合开始消灭包括自身和双方其他随从；对手回合开始不触发。,classic_probe_tail.csv,逐卡真实对局：1 个独立 case；pass。
+NEW1_022,GREEN,Cost modification|Taunt,己方武器攻击力实时降低手牌费用，武器移除后复原；敌方武器不影响；入场嘲讽有效。,classic_probe_tail.csv,"逐卡真实对局：2 个独立 case；pass,pass。"
+NEW1_023,GREEN,Untargetable,敌方法术及英雄技能目标列表排除该牌，实际强行施法被拒；随从战吼仍可选中并造成伤害。,classic_probe_tail.csv,逐卡真实对局：1 个独立 case；pass。
+NEW1_024,GREEN,Battlecry,战吼准确提高己方武器攻击与耐久各1；敌方武器无影响。,classic_probe_tail.csv,"逐卡真实对局：2 个独立 case；pass,pass。"
+NEW1_025,GREEN,Battlecry,敌方武器恰减1耐久：一耐久摧毁、二耐久保留；己方武器不受影响。,classic_probe_tail.csv,"逐卡真实对局：2 个独立 case；pass,pass。"
+NEW1_026,GREEN,Summon|Trigger,己方法术召唤恰好一个1/1学徒，敌方法术不触发，己方满场时不会超出七随从。,classic_probe_tail.csv,"逐卡真实对局：3 个独立 case；pass,pass,pass。"
+NEW1_027,GREEN,Aura|Continuous effect / Update,光环只增强其他友方海盗+1/+1，非海盗及敌方海盗不变；船长死亡后准确撤销。,classic_probe_tail.csv,"逐卡真实对局：2 个独立 case；pass,pass。"
+NEW1_029,GREEN,Battlecry,敌方下回合法术费用变0，随后恢复；己方法术及敌方随从费用不变。,classic_probe_tail.csv,逐卡真实对局：1 个独立 case；pass。
+NEW1_030,GREEN,Battlecry|Draw / Discard,战吼消灭双方其他随从、弃掉己方余牌，自身12/12留场。,classic_probe_tail.csv,逐卡真实对局：1 个独立 case；pass。
+NEW1_036,RED,Draw / Discard|Spell resolution,随从最低1血分支通过；命令怒吼未执行文本的‘抽一张牌’，已知牌仍在牌库中。,classic_probe_tail.csv,逐卡真实对局：1 个独立 case；confirmed_error。
+NEW1_037,GREEN,Random effects|Trigger,只在己方回合结束时使随机其他友方随从攻击+1；两种候选均可命中且一次只命中一个，无其他随从时不自我增益。,classic_probe_tail.csv,"逐卡真实对局：3 个独立 case；pass,pass,pass。"
+NEW1_038,GREEN,Trigger,登场不立即增益，双方每次回合结束各准确获得+1/+1。,classic_probe_tail.csv,逐卡真实对局：1 个独立 case；pass。
+NEW1_040,GREEN,Summon|Trigger,己方回合结束召唤一个2/2嘲讽豺狼人，对方回合结束不触发；满场不越界。,classic_probe_tail.csv,"逐卡真实对局：2 个独立 case；pass,pass。"
+NEW1_041,GREEN,Battlecry|Random effects,战吼随机消灭恰好一个攻击≤2的敌方随从；友方/高攻排除，无合法目标可入场；种子覆盖双候选。,classic_probe_tail.csv,"逐卡真实对局：3 个独立 case；pass,pass,pass。"
+tt_004,GREEN,Trigger,友敌随从各死亡一次后各加1攻击，共+2；单纯召唤不触发。,classic_probe_tail.csv,"逐卡真实对局：2 个独立 case；pass,pass。"
+tt_010,GREEN,Secret|Spell resolution|Summon|Targeting|Trigger,敌方指向随从的法术转向新召唤的1/3且原目标不受伤；己方法术及指向英雄的敌方法术不触发；满场无法召唤时维持秘密。,classic_probe_tail.csv,"逐卡真实对局：3 个独立 case；pass,pass,pass。"

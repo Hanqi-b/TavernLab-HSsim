@@ -1,0 +1,4 @@
+﻿card_id,name_en,set,source,verdict,evidence
+BOT_243,Myra Rotspring,The Boomsday Project (BOOMSDAY),fireplace/cards/boomsday/rogue.py:8,internal_target_candidate,TARGET refers to a generated/internal entity; no manual target prerequisite proven
+BT_801,Eye Beam,Demon Hunter Initiate (DEMON_HUNTER_INITIATE),fireplace/cards/initiate/demonhunter.py:177,confirmed_error,reports/card_quality_full_2026-09-27/targeted_reproductions.csv#BT_801
+TRL_409,"Gral, the Shark",Rastakhan's Rumble (TROLL),fireplace/cards/troll/rogue.py:57,internal_target_candidate,TARGET refers to a generated/internal entity; no manual target prerequisite proven

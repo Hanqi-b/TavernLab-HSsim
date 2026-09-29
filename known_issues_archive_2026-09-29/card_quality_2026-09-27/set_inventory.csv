@@ -1,0 +1,33 @@
+﻿version,set,xml_entities,xml_collectible_including_skins,ordinary_collectible,python_definition_ordinary_collectible,runtime_synthetic_entities,deathrattle_xml,deathrattle_runtime_xml,deathrattle_runtime_synthetic,battlecry_collectible,discover_collectible,choose_one_collectible,secret_collectible,combo_collectible,overload_collectible,weapon_collectible,scope_note
+17.6.0.53261,Basic (BASIC),271,153,153,110,0,0,0,0,25,0,0,0,0,0,6,Python 定义数仅表明类存在，不代表效果正确；XML 与运行时衍生实体分开计数。
+17.6.0.53261,Classic (EXPERT1),398,240,240,213,0,9,11,0,55,0,10,14,8,9,7,Python 定义数仅表明类存在，不代表效果正确；XML 与运行时衍生实体分开计数。
+17.6.0.53261,Hall of Fame (HOF),50,35,35,35,0,1,1,0,13,0,0,1,0,0,0,Python 定义数仅表明类存在，不代表效果正确；XML 与运行时衍生实体分开计数。
+17.6.0.53261,Missions (MISSIONS),36,0,0,0,0,1,1,0,0,0,0,0,0,0,0,Python 定义数仅表明类存在，不代表效果正确；XML 与运行时衍生实体分开计数。
+17.6.0.53261,Curse of Naxxramas (NAXX),164,30,30,28,0,24,24,0,3,0,0,2,0,0,1,Python 定义数仅表明类存在，不代表效果正确；XML 与运行时衍生实体分开计数。
+17.6.0.53261,Goblins vs Gnomes (GVG),182,123,123,107,0,10,10,0,30,0,3,0,2,4,5,Python 定义数仅表明类存在，不代表效果正确；XML 与运行时衍生实体分开计数。
+17.6.0.53261,Blackrock Mountain (BRM),223,31,31,31,0,3,3,0,11,0,1,0,0,1,0,Python 定义数仅表明类存在，不代表效果正确；XML 与运行时衍生实体分开计数。
+17.6.0.53261,The Grand Tournament (TGT),202,132,132,121,0,7,7,0,37,0,2,3,2,3,4,Python 定义数仅表明类存在，不代表效果正确；XML 与运行时衍生实体分开计数。
+17.6.0.53261,Credits (CREDITS),117,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Python 定义数仅表明类存在，不代表效果正确；XML 与运行时衍生实体分开计数。
+17.6.0.53261,Hero Skins (HERO_SKINS),93,33,0,0,0,0,0,0,0,0,0,0,0,0,0,Python 定义数仅表明类存在，不代表效果正确；XML 与运行时衍生实体分开计数。
+17.6.0.53261,Tavern Brawl (TB),1106,0,0,0,0,31,33,0,0,0,0,0,0,0,0,Python 定义数仅表明类存在，不代表效果正确；XML 与运行时衍生实体分开计数。
+17.6.0.53261,League of Explorers (LOE),258,45,45,42,0,11,12,0,16,9,1,2,0,0,1,Python 定义数仅表明类存在，不代表效果正确；XML 与运行时衍生实体分开计数。
+17.6.0.53261,Whispers of the Old Gods (OG),218,134,134,121,0,20,21,0,44,2,3,0,1,2,3,Python 定义数仅表明类存在，不代表效果正确；XML 与运行时衍生实体分开计数。
+17.6.0.53261,One Night in Karazhan (KARA),225,45,45,43,0,6,6,0,19,2,0,1,0,0,2,Python 定义数仅表明类存在，不代表效果正确；XML 与运行时衍生实体分开计数。
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),257,132,132,124,0,11,11,0,55,6,2,3,2,3,3,Python 定义数仅表明类存在，不代表效果正确；XML 与运行时衍生实体分开计数。
+17.6.0.53261,Journey to Un'Goro (UNGORO),228,135,135,125,0,17,20,0,50,10,1,1,2,1,3,Python 定义数仅表明类存在，不代表效果正确；XML 与运行时衍生实体分开计数。
+17.6.0.53261,Knights of the Frozen Throne (ICECROWN),300,135,135,124,0,21,24,0,43,2,3,2,2,1,4,Python 定义数仅表明类存在，不代表效果正确；XML 与运行时衍生实体分开计数。
+17.6.0.53261,Kobolds & Catacombs (LOOTAPALOOZA),543,135,135,130,0,24,27,0,44,1,0,5,1,1,12,Python 定义数仅表明类存在，不代表效果正确；XML 与运行时衍生实体分开计数。
+17.6.0.53261,The Witchwood (GILNEAS),504,129,129,115,0,15,15,0,44,3,1,2,1,1,3,Python 定义数仅表明类存在，不代表效果正确；XML 与运行时衍生实体分开计数。
+17.6.0.53261,The Boomsday Project (BOOMSDAY),404,136,136,129,0,24,29,0,42,6,1,1,1,2,2,Python 定义数仅表明类存在，不代表效果正确；XML 与运行时衍生实体分开计数。
+17.6.0.53261,Rastakhan's Rumble (TROLL),479,135,135,133,0,18,19,0,48,8,2,1,1,1,7,Python 定义数仅表明类存在，不代表效果正确；XML 与运行时衍生实体分开计数。
+17.6.0.53261,Rise of Shadows (DALARAN),798,136,136,128,0,19,20,0,45,10,1,1,1,1,3,Python 定义数仅表明类存在，不代表效果正确；XML 与运行时衍生实体分开计数。
+17.6.0.53261,Taverns of Time (TAVERNS_OF_TIME),49,0,0,0,0,1,1,0,0,0,0,0,0,0,0,Python 定义数仅表明类存在，不代表效果正确；XML 与运行时衍生实体分开计数。
+17.6.0.53261,Saviors of Uldum (ULDUM),795,135,135,125,0,18,19,0,46,8,2,2,1,1,4,Python 定义数仅表明类存在，不代表效果正确；XML 与运行时衍生实体分开计数。
+17.6.0.53261,Descent of Dragons (DRAGONS),244,140,140,132,0,9,12,0,71,8,1,0,1,2,3,Python 定义数仅表明类存在，不代表效果正确；XML 与运行时衍生实体分开计数。
+17.6.0.53261,Year of the Dragon (YEAR_OF_THE_DRAGON),282,35,35,32,0,6,6,0,13,5,1,0,1,1,1,Python 定义数仅表明类存在，不代表效果正确；XML 与运行时衍生实体分开计数。
+17.6.0.53261,Ashes of Outland (BLACK_TEMPLE),390,135,135,133,0,31,34,0,33,3,0,5,0,1,4,Python 定义数仅表明类存在，不代表效果正确；XML 与运行时衍生实体分开计数。
+17.6.0.53261,Wild Event (WILD_EVENT),23,0,0,0,0,1,1,0,0,0,0,0,0,0,0,Python 定义数仅表明类存在，不代表效果正确；XML 与运行时衍生实体分开计数。
+17.6.0.53261,Scholomance Academy (SCHOLOMANCE),30,1,1,1,0,3,3,0,0,0,0,0,0,0,0,Python 定义数仅表明类存在，不代表效果正确；XML 与运行时衍生实体分开计数。
+17.6.0.53261,Battlegrounds (BATTLEGROUNDS),446,0,0,0,0,41,41,0,0,0,0,0,0,0,0,Python 定义数仅表明类存在，不代表效果正确；XML 与运行时衍生实体分开计数。
+17.6.0.53261,Demon Hunter Initiate (DEMON_HUNTER_INITIATE),29,20,20,20,0,1,1,0,3,0,0,0,0,0,2,Python 定义数仅表明类存在，不代表效果正确；XML 与运行时衍生实体分开计数。
+17.6.0.53261+runtime_custom,Runtime custom (INVALID),0,0,0,0,36,0,0,0,0,0,0,0,0,0,0,36 个运行时 custom_card 实体均为 INVALID set，不在项目 XML 中；无亡语实体。

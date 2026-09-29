@@ -56,6 +56,28 @@ def _eval_card(source, card):
     return ret
 
 
+class _DeathMatchTarget:
+    """The dying card's identity and pre-death selector state.
+
+    Death listeners must match the card as it was on the board, while their
+    callbacks must receive the real card after it has entered the graveyard.
+    """
+
+    def __init__(self, card):
+        self._match_original = card
+        self.entity_id = card.entity_id
+        self.id = card.id
+        self.zone = card.zone
+        self.controller = card.controller
+        self.type = card.type
+        self.races = tuple(getattr(card, "races", ()))
+        self.zone_position = card.zone_position
+        self._pending_death = False
+
+    def __getattr__(self, name):
+        return getattr(self._match_original, name)
+
+
 class EventListener:
     ON = 1
     AFTER = 2
@@ -145,12 +167,15 @@ class Action(metaclass=ActionMeta):
         ret.times = self.times
         return ret
 
+    def get_broadcast_match_args(self, args):
+        return args
+
     def _broadcast(self, entity, source, at, *args):
         for event in entity.events:
             if event.at != at:
                 continue
             if isinstance(event.trigger, self.__class__) and event.trigger.matches(
-                entity, source, args
+                entity, source, self.get_broadcast_match_args(args)
             ):
                 log.info("%r triggers off %r from %r", entity, self, source)
                 entity.trigger_event(source, event, args)
@@ -201,7 +226,8 @@ class Action(metaclass=ActionMeta):
             else:
                 # this stuff is stupidslow
                 res = match.eval([arg], entity)
-                if not res or res[0] is not arg:
+                original = getattr(arg, "_match_original", None)
+                if not res or (res[0] is not arg and res[0] is not original):
                     return False
         if hasattr(self, "source") and self.source:
             res = self.source.eval([source], entity)
@@ -336,6 +362,11 @@ class Death(GameAction):
 
     ENTITY = ActionArg()
 
+    def get_broadcast_match_args(self, args):
+        target = args[0]
+        view = self._death_match_targets.get(target.entity_id)
+        return (view,) + args[1:] if view is not None else args
+
     def _broadcast(self, entity, source, at, *args):
         # https://github.com/jleclanche/fireplace/issues/126
         target = args[0]
@@ -354,24 +385,53 @@ class Death(GameAction):
         return super()._broadcast(entity, source, at, *args)
 
     def do(self, source, cards):
-        for card in cards:
-            if not card.dead:
-                continue
-            if card.zone == Zone.PLAY:
+        # Membership in a simultaneous death batch is fixed before any
+        # Deathrattle or Death listener can change another card's health.
+        dying = [
+            card
+            for card in cards
+            if card.zone == Zone.PLAY
+            and card.dead
+            and not getattr(card, "_pending_death", False)
+        ]
+        self._death_match_targets = {
+            card.entity_id: _DeathMatchTarget(card) for card in dying
+        }
+        for card in dying:
+            if card.type == CardType.MINION:
                 card._dead_position = card.zone_position - 1
-            card.zone = Zone.GRAVEYARD
+            card._pending_death = True
+        try:
+            # Vacate every field slot and record every death before resolving
+            # any deathrattle. Trigger order remains the original play order.
+            for card in dying:
+                card.zone = Zone.GRAVEYARD
             source.game.check_for_end_game()
             source.game.refresh_auras()
-            log.info("Processing Deathrattle for %r", card)
-            self._trigger = False
-            source.game.manager.game_action(self, source, card)
-            self.broadcast(source, EventListener.ON, card)
 
-        for card in cards:
-            if not card.dead:
-                continue
-            self._trigger = False
-            self.broadcast(source, EventListener.AFTER, card)
+            for card in dying:
+                card._pending_death = False
+                log.info("Processing Deathrattle for %r", card)
+                self._trigger = False
+                source.game.manager.game_action(self, source, card)
+                self.broadcast(source, EventListener.ON, card)
+                # The old scan inserted the deathrattle just before the first
+                # entity played after the dying card. That entity may now also
+                # be in the graveyard, or may not exist at all.
+                if not self._trigger and card.has_deathrattle:
+                    source.game.queue_actions(card, [Deathrattle(card)])
+
+            for card in dying:
+                self._trigger = False
+                self.broadcast(source, EventListener.AFTER, card)
+                if not self._trigger and card.type == CardType.MINION and card.reborn:
+                    source.game.queue_actions(
+                        card, [Summon(card.controller, RebornCopy(SELF))]
+                    )
+        finally:
+            for card in dying:
+                card._pending_death = False
+            self._death_match_targets = {}
 
 
 class EndTurn(GameAction):
@@ -936,7 +996,9 @@ class PutOnTop(TargetedAction):
                 log.info("Put(%r) fails because %r's deck is full", card, target)
                 continue
             card.zone = Zone.DECK
-            card, card.controller.deck[-1] = card.controller.deck[-1], card
+            deck = target.deck
+            card_index = next(i for i, deck_card in enumerate(deck) if deck_card is card)
+            deck[card_index], deck[-1] = deck[-1], deck[card_index]
             source.game.manager.targeted_action(self, source, target, card)
 
 
@@ -1676,10 +1738,26 @@ class Summon(TargetedAction):
             cards = [cards]
 
         for card in cards:
-            if not card.is_summonable():
+            # Summon capacity and other summonability checks belong to the
+            # player receiving the card.  The card is usually created by the
+            # source controller, so checking first would inspect the wrong
+            # field (and could also let a full target field grow to eight).
+            original_controller = card.controller
+            if card.zone == Zone.PLAY and original_controller != target:
+                # Summon does not transfer an in-play card between fields.
+                # Changing its controller here would leave it in the old
+                # player's field; control changes use Steal instead.
                 continue
-            if card.controller != target:
+            if original_controller != target:
                 card.controller = target
+            try:
+                summonable = card.is_summonable()
+            except Exception:
+                card.controller = original_controller
+                raise
+            if not summonable:
+                card.controller = original_controller
+                continue
             # Poisoned Blade
             if (
                 card.controller.weapon
@@ -1687,7 +1765,17 @@ class Summon(TargetedAction):
                 and source.type == CardType.HERO_POWER
                 and card.type == CardType.WEAPON
             ):
+                card.controller = original_controller
                 continue
+            if original_controller != target and card.zone not in (
+                Zone.PLAY,
+                Zone.SETASIDE,
+            ):
+                # Remove an existing hand/deck/graveyard card from its old
+                # controller's zone container before assigning the new one.
+                card.controller = original_controller
+                card.zone = Zone.SETASIDE
+                card.controller = target
             if card.zone != Zone.PLAY:
                 if source.type == CardType.MINION:
                     if source.zone == Zone.PLAY:

@@ -1,0 +1,3 @@
+﻿card_id,setup,expected_damage,actual_damage,outcome
+AT_003,normal_decks; Mage Fireblast against enemy hero,2,2,pass
+YOD_008,normal_decks; Mage Fireblast against enemy hero,3,2,wrong_effect

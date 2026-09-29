@@ -50,6 +50,7 @@ class OG_291:
 class OG_291e:
     atk = SET(1)
     max_health = SET(1)
+    cost = SET(1)
 
 
 class OG_282:

@@ -112,7 +112,7 @@ class DRG_247:
 class DRG_610(GalakrondUtils):
     """Galakrond, the Nightmare"""
 
-    # [x]<b>Battlecry:</b> Draw 1 card. It costs (0). <i>(@)</i>
+    # [x]<b>Battlecry:</b> Draw 1 card. It costs (1). <i>(@)</i>
     progress_total = 2
     play = Draw(CONTROLLER).then(Buff(Draw.CARD, "DRG_610e"))
     reward = Find(SELF + FRIENDLY_HERO) | Morph(SELF, "DRG_610t2")
@@ -121,7 +121,7 @@ class DRG_610(GalakrondUtils):
 class DRG_610t2(GalakrondUtils):
     """Galakrond, the Apocalypse"""
 
-    # [x]<b>Battlecry:</b> Draw 2 cards. They cost (0). <i>(@)</i>
+    # [x]<b>Battlecry:</b> Draw 2 cards. They cost (1). <i>(@)</i>
     progress_total = 2
     play = Draw(CONTROLLER).then(Buff(Draw.CARD, "DRG_610e")) * 2
     reward = Find(SELF + FRIENDLY_HERO) | Morph(SELF, "DRG_610t3")
@@ -130,7 +130,7 @@ class DRG_610t2(GalakrondUtils):
 class DRG_610t3:
     """Galakrond, Azeroth's End"""
 
-    # [x]<b>Battlecry:</b> Draw 4 cards. They cost (0). Equip a 5/2 Claw.
+    # [x]<b>Battlecry:</b> Draw 4 cards. They cost (1). Equip a 5/2 Claw.
     play = (
         Draw(CONTROLLER).then(Buff(Draw.CARD, "DRG_610e")) * 4,
         Summon(CONTROLLER, "DRG_238ht"),
@@ -145,5 +145,5 @@ class DRG_238p2:
 
 
 class DRG_610e:
-    tags = {GameTag.COST: 1}
+    cost = SET(1)
     events = REMOVED_IN_PLAY

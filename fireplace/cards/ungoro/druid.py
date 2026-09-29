@@ -41,7 +41,7 @@ class UNG_101b:
 class UNG_109:
     """Elder Longneck"""
 
-    play = Find(FRIENDLY_MINIONS + (ATK >= 5)) & Adapt(SELF)
+    play = Find(FRIENDLY_HAND + MINION + (ATK >= 5)) & Adapt(SELF)
 
 
 ##

@@ -1,0 +1,4 @@
+card_id,status,implementation,tested,reason,test_nodes,notes
+YOD_008,GREEN,implemented,yes,逐卡实测：实测英雄技能在增幅体在场时造成 3 点伤害，随从离场后恢复 1 点。,tests/test_year_of_dragon_red_fixes.py::test_arcane_amplifier_adds_two_hero_power_damage_only_while_in_play,CardDefs 原有 1 点英雄技能伤害增益，持续效果补足第二点。
+YOD_014,GREEN,implemented,yes,逐卡实测：战吼伤害等于目标随从攻击力而非自身攻击力，目标生命由 5 降至 3。,tests/test_year_of_dragon_red_fixes.py::test_aeon_reaver_uses_target_attack_not_its_own_attack,伤害数值改用目标攻击力。
+YOD_016,GREEN,implemented,yes,逐卡实测：潜行状态存在，亡语在死亡后确实从牌库抽一张到手牌。,tests/test_year_of_dragon_red_fixes.py::test_skyvateer_deathrattle_draws_one_card_and_keeps_stealth,补齐亡语运行时标签，令现有亡语脚本可执行。

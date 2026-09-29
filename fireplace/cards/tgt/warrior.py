@@ -23,6 +23,7 @@ class AT_067:
 class AT_069:
     """Sparring Partner"""
 
+    tags = {GameTag.TAUNT: True}
     requirements = {PlayReq.REQ_MINION_TARGET: 0, PlayReq.REQ_TARGET_IF_AVAILABLE: 0}
     play = Taunt(TARGET)
 

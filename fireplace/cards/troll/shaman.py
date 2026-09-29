@@ -33,12 +33,39 @@ class TRL_060:
     )
 
 
+class RememberZentimoNeighbors(TargetedAction):
+    TARGET = ActionArg()
+    CARD = CardArg()
+
+    def do(self, source, target, card):
+        card._zentimo_neighbors = tuple(target.adjacent_minions)
+
+
+class RecastZentimoNeighbors(TargetedAction):
+    TARGET = ActionArg()
+    CARD = CardArg()
+
+    def do(self, source, target, card):
+        neighbors = getattr(card, "_zentimo_neighbors", ())
+        for neighbor in neighbors:
+            if neighbor.zone == Zone.PLAY:
+                duplicate = source.controller.card(card.id, source=source)
+                source.game.queue_actions(source, [CastSpell(duplicate, neighbor)])
+
+
 class TRL_085:
     """Zentimo"""
 
     # [x]Whenever you target a minion with a spell, cast it again on its neighbors.
-    events = Play(CONTROLLER, SPELL, MINION).on(
-        CastSpell(Play.CARD, ADJACENT(Play.TARGET))
+    # Capture neighbors before the original spell resolves. A lethal spell
+    # removes its target from the board before Play.AFTER is broadcast.
+    events = (
+        Play(CONTROLLER, SPELL, MINION).on(
+            RememberZentimoNeighbors(Play.TARGET, Play.CARD)
+        ),
+        Play(CONTROLLER, SPELL, MINION).after(
+            RecastZentimoNeighbors(Play.TARGET, Play.CARD)
+        ),
     )
 
 

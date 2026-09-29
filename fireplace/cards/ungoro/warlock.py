@@ -25,7 +25,7 @@ class UNG_049:
 class UNG_830:
     """Cruel Dinomancer"""
 
-    deathrattle = Summon(CONTROLLER, RANDOM(FRIENDLY + DISCARDED + MINION))
+    deathrattle = Summon(CONTROLLER, Copy(RANDOM(FRIENDLY + DISCARDED + MINION)))
 
 
 class UNG_833:

@@ -69,8 +69,11 @@ class GIL_800:
 
 
 class GIL_800e2:
-    update = Refresh(FRIENDLY_HAND, {GameTag.COST: SET(0)})
-    events = Play(CONTROLLER).on(Destroy(SELF))
+    update = Refresh(
+        FuncSelector(lambda _, source: list(source.owner.hand)),
+        {GameTag.COST: SET(0)},
+    )
+    events = Play(OWNER).on(Destroy(SELF))
 
 
 class GIL_833:
@@ -116,4 +119,4 @@ class GIL_663:
     """Witchwood Apple"""
 
     # Add three 2/2 Treants to your hand.
-    play = Give(CONTROLLER, "GIL_663t") * 2
+    play = Give(CONTROLLER, "GIL_663t") * 3

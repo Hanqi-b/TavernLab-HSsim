@@ -155,7 +155,7 @@ class LOOT_500:
     """Val'anyr"""
 
     # <b>Deathrattle:</b> Give a minion in your hand +4/+2. When it dies, reequip this.
-    deathrattle = Buff(RANDOM(FRIENDLY_MINIONS), "LOOT_500e")
+    deathrattle = Buff(RANDOM(FRIENDLY_HAND + MINION), "LOOT_500e")
 
 
 class LOOT_500e:

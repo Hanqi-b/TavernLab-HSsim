@@ -613,6 +613,12 @@ class PlayableCard(BaseCard, Entity, TargetableByAuras):
         """
         True if the play action of the card requires a target
         """
+        if (
+            PlayReq.REQ_TARGET_IF_AVAILABLE_AND_NOT_DRAWN_THIS_TURN
+            in self.requirements
+            and self.drawn_this_turn
+        ):
+            return False
         if self.has_combo and self.controller.combo:
             if PlayReq.REQ_TARGET_FOR_COMBO in self.requirements:
                 return True
@@ -666,7 +672,7 @@ class PlayableCard(BaseCard, Entity, TargetableByAuras):
                 return bool(self.play_targets)
         req = self.requirements.get(PlayReq.REQ_TARGET_IF_AVAILABLE_AND_HERO_HAS_ATTACK)
         if req is not None:
-            if self.controller.hero.atk >= 0:
+            if self.controller.hero.atk > 0:
                 return bool(self.play_targets)
         req = self.requirements.get(
             PlayReq.REQ_TARGET_IF_AVAILABLE_AND_MINIMUM_SPELLS_PLAYED_THIS_TURN
@@ -713,7 +719,10 @@ class PlayableCard(BaseCard, Entity, TargetableByAuras):
             PlayReq.REQ_TARGET_IF_AVAILABLE_AND_COST_5_OR_MORE_SPELL_IN_HAND
         )
         if req is not None:
-            if self.controller.hand.filter(cost=range(5, 100)):
+            if any(
+                card.type == CardType.SPELL and card.cost >= 5
+                for card in self.controller.hand
+            ):
                 return bool(self.play_targets)
         req = self.requirements.get(
             PlayReq.REQ_TARGET_IF_AVAILABLE_AND_MIN_MANA_CRYSTAL
@@ -837,7 +846,7 @@ class LiveEntity(PlayableCard, Entity):
 
 class Character(LiveEntity):
     health_attribute = "health"
-    cant_attack = boolean_property("cant_attack")
+    cant_attack = boolean_property("cant_attack", GameTag.CANT_ATTACK)
     cant_be_frozen = boolean_property("cant_be_frozen")
     cant_be_targeted_by_opponents = boolean_property("cant_be_targeted_by_opponents")
     cant_be_targeted_by_abilities = boolean_property("cant_be_targeted_by_abilities")
@@ -1580,11 +1589,19 @@ class Weapon(rules.WeaponRules, LiveEntity):
 
 
 class HeroPower(PlayableCard):
-    additional_activations = int_property("additional_activations")
     heropower_disabled = int_property("heropower_disabled")
     passive_hero_power = boolean_property("passive_hero_power")
     playable_zone = Zone.PLAY
     steady_shot_can_target = boolean_property("steady_shot_can_target")
+
+    @property
+    def additional_activations(self):
+        # -1 is the unlimited-use sentinel used by Coldarra Drake.
+        return self._getattr("additional_activations", 0)
+
+    @additional_activations.setter
+    def additional_activations(self, value):
+        self._additional_activations = value
 
     def __init__(self, data):
         self.activations_this_turn = 0

@@ -1,0 +1,3 @@
+card_id,status,implementation,tested,reason,test_nodes,notes
+ICC_841,GREEN,implemented,yes,逐卡实测：血腥女王兰娜瑟尔在本局弃掉两张牌后攻击力比基础值高2；在场后再弃掉一张攻击力立即再提高1。,tests/test_ungoro_shared_red_fixes.py::test_discard_history_is_visible_to_blood_queen_lanathel,由 UNGORO 弃牌历史公共修复解决；ICECROWN 整包尚未完成。
+TRL_247,GREEN,implemented,yes,逐卡实测：真实弃掉三张不同的牌后打出灵魂守望者，恰好三张对应的副本进入手牌；原弃牌实体仍在移除区。,tests/test_ungoro_shared_red_fixes.py::test_soulwarden_recovers_three_distinct_discarded_cards,由 UNGORO 弃牌历史公共修复解决；TROLL 整包尚未完成。

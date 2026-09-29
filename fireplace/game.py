@@ -57,6 +57,7 @@ class BaseGame(Entity):
         self.tick = 0
         self.active_aura_buffs = CardList()
         self.setaside = CardList()
+        self.discarded = CardList()
         self._action_stack = 0
 
     def __repr__(self):
@@ -64,7 +65,8 @@ class BaseGame(Entity):
 
     def __iter__(self):
         return chain(
-            self.entities, self.hands, self.decks, self.graveyard, self.setaside
+            self.entities, self.hands, self.decks, self.graveyard, self.setaside,
+            (card for card in self.discarded if card.zone == Zone.REMOVEDFROMGAME),
         )
 
     @property
@@ -358,6 +360,11 @@ class BaseGame(Entity):
             for buff in CardList(entity.entities).filter(one_turn_effect=True):
                 self.log("Ending One-Turn effect: %r", buff)
                 buff.remove()
+        for player in self.players:
+            if player.weapon:
+                for buff in CardList(player.weapon.buffs).filter(one_turn_effect=True):
+                    self.log("Ending One-Turn weapon effect: %r", buff)
+                    buff.remove()
         # Extra turn
         if self.next_players:
             next_player = self.next_players.pop(0)
@@ -378,9 +385,6 @@ class BaseGame(Entity):
     def _begin_turn(self, player: "Player"):
         self.manager.step(self.next_step, Step.MAIN_START)
         self.manager.step(self.next_step, Step.MAIN_ACTION)
-
-        for p in self.players:
-            p.cards_drawn_this_turn = 0
 
         player.turn_start = timegm(time.gmtime())
         player.last_turn = player.turn

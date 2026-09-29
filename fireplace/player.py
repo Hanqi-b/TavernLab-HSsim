@@ -7,7 +7,7 @@ from .actions import Concede, Draw, Fatigue, Give, Hit, SpendMana, Steal, Summon
 from .aura import TargetableByAuras
 from .card import Card
 from .deck import Deck
-from .entity import Entity, slot_property
+from .entity import Entity, int_property, slot_property
 from .managers import PlayerManager
 from .utils import CardList
 
@@ -47,6 +47,8 @@ class Player(Entity, TargetableByAuras):
     spells_cost_health = slot_property("spells_cost_health")
     murlocs_cost_health = slot_property("murlocs_cost_health")
     type = CardType.PLAYER
+    ignore_scripts = True
+    timeout = int_property("timeout")
 
     def __init__(self, name, deck: list[str], hero: str, is_standard=True):
         self.game: Game = None

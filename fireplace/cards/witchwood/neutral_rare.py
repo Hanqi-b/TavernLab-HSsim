@@ -66,7 +66,7 @@ class GIL_623:
 
     # [x]<b>Taunt</b> <b>Battlecry:</b> Lose 1 Health for each card in your opponent's
     # hand.
-    play = Buff(SELF, "GIL_623e") * Count(ENEMY_HERO)
+    play = SetCurrentHealth(SELF, CURRENT_HEALTH(SELF) - Count(ENEMY_HAND))
 
 
 GIL_623e = buff(health=-1)

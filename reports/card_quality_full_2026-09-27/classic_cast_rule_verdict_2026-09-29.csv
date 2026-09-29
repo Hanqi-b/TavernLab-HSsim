@@ -1,0 +1,4 @@
+card_id,status,implementation,tested,reason,evidence,notes
+EX1_095,GREEN,implemented,yes,从手牌施法会抽取已知牌；对手施法不触发；己方其他卡牌代施法只结算原法术且不额外触发抽牌；三条分支均通过。,tests/test_classic_cast_listener_semantics.py::test_gadgetzan_auctioneer_only_draws_for_player_hand_cast,用户确认CAST-001规则：仅玩家从手牌施法触发此类“你施放”监听；归档中的原始YELLOW保持不变。
+EX1_187,GREEN,implemented,yes,从手牌施法使奥术吞噬者获得+2/+2；对手施法和己方其他卡牌代施法均不改变属性；三条分支均通过。,tests/test_classic_cast_listener_semantics.py::test_arcane_devourer_only_gains_stats_for_player_hand_cast,用户确认CAST-001规则：仅玩家从手牌施法触发此类“你施放”监听；归档中的原始YELLOW保持不变。
+EX1_559,GREEN,implemented,yes,从手牌施法生成一张火球术；对手施法和己方其他卡牌代施法均不生成火球术；三条分支均通过。,tests/test_classic_cast_listener_semantics.py::test_archmage_antonidas_only_adds_fireball_for_player_hand_cast,用户确认CAST-001规则：仅玩家从手牌施法触发此类“你施放”监听；归档中的原始YELLOW保持不变。

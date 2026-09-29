@@ -17,6 +17,10 @@ class DRG_096:
 
 
 class DRG_096e:
+    # Keep the transformed legendary at the card's printed 5/5 body.
+    atk = SET(5)
+    max_health = SET(5)
+
     class Hand:
         events = OWN_TURN_BEGIN.on(
             Morph(OWNER, RandomLegendaryMinion()).then(Buff(Morph.CARD, "DRG_096e"))
@@ -100,7 +104,7 @@ class DRG_219:
     # [x]Deal $4 damage to a minion. If you're holding a Dragon, also damage its neighbors.
     requirements = {
         PlayReq.REQ_MINION_TARGET: 0,
-        PlayReq.REQ_TARGET_IF_AVAILABLE_AND_DRAGON_IN_HAND: 0,
+        PlayReq.REQ_TARGET_TO_PLAY: 0,
     }
     powered_up = HOLDING_DRAGON
     play = Hit(TARGET, 4), powered_up & Hit(TARGET_ADJACENT, 4)

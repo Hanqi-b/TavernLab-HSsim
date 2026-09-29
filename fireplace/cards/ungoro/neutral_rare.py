@@ -55,7 +55,7 @@ class UNG_807:
     play = Destroy(TARGET), Buff(SELF, "UNG_807e")
 
 
-UNG_807e = buff(+2, +2)
+UNG_807e = buff(+1, +1)
 
 
 class UNG_816:

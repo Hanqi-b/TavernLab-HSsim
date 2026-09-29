@@ -1,0 +1,15 @@
+card_id,status,implementation,tested,reason,test_nodes,notes
+DRG_019,GREEN,implemented,yes,逐卡实测：两次祈求后在己方场上形成三只突袭本体及复制体；没有祈求时只出现本体。,tests/test_dragons_red_fixes.py::test_scion_of_ruin_summons_two_friendly_copies_after_two_invokes,复制体召唤目标改为己方。
+DRG_058,GREEN,implemented,yes,逐卡实测：手牌中两张龙使攻击力增加四点，逐张移除后动态回落。,tests/test_dragons_red_fixes.py::test_wing_commander_attack_tracks_dragons_in_hand,改为持续统计手牌龙数。
+DRG_067,GREEN,implemented,yes,逐卡实测：仅敌方随从承受三点；无敌方随从时英雄不会被误伤。,tests/test_dragons_red_fixes.py::test_troll_batrider_only_hits_an_enemy_minion,随机池限定敌方随从。
+DRG_088,GREEN,implemented,yes,逐卡实测：每只鸦按其他同名鸦增加攻击力，另一只死亡时动态减少。,tests/test_dragons_red_fixes.py::test_dread_raven_scales_by_each_other_raven_and_updates_on_death,排除自身并按数量动态计算。
+DRG_096,GREEN,implemented,yes,逐卡实测：手牌中每回合变成随机传说随从的 5/5 复制体，连续两个回合保持变形规则。,tests/test_dragons_red_fixes.py::test_bandersmosh_in_hand_becomes_a_five_five_legendary,变形后的附魔设置固定 5/5 并继续保留手牌触发。
+DRG_106,GREEN,implemented,yes,逐卡实测：有龙时伤害目标后发现三张法术并可选入手牌；无龙时只造成伤害。,tests/test_dragons_red_fixes.py::test_arcane_breath_discovers_spells_only_while_holding_a_dragon,发现候选由龙改为法术。
+DRG_219,GREEN,implemented,yes,逐卡实测：有龙时目标及相邻随从各受四点；无龙时只有目标受四点。,tests/test_dragons_red_fixes.py::test_lightning_breath_hits_target_and_neighbors_only_with_dragon,指定随从始终要求目标，条件仅控制相邻伤害。
+DRG_231,GREEN,implemented,yes,逐卡实测：牌库无中立牌时入手五张圣骑士牌；含中立牌时不生成。,tests/test_dragons_red_fixes.py::test_lightforged_crusader_adds_five_paladin_cards_only_for_neutral_free_deck,生成数量改为五。
+DRG_251,GREEN,implemented,yes,逐卡实测：三次突袭随从召唤后奖励一只 4/4 突袭狮鹫，普通随从及奖励自身不额外推进任务。,tests/test_dragons_red_fixes.py::test_clear_the_way_rewards_once_after_three_rush_summons,奖励不计入自身任务进度。
+DRG_255,GREEN,implemented,yes,逐卡实测：己方三次英雄技能后奖励三只麻风侏儒，对手技能不计入。,tests/test_dragons_red_fixes.py::test_toxic_reinforcements_rewards_three_leper_gnomes_after_hero_powers,奖励实体改为麻风侏儒。
+DRG_256,GREEN,implemented,yes,逐卡实测：英雄技能使用后五点伤害在敌方英雄或随从间随机分配，两种结果均实测。,tests/test_dragons_red_fixes.py::test_dragonbane_hits_a_random_enemy_character_after_hero_power,随机目标改为敌方角色。
+DRG_311,GREEN,implemented,yes,逐卡实测：两个抉择分支分别给予随从 +2 生命与嘲讽，或召唤一只 2/2 树人；指定敌方英雄作为随从目标时被拒且卡牌仍在手中。,tests/test_dragons_red_fixes.py::test_treenforcements_choice_subcards_have_their_own_effects,父卡保留可选目标规则并限定随从，补齐第一分支附魔。
+DRG_403,GREEN,implemented,yes,逐卡实测：对手下一次英雄技能费用设为三，自身被消灭后效果仍在；使用一次后费用恢复。,tests/test_dragons_red_fixes.py::test_blowtorch_saboteur_sets_only_the_opponents_next_power_to_three,短时效果挂在己方玩家并监听对手技能。
+DRG_610,GREEN,implemented,yes,逐卡实测：三个升级等级分别抽一、二、四张牌，并按当前 CardDefs 卡面将抽到牌费用设为 1。,tests/test_dragons_red_fixes.py::test_galakrond_the_nightmare_draws_one_cost_cards_at_each_rank,CardDefs 17.6.0.53261 卡面写费用 (1)；使用 SET(1) 而非旧实现的加一。

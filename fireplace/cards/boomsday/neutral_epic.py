@@ -72,7 +72,7 @@ class BOT_544:
     """Loose Specimen"""
 
     # <b>Battlecry:</b> Deal 6 damage randomly split among other friendly minions.
-    play = Hit(RANDOM_FRIENDLY_MINION, 1) * 6
+    play = Hit(RANDOM_OTHER_FRIENDLY_MINION, 1) * 6
 
 
 class BOT_552:

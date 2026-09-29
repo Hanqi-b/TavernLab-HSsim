@@ -28,7 +28,9 @@ class BT_702:
     play = Buff(TARGET, "BT_702e")
 
 
-BT_702e = buff(atk=3, immune=True)
+class BT_702e:
+    tags = {GameTag.ATK: +3, GameTag.IMMUNE: True}
+    events = OWN_TURN_END.on(Destroy(SELF))
 
 
 class BT_703:

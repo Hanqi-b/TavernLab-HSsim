@@ -10,7 +10,9 @@ class DRG_019:
 
     # <b>Rush</b>. <b>Battlecry:</b> If you've <b>Invoked</b> twice, summon 2_copies of
     # this.
-    play = INVOKED_TWICE & SummonBothSides(SELF, ExactCopy(SELF)) * 2
+    # Copies are summoned on the controller's side.  SummonBothSides expects
+    # a player target and is not appropriate for a minion source here.
+    play = INVOKED_TWICE & Summon(CONTROLLER, ExactCopy(SELF)) * 2
 
 
 class DRG_020:

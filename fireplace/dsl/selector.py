@@ -617,14 +617,12 @@ RIGTHMOST_FIELD = FuncSelector(
     )
 )
 LEFTMOST_HAND = FuncSelector(
-    lambda entities, source: source.game.player1.hand[:1]
-    + source.game.player2.hand[-1:]
+    lambda entities, source: source.controller.hand[:1]
 )
 RIGTHMOST_HAND = FuncSelector(
-    lambda entities, source: source.game.player1.hand[:1]
-    + source.game.player2.hand[-1:]
+    lambda entities, source: source.controller.hand[-1:]
 )
-OUTERMOST_HAND = LEFTMOST_HAND + RIGTHMOST_HAND
+OUTERMOST_HAND = LEFTMOST_HAND | RIGTHMOST_HAND
 
 NUM_CARDS_PLAYED_THIS_TURN = Attr(CONTROLLER, GameTag.NUM_CARDS_PLAYED_THIS_TURN)
 CARDS_PLAYED_THIS_TURN = AttrValue("played_this_turn") == True
@@ -663,7 +661,14 @@ ENTOURAGE = FuncSelector(lambda entities, source: source.entourage)
 
 ANOTHER_CLASS = FuncSelector(
     lambda entities, source: [
-        card_class for card_class in CardClass if source.card_class != card_class
+        card_class for card_class in CardClass
+        if card_class not in (
+            source.card_class,
+            CardClass.INVALID,
+            CardClass.NEUTRAL,
+            CardClass.DREAM,
+            CardClass.WHIZBANG,
+        )
     ]
 )
 

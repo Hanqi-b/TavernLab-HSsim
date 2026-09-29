@@ -41,7 +41,10 @@ GiveRush = lambda target: SetTag(target, GameTag.RUSH)
 GiveReborn = lambda target: SetTag(target, GameTag.REBORN)
 
 
-CLEAVE = Hit(TARGET_ADJACENT, ATK(SELF))
+# Attack triggers receive the attacker and defender as event arguments.  Use the
+# defender from that attack instead of the card's stale play target so cleave
+# follows the minion that was actually attacked.
+CLEAVE = Hit(ADJACENT(Attack.DEFENDER), ATK(SELF))
 COINFLIP = RandomNumber(0, 1) == 1
 EMPTY_BOARD = Count(FRIENDLY_MINIONS) == 0
 EMPTY_HAND = Count(FRIENDLY_HAND) == 0

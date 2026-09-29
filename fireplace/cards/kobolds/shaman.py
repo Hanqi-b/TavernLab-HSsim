@@ -34,7 +34,11 @@ class LOOT_517:
 class LOOT_517e:
     tags = {GameTag.TAG_ONE_TURN_EFFECT: True}
     update = Refresh(CONTROLLER, {enums.EXTRA_BATTLECRIES: True})
-    events = Play(CONTROLLER, BATTLECRY).after(Destroy(SELF))
+    # This enchantment is created during Murmuring Elemental's own battlecry.
+    # Its first eligible Play event must therefore exclude the source minion.
+    events = Play(
+        CONTROLLER, BATTLECRY - FuncSelector(lambda _, source: [source.source])
+    ).after(Destroy(SELF))
 
 
 class LOOT_518:
@@ -76,7 +80,9 @@ class LOOT_064:
     reward = Morph(SELF, "LOOT_064t1")
 
     class Hand:
-        events = Play(CONTROLLER, DEATHRATTLE).after(AddProgress(SELF, Play.CARD))
+        events = Overload(CONTROLLER).on(
+            AddProgress(SELF, Overload.PLAYER, Overload.AMOUNT)
+        )
 
 
 class LOOT_064t1:
@@ -93,7 +99,9 @@ class LOOT_064t1:
     reward = Morph(SELF, "LOOT_064t2")
 
     class Hand:
-        events = Play(CONTROLLER, DEATHRATTLE).after(AddProgress(SELF, Play.CARD))
+        events = Overload(CONTROLLER).on(
+            AddProgress(SELF, Overload.PLAYER, Overload.AMOUNT)
+        )
 
 
 class LOOT_064t2:
@@ -146,7 +154,8 @@ class LOOT_504t:
         PlayReq.REQ_FRIENDLY_TARGET: 0,
     }
     play = Evolve(TARGET, 1), Give(CONTROLLER, "LOOT_504t")
-    events = OWN_TURN_END.on(Destroy(SELF))
+    class Hand:
+        events = OWN_TURN_END.on(Destroy(SELF))
 
 
 ##

@@ -1,0 +1,15 @@
+card_id,status,implementation,tested,reason,test_nodes,notes
+ULD_131,GREEN,implemented,yes,逐卡实测：只有回合结束尚有法力时才累积进度，四次后解锁并激活抉择双效果。,tests/test_uldum_red_fixes.py::test_untapped_potential_counts_only_turns_with_remaining_mana,使用实际剩余法力。
+ULD_133,GREEN,implemented,yes,逐卡实测：回合结束有剩余法力才抽牌，法力用尽不抽。,tests/test_uldum_red_fixes.py::test_crystal_merchant_draws_only_with_remaining_mana,使用实际剩余法力。
+ULD_140,GREEN,implemented,yes,逐卡实测：真实抽到二十张牌完成任务，奖励英雄技能抽牌费用变为零。,tests/test_uldum_red_fixes.py::test_supreme_archaeology_counts_real_draws_and_zeroes_reward_draw,任务改在抽牌事件时累积进度。
+ULD_167,GREEN,implemented,yes,逐卡实测：己方回合英雄受伤召唤三费随从；对手回合受伤不触发。,tests/test_uldum_red_fixes.py::test_diseased_vulture_triggers_only_for_owner_damage_on_owner_turn,改监听真实伤害事件并检查当前回合玩家。
+ULD_238,GREEN,implemented,yes,逐卡实测：无重复牌且无敌方随从时不伤害英雄；有敌方随从时十点伤害仅命中随从；牌库有重复牌时不造成伤害。,tests/test_uldum_red_fixes.py::test_reno_relicologist_hits_enemy_minions_only,随机目标限定敌方随从。
+ULD_239,GREEN,implemented,yes,逐卡实测：敌方随从攻击己方英雄后奥秘揭示并对敌方随从造成三点伤害。,tests/test_uldum_red_fixes.py::test_flame_ward_reveals_after_enemy_minion_attacks_owner_hero,补奥秘揭示与伤害顺序。
+ULD_286,GREEN,implemented,yes,逐卡实测：选定随从后洗入三张阴影；只有阴影的牌库中一次抽牌连续触发三张，召唤三只复制体。,tests/test_uldum_red_fixes.py::test_shadow_of_death_shuffles_three_shadows_and_summons_copy_on_draw,洗入数量改为三。
+ULD_291,GREEN,implemented,yes,逐卡实测：六次战吼后奖励技能开启；当回合己方战吼触发两次，回合结束效果消失。,tests/test_uldum_red_fixes.py::test_corrupt_the_waters_unlocks_and_temporarily_doubles_battlecries,奖励改为作用于玩家的短时光环。
+ULD_292,GREEN,implemented,yes,逐卡实测：两个抉择分支分别产生 5/5 突袭本体、或两只 3/3 突袭复制体。,tests/test_uldum_red_fixes.py::test_oasis_surger_resolves_each_choose_one_branch,补齐第一分支缺失的 +2/+2 附魔。
+ULD_326,GREEN,implemented,yes,逐卡实测：每加入一张其他职业卡牌进度加一，四张完成任务并装备 3/2 远古之刃。,tests/test_uldum_red_fixes.py::test_bazaar_burglary_counts_each_other_class_card_added,任务改按实际获得的其他职业牌计数。
+ULD_328,GREEN,implemented,yes,逐卡实测：施放后实际得到两张非盗贼职业的法术。,tests/test_uldum_red_fixes.py::test_clever_disguise_adds_two_spells_from_other_classes,生成次数改为二。
+ULD_705,GREEN,implemented,yes,逐卡实测：场上第七个教徒入场后先清空教徒再召唤守护者；不足七个不召唤。,tests/test_uldum_red_fixes.py::test_mogu_cultist_clears_full_board_before_summoning_ra,清场后显式结算死亡释放随从位。
+ULD_706,GREEN,implemented,yes,逐卡实测：亡语使双方各从自己手中召唤最低费用随从而非最低攻击力随从。,tests/test_uldum_red_fixes.py::test_blatant_decoy_summons_lowest_cost_minion_for_each_player,手牌选择器改为最低费用。
+ULD_724,GREEN,implemented,yes,逐卡实测：实际恢复十五点生命分 6、6、3 计进度并解锁英雄技能；对受伤随从治疗且给予 +3/+3。,tests/test_uldum_red_fixes.py::test_activate_the_obelisk_counts_actual_healing_and_upgrades_power,任务在治疗事件时按实际治疗量累积。

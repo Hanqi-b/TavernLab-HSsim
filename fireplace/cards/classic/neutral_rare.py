@@ -100,7 +100,7 @@ class EX1_076:
 class EX1_080:
     """Secretkeeper"""
 
-    events = OWN_SECRET_PLAY.on(Buff(SELF, "EX1_080o"))
+    events = Play(ALL_PLAYERS, SECRET).on(Buff(SELF, "EX1_080o"))
 
 
 EX1_080o = buff(+1, +1)
@@ -157,7 +157,7 @@ class EX1_284:
 class EX1_509:
     """Murloc Tidecaller"""
 
-    events = Summon(ALL_PLAYERS, MURLOC).on(Buff(SELF, "EX1_509e"))
+    events = Summon(CONTROLLER, MURLOC).on(Buff(SELF, "EX1_509e"))
 
 
 EX1_509e = buff(atk=1)
@@ -167,6 +167,9 @@ class EX1_584:
     """Ancient Mage"""
 
     play = Buff(SELF_ADJACENT, "EX1_584e")
+
+
+EX1_584e = buff(spellpower=1)
 
 
 class EX1_597:

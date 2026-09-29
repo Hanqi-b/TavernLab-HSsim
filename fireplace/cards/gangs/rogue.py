@@ -37,7 +37,7 @@ class CFM_693:
         PlayReq.REQ_MINION_TARGET: 0,
         PlayReq.REQ_TARGET_FOR_COMBO: 0,
     }
-    play = Bounce(TARGET)
+    combo = Bounce(TARGET)
 
 
 class CFM_694:

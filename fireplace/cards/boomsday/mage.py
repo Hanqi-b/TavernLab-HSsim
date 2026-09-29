@@ -28,7 +28,10 @@ class BOT_531:
 
 class BOT_531e:
     update = Refresh(CONTROLLER, {GameTag.SPELLPOWER: 2})
-    events = Play(CONTROLLER, SPELL).on(Destroy(SELF))
+    events = (
+        Play(CONTROLLER, SPELL).after(Destroy(SELF)),
+        OWN_TURN_END.on(Destroy(SELF)),
+    )
 
 
 class BOT_601:

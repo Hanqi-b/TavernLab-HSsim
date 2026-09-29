@@ -1,0 +1,2 @@
+card_id,status,implementation,tested,reason,evidence,notes
+LOE_086,GREEN,implemented,yes,集合石只响应玩家自己从手牌施法：1费心灵之火恰好召唤一只1费随从；灯神代施放的副本实际生效但不产生额外召唤；对手施法不触发；自己打出4费火球术恰好召唤一只4费随从。,tests/test_loe_summoning_stone_cast_rule.py::test_summoning_stone_ignores_djinni_effect_cast_copy|tests/test_loe_summoning_stone_cast_rule.py::test_summoning_stone_only_responds_to_its_players_spell,用户确认仅玩家自己从手牌施法触发此类监听；历史YELLOW及旧探针保持存档原样。

@@ -22,7 +22,7 @@ class DAL_081:
 
 class DAL_081e:
     tags = {
-        GameTag.CANT_BE_TARGETED_BY_SPELLS: True,
+        GameTag.CANT_BE_TARGETED_BY_ABILITIES: True,
         GameTag.CANT_BE_TARGETED_BY_HERO_POWERS: True,
     }
     events = OWN_TURN_BEGIN.on(Destroy(SELF))

@@ -51,7 +51,7 @@ class DRG_058:
     """Wing Commander"""
 
     # Has +2 Attack for each Dragon in your hand.
-    play = Buff(SELF, "DRG_058e") * Count(FRIENDLY_HAND + DRAGON)
+    update = Refresh(SELF, {GameTag.ATK: Count(FRIENDLY_HAND + DRAGON) * 2})
 
 
 DRG_058e = buff(atk=2)
@@ -82,7 +82,7 @@ class DRG_067:
     """Troll Batrider"""
 
     # <b>Battlecry:</b> Deal 3 damage to a random enemy minion.
-    play = Hit(RANDOM_ENEMY_CHARACTER, 3)
+    play = Hit(RANDOM_ENEMY_MINION, 3)
 
 
 class DRG_068:

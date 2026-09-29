@@ -58,7 +58,7 @@ class TRL_545(ThresholdUtils):
     play = ThresholdUtils.powered_up & Buff(SELF, "TRL_545e")
 
 
-TRL_545e = buff(+4, +4)
+TRL_545e = buff(+4, +4, taunt=True)
 
 
 ##
@@ -69,10 +69,7 @@ class TRL_302:
     """Time Out!"""
 
     # Your hero is <b>Immune</b> until your next turn.
-    requirements = {
-        PlayReq.REQ_MINION_TARGET: 0,
-    }
-    play = Buff(SELF, "TRL_302e")
+    play = Buff(FRIENDLY_HERO, "TRL_302e")
 
 
 class TRL_302e:

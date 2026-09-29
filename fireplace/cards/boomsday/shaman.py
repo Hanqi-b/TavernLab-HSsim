@@ -30,8 +30,11 @@ class BOT_411:
 
 
 class BOT_411e:
-    events = Play(CONTROLLER, SPELL).after(
-        Battlecry(Play.CARD, Play.TARGET), Destroy(SELF)
+    events = (
+        Play(CONTROLLER, SPELL).after(
+            Battlecry(Play.CARD, Play.TARGET), Destroy(SELF)
+        ),
+        OWN_TURN_END.on(Destroy(SELF)),
     )
 
 

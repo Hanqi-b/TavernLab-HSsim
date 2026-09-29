@@ -67,7 +67,10 @@ class DRG_311:
 
     # [x]<b>Choose One -</b> Give a minion +2 Health and <b>Taunt</b>; or Summon a 2/2
     # Treant.
-    requirements = {PlayReq.REQ_MINION_TARGET: 0, PlayReq.REQ_TARGET_TO_PLAY: 0}
+    requirements = {
+        PlayReq.REQ_TARGET_IF_AVAILABLE: 0,
+        PlayReq.REQ_MINION_TARGET: 0,
+    }
     choose = ("DRG_311a", "DRG_311b")
     play = ChooseBoth(CONTROLLER) & (
         Buff(TARGET, "DRG_311e"),
@@ -83,6 +86,10 @@ class DRG_311a:
 class DRG_311b:
     requirements = {PlayReq.REQ_MINION_TARGET: 0, PlayReq.REQ_TARGET_TO_PLAY: 0}
     play = Buff(TARGET, "DRG_311e")
+
+
+class DRG_311e:
+    tags = {GameTag.HEALTH: 2, GameTag.TAUNT: True}
 
 
 class DRG_314:

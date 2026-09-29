@@ -63,7 +63,11 @@ class ICC_221:
     requirements = {
         PlayReq.REQ_WEAPON_EQUIPPED: 0,
     }
-    play = GiveLifesteal(FRIENDLY_WEAPON)
+    play = Buff(FRIENDLY_WEAPON, "ICC_221e")
+
+
+ICC_221e = buff(lifesteal=True)
+ICC_221e.tags[GameTag.TAG_ONE_TURN_EFFECT] = True
 
 
 class ICC_233:
@@ -134,7 +138,7 @@ class ICC_827e:
             Play(CONTROLLER).on(
                 Morph(OWNER, ExactCopy(Play.CARD)).then(Buff(Morph.CARD, "ICC_827e"))
             ),
-            OWN_TURN_END.on(Destroy(SELF)),
+            OWN_TURN_END.on(Destroy(OWNER)),
         )
         update = Find(FRIENDLY_HERO_POWER - EXHAUSTED + ID("ICC_827p")) | Destroy(SELF)
 

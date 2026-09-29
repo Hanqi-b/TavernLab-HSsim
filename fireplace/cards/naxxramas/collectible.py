@@ -83,7 +83,7 @@ class FP1_015:
 class FP1_016:
     """Wailing Soul"""
 
-    play = Silence(FRIENDLY_MINIONS)
+    play = Silence(FRIENDLY_MINIONS - SELF)
 
 
 class FP1_017:
@@ -177,7 +177,15 @@ class FP1_025:
     """Reincarnate"""
 
     requirements = {PlayReq.REQ_MINION_TARGET: 0, PlayReq.REQ_TARGET_TO_PLAY: 0}
-    play = Destroy(TARGET), Deaths(), Summon(CONTROLLER, Copy(TARGET))
+
+    def play(self):
+        target = self.target
+        controller = target.controller
+        yield Destroy(target)
+        yield Deaths()
+        # Create the copy under the original controller so persistent card
+        # changes (notably C'Thun buffs) are applied by that player's card().
+        yield Summon(controller, Copy(TARGET).copy(self, target, controller=controller))
 
 
 ##

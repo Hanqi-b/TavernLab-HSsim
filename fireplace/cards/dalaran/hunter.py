@@ -35,7 +35,9 @@ class DAL_379t:
     events = Attack(FRIENDLY_HERO).after(Buff(CONTROLLER, "DAL_379e"))
 
 
-DAL_379e = buff(spellpower=2)
+class DAL_379e:
+    update = Refresh(CONTROLLER, {GameTag.SPELLPOWER: 2})
+    events = OWN_TURN_END.on(Destroy(SELF))
 
 
 class DAL_587:

@@ -98,7 +98,7 @@ class BT_124:
     """Corsair Cache"""
 
     # Draw a weapon. Give it +1 Durability.
-    play = ForceDraw(RANDOM(FRIENDLY_HAND + WEAPON)).then(
+    play = ForceDraw(RANDOM(FRIENDLY_DECK + WEAPON)).then(
         Buff(ForceDraw.TARGET, "BT_124e")
     )
 

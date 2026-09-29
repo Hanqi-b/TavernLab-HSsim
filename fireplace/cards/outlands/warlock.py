@@ -15,7 +15,12 @@ class BT_196:
         PlayReq.REQ_TARGET_IF_AVAILABLE_AND_NOT_DRAWN_THIS_TURN: 0,
     }
     powered_up = Find(SELF + DRAWN_THIS_TURN)
-    play = powered_up & Destroy(ALL_MINIONS - SELF) | Destroy(TARGET)
+
+    def play(self):
+        if self.drawn_this_turn:
+            yield Destroy(ALL_MINIONS - SELF)
+        else:
+            yield Destroy(TARGET)
 
 
 class BT_301:

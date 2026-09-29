@@ -1,0 +1,8 @@
+card_id,status,implementation,tested,reason,test_nodes,notes
+BT_124,GREEN,implemented,yes,逐卡实测：从牌库定向抽出武器，耐久度增加 1，非武器仍留在牌库。,tests/test_black_temple_red_fixes.py::test_corsair_cache_draws_weapon_from_deck_and_adds_durability,从牌库选武器，武器耐久沿现有 health 增益路径计算。
+BT_159,GREEN,implemented,yes,逐卡实测：战吼在对手场上召唤三只 1/1 女猎手，本体留在己方场上。,tests/test_black_temple_red_fixes.py::test_terrorguard_escapee_summons_three_tokens_for_opponent,召唤次数改为三次。
+BT_196,GREEN,implemented,yes,逐卡实测：普通手牌状态只消灭指定随从；当回合从牌库抽到后，无目标消灭双方其他所有随从。,tests/test_black_temple_red_fixes.py::test_kelidan_held_from_prior_turn_destroys_only_selected_minion|tests/test_black_temple_red_fixes.py::test_kelidan_drawn_this_turn_destroys_all_other_minions_without_target,补条件目标前置判断与明确分支。
+BT_253,GREEN,implemented,yes,逐卡实测：指定 1/1 获得 +1/+2，且召唤的复制体同为 2/3。,tests/test_black_temple_red_fixes.py::test_psyche_split_buffs_target_and_summons_buffed_copy,补齐缺失的增益附魔。
+BT_702,GREEN,implemented,yes,逐卡实测：潜行目标本回合获得 +3 攻击与免疫，回合结束后均消失。,tests/test_black_temple_red_fixes.py::test_ashtongue_slayer_temporary_buff_expires_after_turn,临时附魔在己方回合末销毁。
+BT_716,GREEN,implemented,yes,逐卡实测：每次受伤后各获得 +2 攻击，两次叠加并保留嘲讽。,tests/test_black_temple_red_fixes.py::test_bonechewer_vanguard_gains_two_attack_per_damage_event,修复增益实体标识拼写。
+BT_731,GREEN,implemented,yes,逐卡实测：对随从造成伤害会将其变形成传染孢子；对英雄造成伤害后英雄仍是英雄。,tests/test_black_temple_red_fixes.py::test_infectious_sporeling_transforms_damaged_minion_but_not_hero,伤害事件只匹配随从目标。

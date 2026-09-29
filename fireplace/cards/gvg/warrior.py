@@ -85,4 +85,17 @@ class GVG_052:
 class GVG_054:
     """Ogre Warmaul"""
 
-    events = FORGETFUL
+    # Weapons listen for the hero's attack.  The attack event's first argument
+    # is the hero, while Retarget must receive that actual attacker rather than
+    # this weapon card.
+    events = Attack(FRIENDLY_HERO).on(
+        COINFLIP
+        & Retarget(
+            Attack.ATTACKER,
+            RANDOM(
+                ALL_CHARACTERS
+                - Attack.DEFENDER
+                - CONTROLLED_BY(Attack.ATTACKER)
+            ),
+        )
+    )

@@ -114,7 +114,8 @@ class ICC_852e:
 class ICC_853:
     """Prince Valanar"""
 
-    play = Find(FRIENDLY_DECK + (COST == 2)) | (Taunt(SELF), GiveLifesteal(SELF))
+    powered_up = -Find(FRIENDLY_DECK + (COST == 4))
+    play = powered_up & (Taunt(SELF), GiveLifesteal(SELF))
 
 
 class ICC_854:

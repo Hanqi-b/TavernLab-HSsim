@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from copy import copy
 
 from hearthstone.enums import (
     BlockType,
@@ -314,6 +315,10 @@ class BeginTurn(GameAction):
         source.turn += 1
         source.log("%s begins turn %i", player, source.turn)
         source.current_player = player
+        # Turn-start triggers may draw before _begin_turn performs the normal
+        # draw, so clear the counters before those triggers are broadcast.
+        for participant in source.players:
+            participant.cards_drawn_this_turn = 0
         source.manager.step(source.next_step, Step.MAIN_START_TRIGGERS)
         source.manager.step(source.next_step, source.next_step)
         source.game.manager.game_action(self, source, player)
@@ -548,6 +553,9 @@ class Play(GameAction):
 
         card.play_left_most = card is card.controller.hand[0]
         card.play_right_most = card is card.controller.hand[-1]
+        # Hand auras such as Glinda's Echo disappear as the card leaves hand.
+        # Keep the keyword state from the moment the card was played.
+        echo_on_play = card.echo
 
         card.zone = Zone.PLAY
 
@@ -581,7 +589,7 @@ class Play(GameAction):
                     card, [Battlecry(battlecry_card, card.target)]
                 )
 
-            if card.echo:
+            if echo_on_play:
                 source.game.queue_actions(
                     card, [Give(player, Buff(Copy(SELF), "GIL_000"))]
                 )
@@ -1207,8 +1215,11 @@ class Discard(TargetedAction):
         source.game.manager.targeted_action(self, source, target)
         if old_zone == Zone.HAND:
             target.tags[DISCARDED] = True
+            if target not in source.game.discarded:
+                source.game.discarded.append(target)
             actions = target.get_actions("discard")
             source.game.cheat_action(target, actions)
+            self.broadcast(source, EventListener.AFTER, target)
 
 
 class Discover(TargetedAction):
@@ -1219,6 +1230,24 @@ class Discover(TargetedAction):
     TARGET = ActionArg()
     CARDS = CardArg()
     CARD = CardArg()
+
+    def _trigger(self, i, source):
+        # Card scripts store Action objects on their classes. A Discover choice
+        # may remain open while another game triggers the same script, so its
+        # callbacks and selected cards must live on a separate choice object.
+        if source.controller.choice:
+            source.controller.choice.choice_callback.append(
+                lambda: self._trigger(i, source)
+            )
+            return []
+        self.trigger_index = i
+        args = self.get_args(source)
+        targets = self.get_targets(source, args[0])
+        for target in targets:
+            choice = copy(self)
+            choice.choice_callback = []
+            choice.do(source, target, *self.get_target_args(source, target))
+        return []
 
     def get_target_args(self, source, target):
         if target.hero.data.card_class != CardClass.NEUTRAL:
@@ -1299,7 +1328,7 @@ class Draw(TargetedAction):
             log.info("%s draws %r", target, card)
             card.zone = Zone.HAND
             card.turn_drawn = source.game.turn
-            source.controller.cards_drawn_this_turn += 1
+            target.cards_drawn_this_turn += 1
             source.game.manager.targeted_action(self, source, target, card)
             if source.game.step > Step.BEGIN_MULLIGAN:
                 # Proc the draw script, but only if we are past mulligan
@@ -1511,6 +1540,10 @@ class Heal(TargetedAction):
             return source.game.queue_actions(source.controller, [Hit(target, amount)])
 
         amount = source.get_heal(amount, target)
+        # Spell healing applies this modifier in Spell.get_heal. Lifesteal,
+        # minion healing and hero powers reach Heal without that step.
+        if getattr(source, "type", None) != CardType.SPELL:
+            amount <<= source.controller.healing_double
         amount = min(amount, target.damage)
         if amount:
             # Undamaged targets do not receive heals
@@ -1919,6 +1952,18 @@ class Steal(TargetedAction):
         return [controller]
 
     def do(self, source, target, controller):
+        if (
+            target.zone == Zone.PLAY
+            and target.type == CardType.MINION
+            and target.controller is not controller
+            and len(controller.field) >= source.game.MAX_MINIONS_ON_FIELD
+        ):
+            log.info(
+                "%s cannot receive %r because its field is full; destroying it",
+                controller,
+                target,
+            )
+            return source.game.queue_actions(source, [Destroy(target)])
         log.info("%s takes control of %r", controller, target)
         zone = target.zone
         target.zone = Zone.SETASIDE
@@ -2196,6 +2241,25 @@ class Adapt(TargetedAction):
     CARDS = CardArg()
     CARD = CardArg()
 
+    def _trigger(self, i, source):
+        if source.controller.choice:
+            self.choice_callback.append(lambda: self._trigger(i, source))
+            return []
+        self.trigger_index = i
+        args = self.get_args(source)
+        targets = self.get_targets(source, args[0])
+        if not targets:
+            return []
+        cards = self.get_target_args(source, targets[0])[0]
+        self.do(source, targets, cards)
+        ret = []
+        for target in targets:
+            for action in self.callback:
+                ret += source.game.queue_actions(
+                    source, [action], event_args=[target, cards]
+                )
+        return ret
+
     def get_target_args(self, source, target):
         choices = [
             "UNG_999t10",
@@ -2213,18 +2277,20 @@ class Adapt(TargetedAction):
         cards = [source.controller.card(card, source=source) for card in cards]
         return [cards]
 
-    def do(self, source, target, cards):
-        log.info("%r adapts %r for %s", source, cards, target)
+    def do(self, source, targets, cards):
+        log.info("%r adapts %r for %s", source, cards, targets)
         self.cards = cards
         player = source.controller
         player.choice = self
         self.player = player
         self.source = source
-        self.target = target
+        self.targets = list(targets)
+        self.target = self.targets[0] if len(self.targets) == 1 else self.targets
         self.cards = cards
         self.min_count = 1
         self.max_count = 1
-        source.game.manager.targeted_action(self, source, target, cards)
+        for target in self.targets:
+            source.game.manager.targeted_action(self, source, target, cards)
 
     def choose(self, card):
         if card not in self.cards:
@@ -2232,7 +2298,8 @@ class Adapt(TargetedAction):
                 "%r is not a valid choice (one of %r)" % (card, self.cards)
             )
         self.player.choice = None
-        self.source.game.trigger(self.source, (Battlecry(card, self.target),), None)
+        for target in self.targets:
+            self.source.game.trigger(self.source, (Battlecry(card, target),), None)
         self.trigger_choice_callback()
 
 

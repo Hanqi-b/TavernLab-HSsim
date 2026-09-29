@@ -83,6 +83,7 @@ class ULD_705:
     # summon Highkeeper Ra.
     play = (Count(FRIENDLY_MINIONS + ID("ULD_705")) == 7) & (
         Destroy(FRIENDLY_MINIONS),
+        Deaths(),
         Summon(CONTROLLER, "ULD_705t"),
     )
 
@@ -96,8 +97,8 @@ class ULD_706:
 
     # [x]<b>Deathrattle:</b> Each player summons the lowest Cost minion from their hand.
     deathrattle = (
-        Summon(CONTROLLER, LOWEST_ATK(FRIENDLY_HAND + MINION)),
-        Summon(OPPONENT, LOWEST_ATK(ENEMY_HAND + MINION)),
+        Summon(CONTROLLER, LOWEST_COST(FRIENDLY_HAND + MINION)),
+        Summon(OPPONENT, LOWEST_COST(ENEMY_HAND + MINION)),
     )
 
 

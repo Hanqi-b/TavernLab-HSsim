@@ -26,7 +26,13 @@ class BOT_433:
     """Dr. Morrigan"""
 
     # <b>Deathrattle:</b> Swap this with a minion from your deck.
-    deathrattle = Swap(SELF, RANDOM(FRIENDLY_DECK + MINION))
+    # Deathrattle processing has already moved Morrigan to the graveyard.
+    # Swap therefore correctly puts her in the deck, but it leaves the deck
+    # minion in the graveyard as well.  Summon that swapped card afterwards so
+    # it occupies Morrigan's former board slot.
+    deathrattle = Find(FRIENDLY_DECK + MINION) & Swap(
+        SELF, RANDOM(FRIENDLY_DECK + MINION)
+    ).then(Summon(CONTROLLER, Swap.OTHER))
 
 
 class BOT_443:

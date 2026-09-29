@@ -62,7 +62,7 @@ ICC_807e = buff(+2, +2)
 class ICC_808:
     """Crypt Lord"""
 
-    events = Summon(CONTROLLER, TAUNT).after(Buff(SELF, "ICC_808e"))
+    events = Summon(CONTROLLER, MINION).after(Buff(SELF, "ICC_808e"))
 
 
 ICC_808e = buff(health=1)

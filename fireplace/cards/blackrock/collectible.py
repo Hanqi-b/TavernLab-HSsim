@@ -8,7 +8,7 @@ from ..utils import *
 class BRM_002:
     """Flamewaker"""
 
-    events = OWN_SPELL_PLAY.after(Hit(ENEMY_CHARACTERS, 1) * 2)
+    events = OWN_SPELL_PLAY.after(Hit(RANDOM_ENEMY_CHARACTER, 1) * 2)
 
 
 class BRM_004:
@@ -170,7 +170,7 @@ class BRM_029:
         PlayReq.REQ_MINION_TARGET: 0,
         PlayReq.REQ_TARGET_IF_AVAILABLE_AND_DRAGON_IN_HAND: 0,
     }
-    powered_up = HOLDING_DRAGON, Find(ENEMY_MINIONS + LEGENDARY)
+    powered_up = HOLDING_DRAGON, Find(ALL_MINIONS + LEGENDARY)
     play = HOLDING_DRAGON & Destroy(TARGET)
 
 

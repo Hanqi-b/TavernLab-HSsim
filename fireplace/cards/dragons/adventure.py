@@ -75,6 +75,13 @@ YOD_005e = buff(+2, +2)
 # Mage
 
 
+class YOD_008:
+    """Arcane Amplifier"""
+
+    # CardDefs already contributes one point through HEROPOWER_DAMAGE=1.
+    update = Refresh(CONTROLLER, {GameTag.HEROPOWER_DAMAGE: 1})
+
+
 class YOD_007:
     """Animated Avalanche"""
 
@@ -143,7 +150,7 @@ class YOD_014:
         PlayReq.REQ_TARGET_IF_AVAILABLE: 0,
         PlayReq.REQ_MINION_TARGET: 0,
     }
-    play = Hit(TARGET, ATK(SELF))
+    play = Hit(TARGET, ATK(TARGET))
 
 
 class YOD_015:
@@ -166,6 +173,7 @@ class YOD_016:
     """Skyvateer"""
 
     # <b>Stealth</b> <b>Deathrattle:</b> Draw a card.
+    tags = {GameTag.DEATHRATTLE: True}
     deathrattle = Draw(CONTROLLER)
 
 

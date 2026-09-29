@@ -101,7 +101,7 @@ class ULD_724:
 
     # <b>Quest:</b> Restore 15_Health. <b>Reward:</b> Obelisk's Eye.
     progress_total = 15
-    quest = Heal(source=FRIENDLY).after(AddProgress(SELF, Heal.TARGET, Heal.AMOUNT))
+    quest = Heal(source=FRIENDLY).on(AddProgress(SELF, Heal.TARGET, Heal.AMOUNT))
     reward = Summon(CONTROLLER, "ULD_724p")
 
 

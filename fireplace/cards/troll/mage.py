@@ -96,7 +96,7 @@ class TRL_313:
         PlayReq.REQ_TARGET_TO_PLAY: 0,
         PlayReq.REQ_MINION_TARGET: 0,
     }
-    cost_mod = ELEMENTAL_PLAYED_LAST_TURN & -1
+    cost_mod = ELEMENTAL_PLAYED_LAST_TURN & -3
     play = Hit(TARGET, 4)
 
 

@@ -20,7 +20,7 @@ class KAR_006:
 class KAR_009:
     """Babbling Book"""
 
-    play = Give(CONTROLLER, RandomSpell())
+    play = Give(CONTROLLER, RandomSpell(card_class=CardClass.MAGE))
 
 
 class KAR_010:
@@ -305,7 +305,7 @@ class KAR_712:
 class KAR_004:
     """Cat Trick"""
 
-    secret = Play(ENEMY, SPELL).after(Summon(CONTROLLER, "KAR_004a"))
+    secret = Play(ENEMY, SPELL).after(Reveal(SELF), Summon(CONTROLLER, "KAR_004a"))
 
 
 class KAR_013:

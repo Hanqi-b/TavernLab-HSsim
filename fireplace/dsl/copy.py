@@ -15,12 +15,14 @@ class Copy(LazyValue):
     def __repr__(self):
         return "%s(%r)" % (self.__class__.__name__, self.selector)
 
-    def copy(self, source, entity):
+    def copy(self, source, entity, controller=None):
         """
         Return a copy of \a entity
         """
         log.info("Creating a copy of %r", entity)
-        new_entity = source.controller.card(entity.id, source)
+        if controller is None:
+            controller = source.controller
+        new_entity = controller.card(entity.id, source)
         if entity.custom_card:
             new_entity.custom_card = True
             new_entity.create_custom_card = entity.create_custom_card

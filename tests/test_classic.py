@@ -2336,12 +2336,12 @@ def test_murloc_tidecaller():
     game.end_turn()
 
     game.player2.give(MURLOC).play()
-    assert tidecaller.atk == 1 + 1
+    assert tidecaller.atk == 1
     game.end_turn()
 
     # Play a tidehunter. Summons two murlocs.
     game.player1.give("EX1_506").play()
-    assert tidecaller.atk == 1 + 1 + 2
+    assert tidecaller.atk == 1 + 2
 
 
 def test_northshire_cleric():

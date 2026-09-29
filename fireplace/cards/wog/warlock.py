@@ -28,6 +28,7 @@ class OG_121:
 
 
 class OG_121e:
+    tags = {GameTag.TAG_ONE_TURN_EFFECT: True}
     events = OWN_SPELL_PLAY.on(Destroy(SELF))
     update = Refresh(CONTROLLER, {GameTag.SPELLS_COST_HEALTH: True})
 

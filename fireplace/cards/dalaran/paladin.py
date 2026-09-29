@@ -84,7 +84,7 @@ class DAL_727:
     """Call to Adventure"""
 
     # Draw the lowest Cost minion from your deck. Give it +2/+2.
-    play = ForceDraw(LOWEST_ATK(FRIENDLY_DECK + MINION)).then(
+    play = ForceDraw(LOWEST_COST(FRIENDLY_DECK + MINION)).then(
         Buff(ForceDraw.TARGET, "DAL_727e")
     )
 

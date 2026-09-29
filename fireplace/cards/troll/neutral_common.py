@@ -37,7 +37,7 @@ class TRL_312:
     """Spellzerker"""
 
     # Has <b>Spell Damage +2</b> while damaged.
-    enrage = Refresh(SELF, buff="TRL_312e")
+    update = Find(SELF + DAMAGED) & Refresh(SELF, buff="TRL_312e")
 
 
 TRL_312e = buff(spellpower=2)

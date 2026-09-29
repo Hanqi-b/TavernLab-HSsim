@@ -49,6 +49,8 @@ def is_valid_target(self, target, requirements=None):
             return False
         if target.immune and self.controller != target.controller:
             return False
+
+    if target.type in (CardType.MINION, CardType.HERO):
         if self.type == CardType.SPELL and target.cant_be_targeted_by_abilities:
             return False
         if self.type == CardType.HERO_POWER and target.cant_be_targeted_by_hero_powers:

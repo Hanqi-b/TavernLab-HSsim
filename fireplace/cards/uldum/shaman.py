@@ -88,7 +88,8 @@ class ULD_291p:
 
 
 class ULD_291pe:
-    tags = {enums.EXTRA_BATTLECRIES: True}
+    tags = {GameTag.TAG_ONE_TURN_EFFECT: True}
+    update = Refresh(CONTROLLER, {enums.EXTRA_BATTLECRIES: True})
 
 
 ##

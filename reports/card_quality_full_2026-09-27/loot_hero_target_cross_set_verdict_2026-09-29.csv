@@ -1,0 +1,2 @@
+card_id,status,implementation,tested,reason,test_nodes,notes
+DAL_081,GREEN,implemented,yes,逐卡实测：破咒珠宝师战吼后直到持有者下回合，敌方法术及英雄技能均不能指定受保护英雄；非法施法不消耗卡牌与法力；效果到期后目标恢复可选。,tests/test_dalaran_hero_target_immunity_cross_set.py::test_spellward_jeweler_protects_hero_until_owner_next_turn,由 LOOT_382 共享英雄目标规则修复与珠宝师附魔标签修复解决；DALARAN 整包尚未完成。

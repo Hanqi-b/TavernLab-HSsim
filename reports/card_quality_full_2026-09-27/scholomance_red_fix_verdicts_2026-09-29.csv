@@ -1,0 +1,2 @@
+﻿card_id,status,implementation,tested,reason,test_nodes,notes
+SCH_199,YELLOW,implemented,partial,开局面板变形已在奥格瑞玛、纳克萨玛斯验证，奥格瑞玛版本 2 点伤害已验证；其余 22 种支持的面板版本、默认分支及对应效果尚无逐分支行为测试，暂不能判 GREEN。,tests/test_scholomance_transfer_student_red_fix.py::test_transfer_student_becomes_orgrimmar_variant_in_hand_and_deck|tests/test_scholomance_transfer_student_red_fix.py::test_transfer_student_becomes_naxxramas_variant_in_hand_and_deck,GameStart 监听绑定已修复；待验证其他面板选型与各形态效果。

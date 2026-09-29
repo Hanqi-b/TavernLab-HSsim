@@ -50,7 +50,9 @@ class DRG_256:
     """Dragonbane"""
 
     # After you use your Hero Power, deal 5 damage to a random enemy.
-    events = Activate(CONTROLLER, FRIENDLY_HERO_POWER).after(Hit(ENEMY_HERO, 5))
+    events = Activate(CONTROLLER, FRIENDLY_HERO_POWER).after(
+        Hit(RANDOM_ENEMY_CHARACTER, 5)
+    )
 
 
 ##
@@ -73,7 +75,11 @@ class DRG_251:
     # [x]<b>Sidequest:</b> Summon 3 <b>Rush</b> minions. <b>Reward:</b> Summon a 4/4
     # Gryphon with <b>Rush</b>.
     progress_total = 3
-    sidequest = Summon(CONTROLLER, RUSH + MINION).after(AddProgress(SELF, Summon.CARD))
+    # The reward itself has Rush; excluding it prevents recursive progress and
+    # repeated reward summons while the sidequest is being completed.
+    sidequest = Summon(CONTROLLER, RUSH + MINION - ID("DRG_251t")).after(
+        AddProgress(SELF, Summon.CARD)
+    )
     reward = Summon(CONTROLLER, "DRG_251t")
 
 
@@ -86,7 +92,7 @@ class DRG_255:
     sidequest = Activate(CONTROLLER, FRIENDLY_HERO_POWER).after(
         AddProgress(SELF, FRIENDLY_HERO_POWER)
     )
-    reward = Summon(CONTROLLER, "DRG_251t") * 3
+    reward = Summon(CONTROLLER, "DRG_255t2") * 3
 
 
 ##

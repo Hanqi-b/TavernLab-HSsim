@@ -9,7 +9,7 @@ class ULD_133:
     """Crystal Merchant"""
 
     # If you have any unspent Mana at the end of your turn, draw a card.
-    events = OWN_TURN_END.on((MANA(CONTROLLER) > 0) & Draw(CONTROLLER))
+    events = OWN_TURN_END.on((CURRENT_MANA(CONTROLLER) > 0) & Draw(CONTROLLER))
 
 
 class ULD_137:
@@ -52,6 +52,9 @@ class ULD_292a:
     play = Buff(SELF, "ULD_292ae")
 
 
+ULD_292ae = buff(+2, +2)
+
+
 class ULD_292b:
     requirements = {
         PlayReq.REQ_NUM_MINION_SLOTS: 2,
@@ -68,7 +71,7 @@ class ULD_131:
 
     # [x]<b>Quest:</b> End 4 turns with any unspent Mana. <b>Reward:</b> Ossirian Tear.
     progress_total = 4
-    quest = OWN_TURN_END.on((MANA(CONTROLLER) > 0) & AddProgress(SELF, SELF))
+    quest = OWN_TURN_END.on((CURRENT_MANA(CONTROLLER) > 0) & AddProgress(SELF, SELF))
     reward = Summon(CONTROLLER, "ULD_131p")
 
 

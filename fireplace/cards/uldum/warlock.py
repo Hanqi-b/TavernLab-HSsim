@@ -55,8 +55,8 @@ class ULD_167:
     """Diseased Vulture"""
 
     # After your hero takes damage on your turn, summon a random 3-Cost minion.
-    events = Hit(FRIENDLY_HERO).on(
-        Find(CURRENT_PLAYER + CONTROLLER) & Summon(CONTROLLER, RandomMinion(cost=3))
+    events = Damage(FRIENDLY_HERO).on(
+        CurrentPlayer(CONTROLLER) & Summon(CONTROLLER, RandomMinion(cost=3))
     )
 
 
@@ -87,7 +87,7 @@ class ULD_140:
 
     # <b>Quest:</b> Draw 20 cards. <b>Reward:</b> Tome of Origination.
     progress_total = 20
-    quest = Draw(CONTROLLER).after(AddProgress(SELF, Draw.CARD))
+    quest = Draw(CONTROLLER).on(AddProgress(SELF, Draw.CARD))
     reward = Summon(CONTROLLER, "ULD_140p")
 
 

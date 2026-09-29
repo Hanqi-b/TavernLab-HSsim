@@ -60,8 +60,15 @@ class BOT_434:
 
 
 class BOT_434e:
+    # Floop's transformed hand copy is always a 3/4, regardless of the
+    # minion it copied.  Only a later minion play should update it; a spell
+    # played afterwards must leave the last-minion copy intact.
+    atk = SET(3)
+    max_health = SET(4)
+    cost = SET(4)
+
     class Hand:
-        events = Play(CONTROLLER).after(
+        events = Play(CONTROLLER, MINION).after(
             Morph(OWNER, Copy(Play.CARD)).then(Buff(Morph.CARD, "BOT_434e"))
         )
 

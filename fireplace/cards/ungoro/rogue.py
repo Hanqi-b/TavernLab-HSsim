@@ -123,8 +123,8 @@ class UNG_856:
     """Hallucination"""
 
     play = Find(ENEMY_HERO - NEUTRAL) & (
-        GenericChoice(CONTROLLER, RandomSpell(card_class=ENEMY_CLASS) * 3)
-    ) | (GenericChoice(CONTROLLER, RandomSpell(card_class=CardClass.ROGUE) * 3))
+        GenericChoice(CONTROLLER, RandomCollectible(card_class=ENEMY_CLASS) * 3)
+    ) | (GenericChoice(CONTROLLER, RandomCollectible(card_class=CardClass.ROGUE) * 3))
 
 
 ##

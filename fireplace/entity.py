@@ -139,9 +139,14 @@ def slot_property(attr, f=any):
     return func
 
 
-def boolean_property(attr):
+def boolean_property(attr, false_buff_tag=None):
     @property
     def func(self):
+        if false_buff_tag is not None and any(
+            getattr(buff.data.scripts, "tags", {}).get(false_buff_tag) is False
+            for buff in self.buffs
+        ):
+            return False
         return (
             getattr(self, "_" + attr, False)
             or (any(getattr(buff, attr, False) for buff in self.buffs))

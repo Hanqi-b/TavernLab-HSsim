@@ -9,7 +9,7 @@ class BT_351:
     """Battlefiend"""
 
     # After your hero attacks, gain +1 Attack.
-    events = Attack(FRIENDLY_HERO).after(Buff(CONTROLLER, "BT_351e"))
+    events = Attack(FRIENDLY_HERO).after(Buff(SELF, "BT_351e"))
 
 
 BT_351e = buff(atk=1)
@@ -49,9 +49,9 @@ class BT_481:
     class Hand:
         events = Death(FRIENDLY + MINION).on(AddProgress(SELF, Death.ENTITY))
 
-    play = SummonBothSides(
+    play = Summon(
         CONTROLLER, RandomMinion(cost=Min(Attr(SELF, GameTag.QUEST_PROGRESS), 10))
-    )
+    ) * 2
 
 
 class BT_487:
@@ -65,7 +65,7 @@ class BT_510:
     """Wrathspike Brute"""
 
     # [x]<b>Taunt</b> After this is attacked, deal 1 damage to all enemies.
-    events = Attack(SELF).after(Hit(ENEMY_CHARACTERS, 1))
+    events = Attack(ENEMY_CHARACTERS, SELF).after(Hit(ENEMY_CHARACTERS, 1))
 
 
 class BT_814:
@@ -126,7 +126,8 @@ class BT_427:
     """Feast of Souls"""
 
     # Draw a card for each friendly minion that died this turn.
-    play = Draw(CONTROLLER) * Attr(CONTROLLER, GameTag.NUM_MINIONS_KILLED_THIS_TURN)
+    def play(self):
+        yield Draw(CONTROLLER) * self.controller.minions_killed_this_turn
 
 
 class BT_488:
@@ -171,7 +172,7 @@ class BT_753:
 
 
 class BT_753e:
-    events = BeginTurn(OPPONENT).on(ManaThisTurn(OWNER, -2)), Destroy(SELF)
+    events = BeginTurn(OPPONENT).on(ManaThisTurn(OWNER, -2), Destroy(SELF))
 
 
 class BT_801:
@@ -179,6 +180,11 @@ class BT_801:
 
     # <b>Lifesteal</b>. Deal $3 damage to a minion. <b>Outcast:</b> This costs
     # (1).
+    requirements = {
+        PlayReq.REQ_TARGET_TO_PLAY: 0,
+        PlayReq.REQ_MINION_TARGET: 0,
+    }
+
     class Hand:
         update = Find(SELF + OUTERMOST_HAND) & Refresh(SELF, {GameTag.COST: SET(1)})
 

@@ -42,7 +42,9 @@ class TRL_501:
     play = Buff(CONTROLLER, "TRL_501e")
 
 
-TRL_501e = buff(embrace_the_shadow=True)
+class TRL_501e:
+    update = Refresh(CONTROLLER, {GameTag.EMBRACE_THE_SHADOW: True})
+    events = OWN_TURN_END.on(Destroy(SELF))
 
 
 class TRL_502:

@@ -1,25 +1,25 @@
 ﻿version,set,ordinary_collectible,python_definition_ordinary_collectible,battlecry_collectible,discover_collectible,choose_one_collectible,secret_collectible,combo_collectible,overload_collectible,weapon_collectible,quality_green,quality_yellow,quality_red
 17.6.0.53261,Basic (BASIC),143,110,25,0,0,0,0,0,6,143,0,0
-17.6.0.53261,Classic (EXPERT1),240,213,55,0,10,14,8,9,7,230,3,7
-17.6.0.53261,Hall of Fame (HOF),35,35,13,0,0,1,0,0,0,31,0,4
-17.6.0.53261,Curse of Naxxramas (NAXX),30,28,3,0,0,2,0,0,1,27,0,3
-17.6.0.53261,Goblins vs Gnomes (GVG),123,107,30,0,3,0,2,4,5,117,0,6
-17.6.0.53261,Blackrock Mountain (BRM),31,31,11,0,1,0,0,1,0,29,0,2
-17.6.0.53261,The Grand Tournament (TGT),132,121,37,0,2,3,2,3,4,126,0,6
-17.6.0.53261,League of Explorers (LOE),45,42,16,9,1,2,0,0,1,44,1,0
-17.6.0.53261,Whispers of the Old Gods (OG),134,121,44,2,3,0,1,2,3,126,1,7
-17.6.0.53261,One Night in Karazhan (KARA),45,43,19,2,0,1,0,0,2,43,0,2
-17.6.0.53261,Mean Streets of Gadgetzan (GANGS),132,124,55,6,2,3,2,3,3,123,1,8
-17.6.0.53261,Journey to Un'Goro (UNGORO),135,125,50,10,1,1,2,1,3,126,0,9
-17.6.0.53261,Knights of the Frozen Throne (ICECROWN),135,124,43,2,3,2,2,1,4,125,0,10
-17.6.0.53261,Kobolds & Catacombs (LOOTAPALOOZA),135,130,44,1,0,5,1,1,12,112,2,21
-17.6.0.53261,The Witchwood (GILNEAS),129,115,44,3,1,2,1,1,3,114,0,15
-17.6.0.53261,The Boomsday Project (BOOMSDAY),136,129,42,6,1,1,1,2,2,126,0,10
-17.6.0.53261,Rastakhan's Rumble (TROLL),135,133,48,8,2,1,1,1,7,121,0,14
-17.6.0.53261,Rise of Shadows (DALARAN),136,128,45,10,1,1,1,1,3,127,0,9
-17.6.0.53261,Saviors of Uldum (ULDUM),135,125,46,8,2,2,1,1,4,121,0,14
-17.6.0.53261,Descent of Dragons (DRAGONS),140,132,71,8,1,0,1,2,3,126,0,14
-17.6.0.53261,Year of the Dragon (YEAR_OF_THE_DRAGON),35,32,13,5,1,0,1,1,1,32,0,3
-17.6.0.53261,Ashes of Outland (BLACK_TEMPLE),135,133,33,3,0,5,0,1,4,128,0,7
-17.6.0.53261,Scholomance Academy (SCHOLOMANCE),1,1,0,0,0,0,0,0,0,0,0,1
-17.6.0.53261,Demon Hunter Initiate (DEMON_HUNTER_INITIATE),20,20,3,0,0,0,0,0,2,14,0,6
+17.6.0.53261,Classic (EXPERT1),240,213,55,0,10,14,8,9,7,239,1,0
+17.6.0.53261,Hall of Fame (HOF),35,35,13,0,0,1,0,0,0,35,0,0
+17.6.0.53261,Curse of Naxxramas (NAXX),30,28,3,0,0,2,0,0,1,30,0,0
+17.6.0.53261,Goblins vs Gnomes (GVG),123,107,30,0,3,0,2,4,5,123,0,0
+17.6.0.53261,Blackrock Mountain (BRM),31,31,11,0,1,0,0,1,0,31,0,0
+17.6.0.53261,The Grand Tournament (TGT),132,121,37,0,2,3,2,3,4,132,0,0
+17.6.0.53261,League of Explorers (LOE),45,42,16,9,1,2,0,0,1,45,0,0
+17.6.0.53261,Whispers of the Old Gods (OG),134,121,44,2,3,0,1,2,3,134,0,0
+17.6.0.53261,One Night in Karazhan (KARA),45,43,19,2,0,1,0,0,2,45,0,0
+17.6.0.53261,Mean Streets of Gadgetzan (GANGS),132,124,55,6,2,3,2,3,3,132,0,0
+17.6.0.53261,Journey to Un'Goro (UNGORO),135,125,50,10,1,1,2,1,3,135,0,0
+17.6.0.53261,Knights of the Frozen Throne (ICECROWN),135,124,43,2,3,2,2,1,4,135,0,0
+17.6.0.53261,Kobolds & Catacombs (LOOTAPALOOZA),135,130,44,1,0,5,1,1,12,134,1,0
+17.6.0.53261,The Witchwood (GILNEAS),129,115,44,3,1,2,1,1,3,129,0,0
+17.6.0.53261,The Boomsday Project (BOOMSDAY),136,129,42,6,1,1,1,2,2,136,0,0
+17.6.0.53261,Rastakhan's Rumble (TROLL),135,133,48,8,2,1,1,1,7,135,0,0
+17.6.0.53261,Rise of Shadows (DALARAN),136,128,45,10,1,1,1,1,3,136,0,0
+17.6.0.53261,Saviors of Uldum (ULDUM),135,125,46,8,2,2,1,1,4,135,0,0
+17.6.0.53261,Descent of Dragons (DRAGONS),140,132,71,8,1,0,1,2,3,140,0,0
+17.6.0.53261,Year of the Dragon (YEAR_OF_THE_DRAGON),35,32,13,5,1,0,1,1,1,35,0,0
+17.6.0.53261,Ashes of Outland (BLACK_TEMPLE),135,133,33,3,0,5,0,1,4,135,0,0
+17.6.0.53261,Scholomance Academy (SCHOLOMANCE),1,1,0,0,0,0,0,0,0,0,1,0
+17.6.0.53261,Demon Hunter Initiate (DEMON_HUNTER_INITIATE),20,20,3,0,0,0,0,0,2,20,0,0

@@ -1,6 +1,18 @@
 from ..utils import *
 
 
+class MilledMinion(Evaluator):
+    def __init__(self):
+        super().__init__()
+
+    def __repr__(self):
+        return "%s()" % self.__class__.__name__
+
+    def check(self, source):
+        card = Mill.CARD.evaluate(source)
+        return card is not None and card.type == CardType.MINION
+
+
 ##
 # Minions
 
@@ -29,7 +41,7 @@ class ICC_314t2:
     """Army of the Dead"""
 
     play = (Mill(CONTROLLER) * 5).then(
-        Find(MINION + Mill.CARD) & Summon(CONTROLLER, Mill.CARD)
+        MilledMinion() & Summon(CONTROLLER, Mill.CARD)
     )
 
 
@@ -64,7 +76,7 @@ class ICC_314t6:
         PlayReq.REQ_MINION_TARGET: 0,
         PlayReq.REQ_TARGET_TO_PLAY: 0,
     }
-    play = Destroy(TARGET).then(Hit(FRIENDLY_HERO, ATK(TARGET)))
+    play = Destroy(TARGET).then(Hit(FRIENDLY_HERO, CURRENT_HEALTH(TARGET)))
 
 
 class ICC_314t7:

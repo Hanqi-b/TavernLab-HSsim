@@ -185,7 +185,8 @@ class DREAM_05:
 
 
 class DREAM_05e:
-    events = OWN_TURN_BEGIN.on(Destroy(SELF))
+    tags = {GameTag.ATK: +5, GameTag.HEALTH: +5}
+    events = OWN_TURN_BEGIN.on(Destroy(OWNER))
 
 
 class EX1_577:

@@ -21,6 +21,7 @@ from .entity import Entity
 from .enums import DISCARDED
 from .exceptions import InvalidAction
 from .logging import log
+from .health_history import record_hero_health_change
 from .utils import random_class
 
 
@@ -323,7 +324,14 @@ class BeginTurn(GameAction):
         source.manager.step(source.next_step, source.next_step)
         source.game.manager.game_action(self, source, player)
         self.broadcast(source, EventListener.ON, player)
-        source._begin_turn(player)
+        def finish_turn_start():
+            for participant in source.players:
+                if participant.choice:
+                    participant.choice.choice_callback.append(finish_turn_start)
+                    return
+            source._begin_turn(player)
+
+        finish_turn_start()
 
 
 class Concede(GameAction):
@@ -404,6 +412,10 @@ class Death(GameAction):
         }
         for card in dying:
             if card.type == CardType.MINION:
+                snapshot = copy(card)
+                snapshot.buffs = [copy(buff) for buff in card.buffs]
+                snapshot.additional_deathrattles = list(card.additional_deathrattles)
+                source.game.death_history.append(snapshot)
                 card._dead_position = card.zone_position - 1
             card._pending_death = True
         try:
@@ -536,6 +548,9 @@ class Play(GameAction):
 
     def do(self, source, card, target, index, choose):
         player = source
+        from .spellburst import capture_spellburst, resolve_spellburst
+
+        spellburst = capture_spellburst(player, card)
         log.info("%s plays %r (target=%r, index=%r)", player, card, target, index)
 
         player.pay_cost(card, card.cost)
@@ -620,6 +635,7 @@ class Play(GameAction):
         player.cards_played_this_game.append(card)
         card.turn_played = source.game.turn
         card.choose = None
+        resolve_spellburst(player, card, spellburst)
 
 
 class Activate(GameAction):
@@ -1021,7 +1037,9 @@ class Damage(TargetedAction):
     def do(self, source, target, amount=None):
         if not amount:
             amount = target.predamage
+        previous_health = getattr(target, "health", None)
         amount = target._hit(amount)
+        record_hero_health_change(target, previous_health)
         target.predamage = 0
         if (
             source.type == CardType.MINION or source.type == CardType.HERO
@@ -1041,8 +1059,12 @@ class Damage(TargetedAction):
             self.broadcast(source, EventListener.ON, target, amount, source)
             # poisonous can not destroy hero
             if (
-                hasattr(source, "poisonous")
-                and source.poisonous
+                (getattr(source, "poisonous", False) or (
+                    source.type == CardType.SPELL and any(
+                        getattr(m.data.scripts, "poisonous_spells", False)
+                        and not m.ignore_scripts for m in source.controller.field
+                    )
+                ))
                 and (target.type != CardType.HERO and source.type != CardType.WEAPON)
             ):
                 target.destroy()
@@ -1548,7 +1570,9 @@ class Heal(TargetedAction):
         if amount:
             # Undamaged targets do not receive heals
             log.info("%r heals %r for %i", source, target, amount)
+            previous_health = target.health
             target.damage -= amount
+            record_hero_health_change(target, previous_health)
             source.game.manager.targeted_action(self, source, target, amount)
             self.queue_broadcast(self, (source, EventListener.ON, target, amount))
             target.healed_this_turn += amount
@@ -1681,8 +1705,10 @@ class SetCurrentHealth(TargetedAction):
 
     def do(self, source, target, amount):
         log.info("Setting current health on %r to %i", target, amount)
+        previous_health = target.health
         maxhp = target.max_health
         target.damage = max(0, maxhp - amount)
+        record_hero_health_change(target, previous_health)
         source.game.manager.targeted_action(self, source, target, amount)
         return target
 

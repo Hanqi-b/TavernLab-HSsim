@@ -3,7 +3,7 @@ from copy import copy, deepcopy
 from hearthstone.enums import CardType, Race, Rarity
 
 from .lazynum import LazyValue
-from .selector import Selector
+from .selector import ANOTHER_CLASS, Selector
 
 
 class RandomCardPicker(LazyValue):
@@ -70,7 +70,11 @@ class RandomCardPicker(LazyValue):
 
         from .. import cards
 
-        return cards.filter(**new_filters)
+        pool = cards.filter(**new_filters)
+        if self.filters.get("card_class") is ANOTHER_CLASS or filters.get("card_class") is ANOTHER_CLASS:
+            own_class = source.controller.hero.card_class
+            pool = [cid for cid in pool if own_class not in cards.db[cid].classes]
+        return pool
 
     def evaluate(self, source, cards=None) -> str:
         """

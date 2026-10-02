@@ -129,3 +129,21 @@ def test_failed_save_does_not_advance_in_memory_run(tmp_path: Path):
         assert store.load().to_dict() == before
     finally:
         service.close()
+
+
+@pytest.mark.parametrize("sets", [
+    ["GVG", "TGT", "OG", "GANGS", "NAXX", "BRM"],  # 14
+    ["GVG", "TGT", "OG", "GANGS", "UNGORO"],  # 15
+    SETS,  # 16
+    ["GVG", "TGT", "OG", "GANGS", "UNGORO", "NAXX", "BRM"],  # 17
+    ["GVG", "TGT", "OG", "GANGS", "UNGORO", "SCHOLOMANCE"],  # 18
+])
+def test_new_budget_runs_survive_save_and_reload(sets, tmp_path):
+    run = ArenaRun.create(sets, "Tester", "zhCN", seed=17)
+    run.choose_hero(run.hero_choices[0])
+    store = ArenaStore(tmp_path / "arena.json")
+    store.save(run)
+    loaded = store.load()
+    assert loaded.selected_sets == tuple(sets)
+    assert loaded.hero_id == run.hero_id
+    assert loaded.choices == run.choices

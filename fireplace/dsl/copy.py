@@ -53,6 +53,7 @@ class ExactCopy(Copy):
         ret = super().copy(source, entity)
         if self.id:
             ret = source.controller.card(self.id, source)
+        ret.spellburst_used = entity.spellburst_used
         for buff in entity.buffs:
             # Recreate the buff stack
             new_buff = source.controller.card(buff.id)

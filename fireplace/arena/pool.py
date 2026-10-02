@@ -114,7 +114,7 @@ def eligible_cards(set_ids, hero_id: str) -> tuple[CardInfo, ...]:
     ``BASIC`` and ``EXPERT1`` are always added to the allowed set list. An old
     saved run may still include ``EXPERT1`` among its selected IDs; it is
     ignored as an expansion choice. The input does not need to satisfy the full
-    sixteen-slot budget, which makes this function useful for previews and
+    fourteen-to-eighteen-point budget, which makes this function useful for previews and
     focused tests.  The returned tuple is sorted by card ID and is safe to
     retain between draft rounds.
     """

@@ -825,7 +825,8 @@ def test_complete_match_through_http_actions(web_game):
 
 def test_real_draft_reaches_game_over_through_value_actions(monkeypatch):
     monkeypatch.setattr(web_assets, "_default_resolver_factory", lambda: None)
-    game, human, opponent = build_game(seed=2, opponent_name="Heuristic")
+    # Seed 0 exercises a Discover choice with the complete Scholomance pool.
+    game, human, opponent = build_game(seed=0, opponent_name="Heuristic")
     ai = HeuristicAgent()
     human_agent = HeuristicAgent()
     app = WebGame(GameSession(game, {}), human, ai)

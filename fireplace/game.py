@@ -58,6 +58,7 @@ class BaseGame(Entity):
         self.active_aura_buffs = CardList()
         self.setaside = CardList()
         self.discarded = CardList()
+        self.death_history = []
         self._action_stack = 0
 
     def __repr__(self):
@@ -245,9 +246,10 @@ class BaseGame(Entity):
         """
         old_event_args = source.event_args
         source.event_args = event_args
-        ret = self.trigger_actions(source, actions)
-        source.event_args = old_event_args
-        return ret
+        try:
+            return self.trigger_actions(source, actions)
+        finally:
+            source.event_args = old_event_args
 
     def trigger_actions(self, source: Entity, actions: "list[Action]"):
         """
@@ -255,7 +257,19 @@ class BaseGame(Entity):
         This should seldom be called directly - use `queue_actions` instead.
         """
         ret = []
-        for action in actions:
+        pending = iter(actions)
+        while True:
+            choice = next((p.choice for p in self.players if p.choice), None)
+            if choice is not None and source.type not in (CardType.GAME, CardType.PLAYER):
+                event_args = source.event_args
+                choice.choice_callback.append(
+                    lambda: self.trigger(source, pending, event_args)
+                )
+                break
+            try:
+                action = next(pending)
+            except StopIteration:
+                break
             if isinstance(action, EventListener):
                 # Queuing an EventListener registers it as a one-time event
                 # This allows registering events from eg. play actions

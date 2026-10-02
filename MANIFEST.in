@@ -1,4 +1,5 @@
 include fireplace/cards/CardDefs.xml
+include fireplace/cards/Scholomance.xml
 recursive-include fireplace/web_gui *.html *.js *.css *.webp
 include card_assets/placeholder.png
 include card_assets/SOURCES.md

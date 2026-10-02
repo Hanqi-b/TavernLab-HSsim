@@ -406,8 +406,16 @@ def test_random_match_factories_preserve_seeded_setup():
         "HERO_09",
         "HERO_05",
     ]
+    # This snapshot includes the corrected dual-class eligibility pool.
+    for player in shared[0].players:
+        hero_class = cards.db[player.starting_hero].card_class
+        for card_id in player.starting_deck:
+            classes = set(cards.db[card_id].classes)
+            if len(classes) > 1:
+                classes.discard(CardClass.NEUTRAL)
+            assert hero_class in classes or classes == {CardClass.NEUTRAL}
     assert hashlib.sha256(payload.encode()).hexdigest() == (
-        "493f0fad853806055dedca549c74cc496571dbdcf5980487e5f08f8ad1db01c2"
+        "30b03bc2eaab700a96c6f89a748493d9df27861caf382f8df5bc7be22fbcbb8e"
     )
 
 

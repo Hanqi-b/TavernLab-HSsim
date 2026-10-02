@@ -20,6 +20,8 @@ from typing import Any
 from hearthstone import cardxml
 from hearthstone.enums import CardSet, GameTag
 
+from fireplace.card_data import DEFAULT_CARD_DEFS_PATH, load_card_data
+
 from .script_index import PythonScriptIndex
 
 
@@ -88,7 +90,7 @@ _CLASS_LABELS = {
 
 
 def _default_source_path() -> Path:
-    return Path(__file__).resolve().parent.parent / "cards" / "CardDefs.xml"
+    return DEFAULT_CARD_DEFS_PATH
 
 
 def _enum_name(value: object) -> str | None:
@@ -229,6 +231,7 @@ class CardCatalog:
     """
 
     def __init__(self, source_path: Path | None = None):
+        self._uses_shared_default_data = source_path is None
         self.source_path = Path(source_path) if source_path is not None else _default_source_path()
         self._lock = RLock()
         self._indexes: dict[str, _CatalogIndex] = {}
@@ -294,7 +297,14 @@ class CardCatalog:
             if current is not None:
                 return current
 
-            loaded, _ = cardxml.load(path=self.source_path, locale=locale)
+            if self._uses_shared_default_data:
+                loaded, _ = load_card_data(locale=locale)
+            else:
+                loaded, _ = load_card_data(
+                    locale=locale,
+                    source_path=self.source_path,
+                    include_scholomance=False,
+                )
             dbf_to_id = {
                 card.dbf_id: card_id
                 for card_id, card in loaded.items()

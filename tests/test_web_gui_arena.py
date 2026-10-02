@@ -179,3 +179,21 @@ def test_second_server_returns_conflict_and_recovers_after_owner_closes(arena_ht
         server.shutdown()
         thread.join(timeout=5)
         server.server_close()
+
+
+@pytest.mark.parametrize("sets,status_code", [
+    (["GVG", "TGT", "OG", "GANGS", "NAXX"], 400),  # 13
+    (["GVG", "TGT", "OG", "GANGS", "NAXX", "BRM"], 200),  # 14
+    (["GVG", "TGT", "OG", "GANGS", "UNGORO", "SCHOLOMANCE"], 200),  # 18
+    (["GVG", "TGT", "OG", "GANGS", "UNGORO", "SCHOLOMANCE", "NAXX"], 400),  # 19
+])
+def test_arena_http_budget_boundaries(arena_http, sets, status_code):
+    _, base = arena_http
+    status, state = request(base, "/api/arena/start", {
+        "nickname": "Tester", "locale": "zhCN", "set_ids": sets,
+    })
+    assert status == status_code
+    if status == 200:
+        assert state["mode"] == "hero" and len(state["hero_offer"]) == 3
+    else:
+        assert state["mode"] == "setup"

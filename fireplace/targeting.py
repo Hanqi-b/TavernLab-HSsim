@@ -27,8 +27,8 @@ TARGETING_PREREQUISITES = (
     PlayReq.REQ_TARGET_IF_AVAILABLE_AND_COST_5_OR_MORE_SPELL_IN_HAND,
     PlayReq.REQ_TARGET_IF_AVAILABLE_AND_MIN_MANA_CRYSTAL,
     PlayReq.REQ_TARGET_IF_AVAILABLE_AND_FRIENDLY_LACKEY,
-    # PlayReq.REQ_TARGET_IF_AVAILABLE_AND_PLAYER_HEALTH_CHANGED_THIS_TURN,
-    # PlayReq.REQ_TARGET_IF_AVAILABLE_AND_SOUL_FRAGMENT_IN_DECK,
+    PlayReq.REQ_TARGET_IF_AVAILABLE_AND_PLAYER_HEALTH_CHANGED_THIS_TURN,
+    PlayReq.REQ_TARGET_IF_AVAILABLE_AND_SOUL_FRAGMENT_IN_DECK,
     # PlayReq.REQ_TARGET_IF_AVAILABLE_AND_BOUGHT_RACE_THIS_TURN,
     # PlayReq.REQ_TARGET_IF_AVAILABLE_AND_SOLD_RACE_THIS_TURN,
 )
@@ -134,4 +134,7 @@ def is_valid_target(self, target, requirements=None):
             ):
                 return False
 
+    validator = getattr(self.data.scripts, "valid_target", None)
+    if validator is not None and not validator(self, target):
+        return False
     return True

@@ -21,7 +21,7 @@ def test_babbling_book_adds_exactly_one_mage_spell_to_hand():
     _, player, _ = ready_game(CardClass.WARRIOR)
     pool = RandomSpell(card_class=CardClass.MAGE).find_cards(player.give("KAR_009"))
     assert pool
-    assert all(player.card(card_id).card_class == CardClass.MAGE for card_id in pool)
+    assert all(CardClass.MAGE in player.card(card_id).data.classes for card_id in pool)
 
     for seed in range(8):
         game, player, _ = ready_game(CardClass.WARRIOR)
@@ -32,7 +32,7 @@ def test_babbling_book_adds_exactly_one_mage_spell_to_hand():
         assert len(player.hand) == 1
         generated = player.hand[0]
         assert generated.type == CardType.SPELL
-        assert generated.card_class == CardClass.MAGE
+        assert CardClass.MAGE in generated.data.classes
         assert generated.zone == Zone.HAND
 
 

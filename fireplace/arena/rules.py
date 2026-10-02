@@ -31,6 +31,7 @@ LARGE_SETS: tuple[str, ...] = (
     "ULDUM",
     "DRAGONS",
     "BLACK_TEMPLE",
+    "SCHOLOMANCE",
 )
 
 
@@ -45,7 +46,8 @@ SMALL_SETS: tuple[str, ...] = (
 )
 
 
-SET_BUDGET = 16
+MIN_SET_BUDGET = 14
+MAX_SET_BUDGET = 18
 LARGE_SET_COST = 3
 SMALL_SET_COST = 1
 BASIC_SET = "BASIC"
@@ -74,8 +76,9 @@ def validate_sets(ids: Iterable[str]) -> tuple[str, ...]:
     """Validate and return the requested arena expansion IDs in input order.
 
     A valid selection contains distinct known expansion IDs and has a total
-    weighted cost of sixteen. ``BASIC`` and ``EXPERT1`` are locked into every
-    arena pool and cannot be supplied as selectable IDs.
+    weighted cost between fourteen and eighteen, inclusive. ``BASIC`` and
+    ``EXPERT1`` are locked into every arena pool and cannot be supplied as
+    selectable IDs.
     """
 
     if isinstance(ids, (str, bytes)):
@@ -99,9 +102,11 @@ def validate_sets(ids: Iterable[str]) -> tuple[str, ...]:
 
     large_count = sum(set_id in LARGE_SETS for set_id in selected)
     small_count = sum(set_id in SMALL_SETS for set_id in selected)
-    if large_count * LARGE_SET_COST + small_count * SMALL_SET_COST != SET_BUDGET:
+    budget = large_count * LARGE_SET_COST + small_count * SMALL_SET_COST
+    if not MIN_SET_BUDGET <= budget <= MAX_SET_BUDGET:
         raise ValueError(
-            "arena set selection must satisfy 3 * large_sets + small_sets == 16"
+            f"arena set selection budget must be between {MIN_SET_BUDGET} and "
+            f"{MAX_SET_BUDGET} points"
         )
 
     return selected
@@ -119,8 +124,8 @@ def validate_pool_sets(ids: Iterable[str]) -> tuple[str, ...]:
     """Validate expansion IDs for a card-pool lookup.
 
     Pool lookups are also useful for diagnostics and UI previews, where a
-    single expansion is often requested before a complete sixteen-slot
-    selection exists.  They therefore validate membership and uniqueness but
+    single expansion is often requested before a complete selection meets
+    the budget range. They therefore validate membership and uniqueness but
     leave the full budget check to :func:`validate_sets`.
     """
 
@@ -147,6 +152,8 @@ __all__ = [
     "CLASSIC_SET",
     "HERO_IDS",
     "LARGE_SETS",
+    "MIN_SET_BUDGET",
+    "MAX_SET_BUDGET",
     "SMALL_SETS",
     "validate_hero_id",
     "validate_pool_sets",

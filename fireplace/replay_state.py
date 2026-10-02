@@ -80,7 +80,7 @@ _REPLAY_SOURCE_FILES = (
     "utils.py",
 )
 _REPLAY_SOURCE_DIRECTORIES = ("cards", "dsl")
-_REPLAY_SOURCE_DATA_FILES = ("cards/CardDefs.xml",)
+_REPLAY_SOURCE_DATA_FILES = ("cards/CardDefs.xml", "cards/Scholomance.xml")
 
 
 def _read(obj: Any, name: str, default: Any = _MISSING) -> Any:
@@ -226,6 +226,7 @@ _CARD_FIELDS = (
     "reborn",
     "dormant",
     "silenced",
+    "spellburst_used",
     "has_deathrattle",
     "has_inspire",
     "has_overkill",
@@ -338,6 +339,8 @@ def _player_state(player: Any, seat: int) -> dict[str, Any]:
         "cant_draw",
         "cant_fatigue",
         "cards_drawn_this_turn",
+        "hero_health_changed_turn",
+        "hero_health_changes_on_own_turn",
         "cards_played_this_turn",
         "minions_killed_this_turn",
         "minions_played_this_turn",
@@ -411,6 +414,11 @@ def normalized_game_state(game: Any) -> dict[str, Any]:
         "current_player_seat": _seat(players, current_player),
         "first_player_seat": _seat(players, first_player),
         "rng_state_digest": _rng_state_digest(game),
+        "death_history": [
+            {"id": card.id, "controller_seat": _seat(players, card.controller),
+             "has_deathrattle": card.has_deathrattle}
+            for card in getattr(game, "death_history", ())
+        ],
         "players": [_player_state(player, seat) for seat, player in enumerate(players)],
         "setaside": [
             _card_state(card) for card in _cards(_read(game, "setaside"))

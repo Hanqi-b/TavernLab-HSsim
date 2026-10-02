@@ -5,43 +5,51 @@ from ..utils import *
 # Minions
 
 
+TRANSFER_STUDENT_FOR_BOARD = {
+    BoardEnum.STORMWIND: "SCH_199t",
+    BoardEnum.ORGRIMMAR: "SCH_199t2",
+    BoardEnum.PANDARIA: "SCH_199t3",
+    BoardEnum.STRANGLETHORN: "SCH_199t4",
+    BoardEnum.NAXXRAMAS: "SCH_199t5",
+    BoardEnum.GOBLINS_VS_GNOMES: "SCH_199t6",
+    BoardEnum.BLACKROCK_MOUNTAIN: "SCH_199t7",
+    BoardEnum.THE_GRAND_TOURNAMENT: "SCH_199t8",
+    BoardEnum.EXCAVATION_SITE: "SCH_199t24",
+    BoardEnum.THE_MUSEUM: "SCH_199t9",
+    BoardEnum.WHISPERS_OF_THE_OLD_GODS: "SCH_199t10",
+    BoardEnum.KARAZHAN: "SCH_199t11",
+    BoardEnum.GADGETZAN: "SCH_199t12",
+    BoardEnum.UNGORO: "SCH_199t13",
+    BoardEnum.ICECROWN_CITADEL: "SCH_199t14",
+    BoardEnum.THE_CATACOMBS: "SCH_199t15",
+    BoardEnum.THE_WITCHWOOD: "SCH_199t16",
+    BoardEnum.THE_BOOMSDAY_PROJECT: "SCH_199t17",
+    BoardEnum.GURUBASHI_ARENA: "SCH_199t18",
+    BoardEnum.DALARAN: "SCH_199t19",
+    BoardEnum.ULDUM_TOMB: "SCH_199t20",
+    BoardEnum.ULDUM_CITY: "SCH_199t25",
+    BoardEnum.DRAGONBLIGHT: "SCH_199t21",
+    BoardEnum.OUTLAND: "SCH_199t22",
+    BoardEnum.SCHOLOMANCE: "SCH_199t23",
+    None: "SCH_199t",
+}
+
 TRANSFER_STUDENT_EFFECT = Switch(
     GAME_SKIN,
-    {
-        BoardEnum.STORMWIND: Morph(SELF, "SCH_199t"),
-        BoardEnum.ORGRIMMAR: Morph(SELF, "SCH_199t2"),
-        BoardEnum.PANDARIA: Morph(SELF, "SCH_199t3"),
-        BoardEnum.STRANGLETHORN: Morph(SELF, "SCH_199t4"),
-        BoardEnum.NAXXRAMAS: Morph(SELF, "SCH_199t5"),
-        BoardEnum.GOBLINS_VS_GNOMES: Morph(SELF, "SCH_199t6"),
-        BoardEnum.BLACKROCK_MOUNTAIN: Morph(SELF, "SCH_199t7"),
-        BoardEnum.THE_GRAND_TOURNAMENT: Morph(SELF, "SCH_199t8"),
-        BoardEnum.EXCAVATION_SITE: Morph(SELF, "SCH_199t24"),
-        BoardEnum.THE_MUSEUM: Morph(SELF, "SCH_199t9"),
-        BoardEnum.WHISPERS_OF_THE_OLD_GODS: Morph(SELF, "SCH_199t10"),
-        BoardEnum.KARAZHAN: Morph(SELF, "SCH_199t11"),
-        BoardEnum.GADGETZAN: Morph(SELF, "SCH_199t12"),
-        BoardEnum.UNGORO: Morph(SELF, "SCH_199t13"),
-        BoardEnum.ICECROWN_CITADEL: Morph(SELF, "SCH_199t14"),
-        BoardEnum.THE_CATACOMBS: Morph(SELF, "SCH_199t15"),
-        BoardEnum.THE_WITCHWOOD: Morph(SELF, "SCH_199t16"),
-        BoardEnum.THE_BOOMSDAY_PROJECT: Morph(SELF, "SCH_199t17"),
-        BoardEnum.GURUBASHI_ARENA: Morph(SELF, "SCH_199t18"),
-        BoardEnum.DALARAN: Morph(SELF, "SCH_199t19"),
-        BoardEnum.ULDUM_TOMB: Morph(SELF, "SCH_199t20"),
-        BoardEnum.ULDUM_CITY: Morph(SELF, "SCH_199t25"),
-        BoardEnum.DRAGONBLIGHT: Morph(SELF, "SCH_199t21"),
-        BoardEnum.OUTLAND: Morph(SELF, "SCH_199t22"),
-        # BoardEnum.SCHOLOMANCE: Morph(SELF, "SCH_199t23"),
-        None: Morph(SELF, "SCH_199t"),
-    },
+    {board: Morph(SELF, card_id) for board, card_id in TRANSFER_STUDENT_FOR_BOARD.items()},
 )
 
 
 class SCH_199:
     """Transfer Student"""
 
-    # This has different effects based on which game board you're on.
+    @staticmethod
+    def resolve_card_id(player):
+        if not hasattr(player.game, "skin"):
+            return "SCH_199"
+        return TRANSFER_STUDENT_FOR_BOARD.get(player.game.skin, "SCH_199t")
+
+    # Initial decks are created before the board is selected.
     class Hand:
         events = GameStart().on(TRANSFER_STUDENT_EFFECT)
 
@@ -84,7 +92,7 @@ class SCH_199t6:
 
     # <b>Battlecry and Deathrattle:</b> Add a <b>Spare Part</b> card to your
     # hand.
-    play = deathrattle = Give(CONTROLLER, RandomSparePart())
+    play = deathrattle = Give(CONTROLLER, RandomCard(spare_part=True, is_standard=False))
 
 
 class SCH_199t7:
@@ -148,7 +156,7 @@ class SCH_199t13:
     """Transfer Student"""
 
     # <b>Battlecry:</b> <b>Adapt</b>.
-    play = Adapt()
+    play = Adapt(SELF)
 
 
 class SCH_199t14:
@@ -197,7 +205,7 @@ class SCH_199t21:
     """Transfer Student"""
 
     # <b>Battlecry:</b> <b>Discover</b> a Dragon.
-    play = Discover(CONTROLLER, RandomDragon())
+    play = DISCOVER(RandomDragon())
 
 
 class SCH_199t22:

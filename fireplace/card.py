@@ -20,6 +20,7 @@ from .entity import BaseEntity, Entity, boolean_property, int_property, slot_pro
 from .enums import PlayReq
 from .exceptions import InvalidAction
 from .managers import CardManager
+from .health_history import record_hero_health_change
 from .targeting import TARGETING_PREREQUISITES, is_valid_target
 from .utils import CardList
 
@@ -67,6 +68,10 @@ class BaseCard(BaseEntity):
         self.target = None
         self.parent_card: BaseCard = None
         self.aura = False
+        self.spellburst_used = False
+        self.spellburst_spell = None
+        self.spellburst_cost = 0
+        self.spellburst_deaths = ()
         self.heropower_damage = 0
         self._zone = Zone.INVALID
         self._progress: int = 0
@@ -85,6 +90,8 @@ class BaseCard(BaseEntity):
         data["progress"] = self.progress
         data["progress_total"] = self.progress_total
         data["zone"] = int(self.zone)
+        if getattr(self.data.scripts, "spellburst", ()):
+            data["spellburst_used"] = self.spellburst_used
         return data
 
     def dump_hidden(self):
@@ -403,6 +410,10 @@ class PlayableCard(BaseCard, Entity, TargetableByAuras):
     def _set_zone(self, zone):
         old_zone = self.zone
         super()._set_zone(zone)
+        if (zone in (Zone.HAND, Zone.DECK) and old_zone != zone) or (
+            old_zone == Zone.GRAVEYARD and zone == Zone.PLAY
+        ):
+            self.spellburst_used = False
         if old_zone == Zone.PLAY and zone not in (Zone.GRAVEYARD, Zone.SETASIDE):
             if not self.keep_buff:
                 self.clear_buffs()
@@ -563,15 +574,15 @@ class PlayableCard(BaseCard, Entity, TargetableByAuras):
                     "%r requires a choice (one of %r)" % (self, self.choose_cards)
                 )
             card = self
-        if not self.is_playable():
+        if not self.is_playable() or not card.is_playable():
             raise InvalidAction("%r isn't playable." % (self))
         if card.requires_target():
             if not target:
                 raise InvalidAction("%r requires a target to play." % (self))
-            elif target not in self.play_targets:
+            elif target not in card.play_targets:
                 raise InvalidAction("%r is not a valid target for %r." % (target, self))
             if self.controller.all_targets_random:
-                new_target = self.game.random.choice(self.play_targets)
+                new_target = self.game.random.choice(card.play_targets)
                 self.logger.info(
                     "Retargeting %r from %r to %r", self, target, new_target
                 )
@@ -739,6 +750,10 @@ class PlayableCard(BaseCard, Entity, TargetableByAuras):
             if self.steady_shot_can_target:
                 return bool(self.play_targets)
         req = self.requirements.get(PlayReq)
+        if PlayReq.REQ_TARGET_IF_AVAILABLE_AND_PLAYER_HEALTH_CHANGED_THIS_TURN in self.requirements:
+            return self.controller.hero_health_changed_turn == self.game.turn and bool(self.play_targets)
+        if PlayReq.REQ_TARGET_IF_AVAILABLE_AND_SOUL_FRAGMENT_IN_DECK in self.requirements:
+            return any(c.id == "SCH_307t" for c in self.controller.deck) and bool(self.play_targets)
         return PlayReq.REQ_TARGET_TO_PLAY in self.requirements
 
     @property
@@ -1029,7 +1044,7 @@ class Hero(Character):
             if self.controller.hero_power:
                 yield self.controller.hero_power
             if self.controller.weapon:
-                yield self.controller.weapon
+                yield from self.controller.weapon.entities
         yield from self.buffs
 
     @property
@@ -1076,6 +1091,7 @@ class Hero(Character):
             if self.data.hero_power:
                 self.controller.summon(self.data.hero_power)
             if old_hero:
+                record_hero_health_change(self, old_hero.health)
                 old_hero.zone = Zone.GRAVEYARD
         elif value == Zone.GRAVEYARD:
             if self.controller.hero is self:
@@ -1530,11 +1546,13 @@ class Enchantment(BaseCard):
                     self.owner.damage = max(
                         self.owner.damage - (old_health - self.owner.health), 0
                     )
+                record_hero_health_change(self.owner, old_health)
 
         super()._set_zone(zone)
 
     def apply(self, target):
         self.log("Applying %r to %r", self, target)
+        previous_health = target.health if target.type == CardType.HERO else None
         self.owner = target
         if hasattr(self.data.scripts, "apply"):
             self.data.scripts.apply(self, target)
@@ -1542,6 +1560,9 @@ class Enchantment(BaseCard):
             self.log("%r removes all damage from %r", self, target)
             target.damage = 0
         self.zone = Zone.PLAY
+
+        if previous_health is not None:
+            record_hero_health_change(target, previous_health)
 
     def remove(self):
         self.zone = Zone.REMOVEDFROMGAME

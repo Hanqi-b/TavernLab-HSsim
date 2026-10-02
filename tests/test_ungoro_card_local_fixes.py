@@ -98,7 +98,7 @@ def test_hallucination_offers_collectible_cards_of_the_actual_opponent_class():
         offered = list(owner.choice.cards)
         assert len(offered) == 3
         assert all(
-            card.data.collectible and card.data.card_class == opponent.hero.card_class
+            card.data.collectible and opponent.hero.card_class in card.data.classes
             for card in offered
         )
         saw_nonspell |= any(CardType(card.type) != CardType.SPELL for card in offered)

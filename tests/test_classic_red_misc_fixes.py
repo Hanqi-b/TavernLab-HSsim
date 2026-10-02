@@ -25,11 +25,13 @@ def test_pilfer_pool_and_actual_cards_are_collectible_other_hero_classes():
     source = player.give("EX1_182")
     pool = RandomCollectible(card_class=ANOTHER_CLASS).find_cards(source)
     assert pool
+    assert "SCH_350" not in pool  # Rogue/Mage is still a Rogue card.
+    assert "SCH_126" in pool  # Priest/Warlock is another class.
     assert all(cards.db[card_id].collectible for card_id in pool)
-    assert all(cards.db[card_id].card_class not in (
+    assert all(all(cls not in (
         CardClass.ROGUE, CardClass.NEUTRAL, CardClass.INVALID,
         CardClass.DREAM, CardClass.WHIZBANG,
-    ) for card_id in pool)
+    ) for cls in cards.db[card_id].classes) for card_id in pool)
 
     for seed in range(12):
         game, player, _ = ready_rogue_game()
@@ -41,10 +43,10 @@ def test_pilfer_pool_and_actual_cards_are_collectible_other_hero_classes():
         generated = player.hand[0]
         assert generated.zone == Zone.HAND
         assert generated.data.collectible
-        assert generated.card_class not in (
+        assert all(cls not in (
             CardClass.ROGUE, CardClass.NEUTRAL, CardClass.INVALID,
             CardClass.DREAM, CardClass.WHIZBANG,
-        )
+        ) for cls in generated.data.classes)
 
 
 def test_kidnapper_combo_returns_stolen_minion_to_current_controller():

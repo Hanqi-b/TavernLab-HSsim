@@ -50,7 +50,7 @@ def test_GIL_819_friendly_death_gives_shaman_spell_but_enemy_death_does_not():
     assert len(player.hand) == 1
     reward = player.hand[0]
     assert reward.type == CardType.SPELL
-    assert reward.card_class == CardClass.SHAMAN
+    assert CardClass.SHAMAN in reward.data.classes
 
     enemy_victim = game.player2.summon(WISP)
     enemy_victim.destroy()
@@ -69,7 +69,7 @@ def test_GIL_819_random_reward_stays_in_shaman_spell_pool():
         assert len(player.hand) == 1
         spell = player.hand[0]
         assert spell.type == CardType.SPELL
-        assert spell.card_class == CardClass.SHAMAN
+        assert CardClass.SHAMAN in spell.data.classes
         seen.add(spell.id)
     assert len(seen) > 1
 

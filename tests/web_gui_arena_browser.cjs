@@ -50,8 +50,14 @@ function initialState() {
         { id: "LARGE_C", label: "Large C", count: 105 },
         { id: "LARGE_D", label: "Large D", count: 130 },
         { id: "LARGE_E", label: "Large E", count: 101 },
+        { id: "LARGE_F", label: "Large F", count: 135 },
       ],
-      small: [{ id: "SMALL_A", label: "Small A", count: 40 }],
+      small: [
+        { id: "SMALL_A", label: "Small A", count: 40 },
+        { id: "SMALL_B", label: "Small B", count: 40 },
+        { id: "SMALL_C", label: "Small C", count: 40 },
+        { id: "SMALL_D", label: "Small D", count: 40 },
+      ],
     },
     hero_offer: [],
     card_offer: [],
@@ -202,10 +208,31 @@ async function main() {
 
     const large = page.locator('[data-action="toggle-pack"][data-pack-size="large"]');
     const small = page.locator('[data-action="toggle-pack"][data-pack-size="small"]');
-    for (let index = 0; index < 5; index += 1) await large.nth(index).click();
-    await small.first().click();
-    assert.equal(await page.locator('[data-testid="arena-start"]').isDisabled(), false);
-    assert.match(await page.locator(".arena-budget-ring").textContent(), /16/);
+    const start = page.locator('[data-testid="arena-start"]');
+    async function assertBudget(points, allowed) {
+      assert.equal(Number(await page.locator(".arena-budget-ring strong").textContent()), points);
+      assert.equal(await start.isDisabled(), !allowed);
+      assert.match(await page.locator(".arena-budget-ring span").textContent(), /14–18/);
+    }
+    for (let index = 0; index < 4; index += 1) await large.nth(index).click();
+    await small.nth(0).click();
+    await assertBudget(13, false);
+    await small.nth(1).click();
+    await assertBudget(14, true);
+    await small.nth(2).click();
+    await assertBudget(15, true);
+    await small.nth(3).click();
+    await assertBudget(16, true);
+    await large.nth(4).click();
+    await assertBudget(19, false);
+    await small.nth(3).click();
+    await assertBudget(18, true);
+    await small.nth(2).click();
+    await assertBudget(17, true);
+    await small.nth(1).click();
+    await small.nth(0).click();
+    await large.nth(5).click();
+    await assertBudget(18, true);
     await page.locator('[data-testid="arena-start"]').click();
 
     await page.locator('[data-testid="arena-hero-offer"]').waitFor();

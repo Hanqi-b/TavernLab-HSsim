@@ -8,6 +8,9 @@ import { announceAccountChange, watchAccountSession } from "./account_session.js
  * renders the current state and submits one explicit choice at a time.
  */
 
+const MIN_POOL_BUDGET = 14;
+const MAX_POOL_BUDGET = 18;
+
 const COPY = {
   zhCN: {
     back: "返回开始界面",
@@ -21,7 +24,7 @@ const COPY = {
     stepDraft: "选牌",
     stepReady: "开战",
     setupTitle: "选择竞技场卡池",
-    setupIntro: "基础和经典卡牌固定在卡池中，不计入 16 点预算。另选扩展包：大包 3 点，小包 1 点。",
+    setupIntro: "基础和经典卡牌固定在卡池中，不计入扩展包点数。另选扩展包：大包 3 点，小包 1 点。",
     nickname: "竞技场昵称",
     nicknamePlaceholder: "例如：旅店老板",
     nicknameHint: "昵称只保存在这台设备上。",
@@ -35,9 +38,9 @@ const COPY = {
     points: "点",
     selectedPacks: "已选卡包",
     budget: "卡池预算",
-    budgetRule: "需要正好 16 点：5 个大包 + 1 个小包，或用 3 个小包替代 1 个大包。",
+    budgetRule: "总点数允许 14–18 点，大包 3 点，小包 1 点。",
     budgetReady: "卡池选择完成，可以开始选英雄。",
-    budgetInvalid: "还需要选择到正好 16 点的卡池。",
+    budgetInvalid: "请选择总计 14–18 点的扩展包。",
     startArena: "开始竞技场",
     starting: "正在创建竞技场……",
     heroTitle: "选择你的英雄",
@@ -75,7 +78,7 @@ const COPY = {
     missingArt: "暂无图片",
     requestFailed: "竞技场请求失败：{message}",
     invalidName: "请输入竞技场昵称。",
-    invalidBudget: "请选择正好 16 点的扩展包。",
+    invalidBudget: "请选择总计 14–18 点的扩展包。",
     network: "无法连接本机竞技场服务。",
     reset: "返回选包",
   },
@@ -91,7 +94,7 @@ const COPY = {
     stepDraft: "Draft",
     stepReady: "Battle",
     setupTitle: "Choose your arena pool",
-    setupIntro: "Basic and Classic cards are always in the pool and cost no points. Choose expansions worth 16 points: large packs cost 3 and small packs cost 1.",
+    setupIntro: "Basic and Classic cards are always in the pool and cost no points. Choose expansions worth 14–18 points: large packs cost 3 and small packs cost 1.",
     nickname: "Arena nickname",
     nicknamePlaceholder: "For example: Innkeeper",
     nicknameHint: "Your nickname stays on this device.",
@@ -105,9 +108,9 @@ const COPY = {
     points: "pts",
     selectedPacks: "Selected packs",
     budget: "Pool budget",
-    budgetRule: "Use exactly 16 points: 5 large + 1 small, or replace a large pack with 3 small packs.",
+    budgetRule: "Choose 14–18 points in total: large packs cost 3 and small packs cost 1.",
     budgetReady: "Pool complete. You can choose your hero.",
-    budgetInvalid: "Choose packs worth exactly 16 points.",
+    budgetInvalid: "Choose packs worth 14–18 points.",
     startArena: "Start arena",
     starting: "Creating arena run…",
     heroTitle: "Choose your hero",
@@ -145,7 +148,7 @@ const COPY = {
     missingArt: "No image",
     requestFailed: "Arena request failed: {message}",
     invalidName: "Enter an arena nickname.",
-    invalidBudget: "Choose exactly 16 expansion points.",
+    invalidBudget: "Choose 14–18 expansion points.",
     network: "The local arena service is unavailable.",
     reset: "Back to packs",
   },
@@ -425,7 +428,7 @@ function setError(message = "") {
 function setBusy(value) {
   model.busy = Boolean(value);
   refs.stage?.querySelectorAll("button").forEach((button) => {
-    const budgetInvalid = button.dataset.action === "start" && selectedBudget(model.state) !== 16;
+    const budgetInvalid = button.dataset.action === "start" && !isBudgetValid(model.state);
     button.disabled = model.busy || budgetInvalid || button.dataset.alwaysEnabled === "true";
   });
   const localeLocked = model.state && currentMode() !== "setup";
@@ -543,9 +546,14 @@ function selectedBudget(state) {
   return all.reduce((total, id) => total + (large.has(id) ? 3 : 1), 0);
 }
 
+function isBudgetValid(state) {
+  const budget = selectedBudget(state);
+  return budget >= MIN_POOL_BUDGET && budget <= MAX_POOL_BUDGET;
+}
+
 function renderSetup(state) {
   const budget = selectedBudget(state);
-  const ready = budget === 16;
+  const ready = isBudgetValid(state);
   const large = list(state.pack_options.large).map((option) => packOption(option, "large")).join("");
   const small = list(state.pack_options.small).map((option) => packOption(option, "small")).join("");
   const storedName = (() => {
@@ -585,8 +593,8 @@ function renderSetup(state) {
         <p class="arena-rule-note">${escapeHtml(t("budgetRule"))}</p>
       </section>
       <aside class="arena-panel arena-budget-panel" aria-labelledby="arena-budget-title">
-        <div class="arena-budget-ring${ready ? " is-ready" : ""}" aria-label="${escapeHtml(t("budget"))}: ${budget} / 16">
-          <strong>${budget}</strong><span>/ 16</span>
+        <div class="arena-budget-ring${ready ? " is-ready" : ""}" aria-label="${escapeHtml(t("budget"))}: ${budget}; ${MIN_POOL_BUDGET}–${MAX_POOL_BUDGET}">
+          <strong>${budget}</strong><span>${MIN_POOL_BUDGET}–${MAX_POOL_BUDGET} ${escapeHtml(t("points"))}</span>
         </div>
         <p class="eyebrow">ARENA POOL</p>
         <h2 id="arena-budget-title">${escapeHtml(t("budget"))}</h2>
@@ -815,7 +823,7 @@ async function handleAction(actionNode) {
       document.getElementById("arena-nickname")?.focus();
       return;
     }
-    if (selectedBudget(model.state) !== 16) {
+    if (!isBudgetValid(model.state)) {
       setError(t("invalidBudget"));
       return;
     }

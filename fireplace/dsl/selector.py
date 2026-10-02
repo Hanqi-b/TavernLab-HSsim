@@ -663,7 +663,7 @@ ANOTHER_CLASS = FuncSelector(
     lambda entities, source: [
         card_class for card_class in CardClass
         if card_class not in (
-            source.card_class,
+            source.controller.hero.card_class,
             CardClass.INVALID,
             CardClass.NEUTRAL,
             CardClass.DREAM,

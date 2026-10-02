@@ -66,10 +66,10 @@ Card catalog:
 
 | 层次 | 当前范围 |
 | --- | --- |
-| 卡牌资料 | 仓库自带的 <code>CardDefs.xml</code> 是 build **53261**，对应历史 **Patch 17.6.0.53261**，不是当前官方卡池。目录中有 **2,507** 条可收集记录；全部 XML 范围有 **9,344** 条记录（包含衍生与不可收集实体）。 |
-| 扩展包 | 资料覆盖基础、经典及多个历史扩展包，主要到**外域的灰烬**；通灵学园只有 **1** 条可收集记录，不能视为完整支持该扩展包。 |
+| 卡牌资料 | 基础 <code>CardDefs.xml</code> 保持历史 build **53261**；通灵学园单独叠加首发 **18.0.0.54613** 数据，不更新其他扩展包。目录中有 **2,641** 条可收集记录（不含英雄皮肤）；合并 XML 共 **9,573** 条记录。 |
+| 扩展包 | 基础、经典及多个历史扩展包，扩展至**通灵学园首发版**；通灵学园 **135/135** 张可收集卡已接入效果脚本及行为测试。见[实现与验证说明](docs/scholomance-implementation.md)。 |
 | 卡牌效果 | 目录中的“有 Python 定义”只表示找到了对应或复用的代码定义，**不保证**效果完整、可正常加入对局或与官方规则完全一致；部分卡牌目前是白板。 |
-| 竞技场卡池 | 基础与经典固定加入；另从当前列出的 **14 个大包、5 个小包**中使用 **16 点**选择扩展包（大包 3 点、小包 1 点）。当前提供 9 个经典职业英雄。 |
+| 竞技场卡池 | 基础与经典固定加入；另从当前列出的 **15 个大包、5 个小包**中使用 **14–18 点**选择扩展包（大包 3 点、小包 1 点）。当前提供 9 个经典职业英雄。 |
 
 旧版 Fireplace README 的卡牌完成度百分比保存在[历史文档](LEGACY_FIREPLACE_README.md)，不代表 TavernLab-HSsim 当前的可玩效果覆盖率。
 
@@ -123,10 +123,10 @@ python examples/replay_log.py games/match.json
 
 | Layer | Current scope |
 | --- | --- |
-| Card data | Bundled <code>CardDefs.xml</code> is build **53261**, corresponding to historical **Patch 17.6.0.53261**, not today's official card pool. The catalog has **2,507** collectible records and **9,344** XML records in total, including generated and non-collectible entities. |
-| Expansions | Data includes Basic, Classic, and historical sets mainly through **Ashes of Outland**. There is only **one** collectible Scholomance Academy record, so that set is not fully covered. |
+| Card data | The base <code>CardDefs.xml</code> remains historical build **53261**. A Scholomance-only overlay supplies launch **18.0.0.54613** data without updating other sets. The catalog has **2,641** collectible records (excluding hero skins); merged XML contains **9,573** entities. |
+| Expansions | Basic, Classic, and historical sets through **Scholomance Academy at launch**. All **135/135** Scholomance collectibles have scripts and behavioral test references. See [implementation and validation](docs/scholomance-implementation.md). |
 | Card effects | A “Python definition” badge means a matching or reused definition was found. It **does not guarantee** a complete effect, normal playability, or exact official behavior. Some cards currently have no scripted effect. |
-| Arena pool | Basic and Classic are always included. The selectable list has **14 large sets and 5 small sets** with a **16-point** budget (large: 3; small: 1). Nine classic heroes are available. |
+| Arena pool | Basic and Classic are always included. The selectable list has **15 large sets and 5 small sets** with a **14–18-point** budget (large: 3; small: 1). Nine classic heroes are available. |
 
 The old Fireplace README's completion percentages are preserved in a [historical document](LEGACY_FIREPLACE_README.md). They do not measure TavernLab-HSsim's current playable effect coverage.
 

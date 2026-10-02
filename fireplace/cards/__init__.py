@@ -1,9 +1,9 @@
-import os
 from importlib import import_module
 
 from hearthstone import cardxml
 from hearthstone.enums import CardSet, CardType, GameTag, Race, ZodiacYear
 
+from ..card_data import load_card_data
 from ..enums import BoardEnum
 from ..logging import log
 from ..utils import CARD_SETS
@@ -21,6 +21,7 @@ standard_board_skins = [
     BoardEnum.ULDUM_CITY,
     BoardEnum.DRAGONBLIGHT,
     BoardEnum.OUTLAND,
+    BoardEnum.SCHOLOMANCE,
 ]
 
 
@@ -89,6 +90,7 @@ class CardDB(dict[str, cardxml.CardXML]):
             "secret_deathrattles",
             "magnetic",
             "overkill",
+            "spellburst",
         )
 
         for script in scriptnames:
@@ -187,12 +189,10 @@ class CardDB(dict[str, cardxml.CardXML]):
     def initialize(self, locale=default_language):
         log.info("Initializing card database")
         self.initialized = True
-        dirname = os.path.dirname(__file__)
-        filename = os.path.join(dirname, "CardDefs.xml")
         db2, _ = cardxml.load(locale=locale)
         for id, card in db2.items():
             self.dbf[card.dbf_id] = id
-        db, _ = cardxml.load(path=filename, locale=locale)
+        db, _ = load_card_data(locale=locale)
         for id, card in db.items():
             self[id] = self.merge(id, card)
             self.dbf[card.dbf_id] = id
@@ -260,7 +260,7 @@ class CardDB(dict[str, cardxml.CardXML]):
                         ]
                     else:
                         cards = [card for card in cards if value in card.classes]
-                if attr == "races":
+                elif attr == "races":
                     cards = [card for card in cards if value in card.races]
                 else:
                     cards = [

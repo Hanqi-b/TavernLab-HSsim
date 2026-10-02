@@ -100,3 +100,20 @@ def test_card_offer_is_distinct_repeatable_and_prefers_same_rarity():
         next(card["rarity"] for card in pool if card["id"] == card_id)
         for card_id in first
     } == {"COMMON"}
+
+
+@pytest.mark.parametrize("sets,allowed", [
+    (("GVG", "TGT", "OG", "GANGS", "NAXX"), False),  # 13
+    (("GVG", "TGT", "OG", "GANGS", "NAXX", "BRM"), True),  # 14
+    (("GVG", "TGT", "OG", "GANGS", "UNGORO"), True),  # 15
+    (("GVG", "TGT", "OG", "GANGS", "UNGORO", "NAXX"), True),  # 16
+    (("GVG", "TGT", "OG", "GANGS", "UNGORO", "NAXX", "BRM"), True),  # 17
+    (("GVG", "TGT", "OG", "GANGS", "UNGORO", "SCHOLOMANCE"), True),  # 18
+    (("GVG", "TGT", "OG", "GANGS", "UNGORO", "SCHOLOMANCE", "NAXX"), False),  # 19
+])
+def test_arena_budget_accepts_every_total_from_fourteen_through_eighteen(sets, allowed):
+    if allowed:
+        assert validate_sets(sets) == sets
+    else:
+        with pytest.raises(ValueError, match="between 14 and 18"):
+            validate_sets(sets)

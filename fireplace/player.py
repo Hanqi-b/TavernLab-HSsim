@@ -97,6 +97,8 @@ class Player(Entity, TargetableByAuras):
         self.elemental_played_this_turn = 0
         self.elemental_played_last_turn = 0
         self.cards_drawn_this_turn = 0
+        self.hero_health_changed_turn = -1
+        self.hero_health_changes_on_own_turn = 0
         self.cards_played_this_turn = 0
         self.cards_played_this_game = CardList()
         self.hero_power_damage_this_game = 0
@@ -254,6 +256,9 @@ class Player(Entity, TargetableByAuras):
 
     def card(self, id, source=None, parent=None, zone=Zone.SETASIDE):
         card = Card(id)
+        resolve_id = getattr(card.data.scripts, "resolve_card_id", None)
+        if resolve_id:
+            card = Card(resolve_id(self))
         card.controller = self
         card.zone = zone
         if source is not None:

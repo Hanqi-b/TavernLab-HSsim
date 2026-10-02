@@ -209,7 +209,7 @@ class BoardEnum(IntEnum):
     ULDUM_CITY = 22
     DRAGONBLIGHT = 23
     OUTLAND = 24
-    # SCHOLOMANCE = 25
+    SCHOLOMANCE = 25
     # DARKMOON_FAIRE = 26
     # THE_BARRENS = 27
     # UNITED_IN_STORMWIND = 28

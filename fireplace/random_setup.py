@@ -25,8 +25,10 @@ def random_draft(card_class: CardClass, exclude=[], include=[], game=None):
         if cls.type == CardType.HERO:
             # Heroes are collectible...
             continue
-        if cls.card_class and cls.card_class not in [card_class, CardClass.NEUTRAL]:
-            # Play with more possibilities
+        classes = set(cls.classes)
+        if len(classes) > 1:
+            classes.discard(CardClass.NEUTRAL)
+        if card_class not in classes and CardClass.NEUTRAL not in classes:
             continue
         collection.append(cls)
 

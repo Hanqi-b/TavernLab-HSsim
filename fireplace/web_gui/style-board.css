@@ -109,6 +109,7 @@
 .turn-label,
 .revision-label,
 .hand-count,
+.deck-count,
 .mana {
   border: 1px solid rgb(201 155 83 / 75%);
   border-radius: 999px;
@@ -216,6 +217,8 @@
   right: 23%;
   bottom: 5.1%;
   justify-content: flex-end;
+  /* The promoted hero panel overlaps the hand; its label is informational. */
+  pointer-events: none;
 }
 
 .player-plaque {
@@ -252,24 +255,34 @@
   right: -1%;
 }
 
-.self-panel > .mana {
+.self-panel > .self-resources {
   position: absolute;
   z-index: 17;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
   right: 4%;
   bottom: 24%;
+  pointer-events: none;
+}
+
+.self-panel > .self-resources .mana {
   border-color: rgb(128 202 255 / 85%);
   background: rgb(14 27 46 / 96%);
   font-size: clamp(.82rem, 1.05vw, 1rem);
 }
 
 .mana,
-.hand-count {
+.hand-count,
+.deck-count {
   color: var(--mana);
   font-size: clamp(.64rem, .88vw, .82rem);
   font-weight: 850;
 }
 
-.hand-count {
+.hand-count,
+.deck-count {
   color: var(--gold-light);
 }
 

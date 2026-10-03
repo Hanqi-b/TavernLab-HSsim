@@ -104,17 +104,28 @@ async function startMatch(page, locale, nickname, contract) {
     await enter.click();
   }
   await page.locator("#lobby-setup").waitFor({ state: "visible", timeout });
-  assert.equal(await page.locator("#opponent-heuristic-title").innerText(), locale === "enUS" ? "Default AI" : "默认AI");
-  assert.equal(await page.locator("input[name=opponent]").count(), 0, "the lobby must not offer a policy selector");
+  const opponentSelect = page.locator("#opponent-select");
+  assert.equal(await opponentSelect.count(), 1, "the lobby must offer an opponent policy selector");
+  assert.equal(await opponentSelect.inputValue(), "radical");
+  assert.equal(await opponentSelect.locator("option").count(), 2);
+  assert.equal(await opponentSelect.locator("option[value=radical]").innerText(), locale === "enUS" ? "Radical strategy" : "激进策略");
+  assert.equal(await opponentSelect.locator("option[value=mcts]").innerText(), locale === "enUS" ? "MCTS strategy" : "MCTS策略");
+
+  const opponent = locale === "enUS" ? "mcts" : "radical";
+  await opponentSelect.selectOption(opponent);
+  assert.equal(await opponentSelect.locator("option[value=heuristic]").count(), 0);
 
   const imageResponsePromise = page.waitForResponse((response) => {
     const url = new URL(response.url());
     return url.pathname === "/assets/render/CS2_231" && response.status() === 200;
   }, { timeout });
+  const startRequestPromise = page.waitForRequest((request) =>
+    request.method() === "POST" && new URL(request.url()).pathname === "/api/start", { timeout });
   const startResponsePromise = page.waitForResponse((response) =>
     response.request().method() === "POST" && new URL(response.url()).pathname === "/api/start", { timeout });
   await page.locator("#start-match-button").click();
-  const startResponse = await startResponsePromise;
+  const [startRequest, startResponse] = await Promise.all([startRequestPromise, startResponsePromise]);
+  assert.deepEqual(startRequest.postDataJSON(), { nickname, locale, opponent });
   const started = await startResponse.json();
   assert.equal(startResponse.status(), 200, `${locale}: start failed: ${JSON.stringify(started)}`);
   assert.equal(started.mode, "match");
@@ -158,7 +169,7 @@ async function startMatch(page, locale, nickname, contract) {
     assert(!serializedCard.includes("测试小精灵"), "English card data must never contain the Chinese fixture name");
   }
   await page.screenshot({ path: path.join(artifacts, `web-gui-locale-${locale}.png`), fullPage: true });
-  return { locale, opponent: "heuristic", sessionId: state.session_id, state, cardId: card.card_id, name: card.name, text: card.text, imageBytes: expectedBytes.length };
+  return { locale, opponent, sessionId: state.session_id, state, cardId: card.card_id, name: card.name, text: card.text, imageBytes: expectedBytes.length };
 }
 
 async function finishFixtureMatch(page) {
@@ -227,6 +238,9 @@ async function finishFixtureMatch(page) {
         legacy_available: false,
       }),
     }));
+    await context.addInitScript(() => {
+      if (!localStorage.getItem("fireplace.opponent")) localStorage.setItem("fireplace.opponent", "heuristic");
+    });
     const page = await context.newPage();
     page.setDefaultTimeout(timeout);
     // Keep this tab's match snapshot frozen so the later cross-tab stale
@@ -266,7 +280,7 @@ async function finishFixtureMatch(page) {
     }
     await page.locator("#lobby-setup").waitFor({ state: "visible", timeout });
     assert.equal(await page.locator("#start-match-button").innerText(), "Start match");
-    assert.equal(await page.locator("#opponent-heuristic-title").innerText(), "Default AI");
+    assert.equal(await page.locator("#opponent-select").inputValue(), "radical");
     await page.screenshot({ path: path.join(artifacts, "web-gui-lobby-enUS.png"), fullPage: true });
 
     const chinese = await startMatch(page, "zhCN", "Locale Fixture Player", fixtureInfo.contracts.zhCN);

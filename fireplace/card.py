@@ -199,6 +199,12 @@ class BaseCard(BaseEntity):
     def classes(self):
         if self.multi_class_group != MultiClassGroup.INVALID:
             return MultiClassGroup(self.multi_class_group).card_classes
+        # Some records carry MULTIPLE_CLASSES without a legacy
+        # MULTI_CLASS_GROUP.  Keep those memberships from the card data rather
+        # than reducing the card to its live CLASS tag (which is commonly
+        # NEUTRAL on multi-class records).
+        if getattr(self.data, "multiple_classes", 0):
+            return list(self.data.classes)
         return [self.card_class]
 
     @zone.setter
@@ -1263,6 +1269,9 @@ class Minion(Character):
         return super().zone_position
 
     def _set_zone(self, value):
+        # Private zones discard combat state, including shuffles via SETASIDE.
+        entering_private_zone = value in (Zone.HAND, Zone.DECK) and self.zone != value
+
         if value == Zone.PLAY:
             if self._summon_index is not None:
                 self.controller.field.insert(self._summon_index, self)
@@ -1276,6 +1285,11 @@ class Minion(Character):
             self.controller.field.remove(self)
             if self.damage:
                 self.damage = 0
+
+        if entering_private_zone:
+            self.turns_in_play = 0
+            self.num_attacks = 0
+            self.frozen = False
 
         super()._set_zone(value)
 

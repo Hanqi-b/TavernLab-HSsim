@@ -7,6 +7,7 @@ import pytest
 from fireplace.arena.run import ArenaRun
 from fireplace.arena.store import ArenaStore, ArenaStoreConflict, ArenaStoreCorrupt
 from fireplace.web_gui.arena_service import ArenaService
+from fireplace.web_gui.contracts import WebLifecycleError
 
 
 SETS = ["GVG", "TGT", "OG", "GANGS", "UNGORO", "NAXX"]
@@ -59,6 +60,96 @@ def test_arena_run_ends_at_seven_wins_or_three_losses():
         losing.settle_match(losing.start_match(), False)
     assert losing.stage == "complete"
     assert losing.losses == 3
+
+
+def test_arena_run_can_be_retired_without_changing_record_or_deck(tmp_path: Path):
+    run = _ready()
+    for _ in range(2):
+        run.settle_match(run.start_match(), True)
+    deck = list(run.deck)
+    revision = run.revision
+
+    run.retire()
+
+    assert run.stage == "complete"
+    assert run.retired is True
+    assert run.pending_match_id is None
+    assert (run.wins, run.losses) == (2, 0)
+    assert run.deck == deck
+    assert run.revision == revision + 1
+
+    store = ArenaStore(tmp_path / "retired.json")
+    store.save(run)
+    loaded = store.load()
+    assert loaded is not None
+    assert loaded.retired is True
+    assert loaded.stage == "complete"
+    assert (loaded.wins, loaded.losses) == (2, 0)
+    assert loaded.deck == deck
+
+
+def test_old_version_one_run_without_retired_marker_defaults_to_false():
+    run = _ready()
+    payload = run.to_dict()
+    payload.pop("retired")
+
+    restored = ArenaRun.from_dict(payload)
+
+    assert restored.retired is False
+
+
+def test_arena_service_retire_rejects_stale_or_wrong_run_without_mutation(tmp_path: Path):
+    run = _ready()
+    store = ArenaStore(tmp_path / "retire-cas.json")
+    store.save(run)
+    service = ArenaService(store=store)
+    try:
+        before = service.run.to_dict()
+        for payload in (
+            {"run_id": "wrong-run", "revision": run.revision},
+            {"run_id": run.run_id, "revision": run.revision - 1},
+        ):
+            with pytest.raises(WebLifecycleError) as error:
+                service.retire(payload)
+            assert error.value.status_code == 409
+            assert service.run.to_dict() == before
+            assert store.load().to_dict() == before
+
+        state = service.retire({"run_id": run.run_id, "revision": run.revision})
+        assert state["mode"] == "complete"
+        assert state["retired"] is True
+        assert service.run.revision == run.revision + 1
+    finally:
+        service.close()
+
+
+def test_arena_service_retire_only_allows_ready_stage(tmp_path: Path):
+    service = ArenaService(store=ArenaStore(tmp_path / "retire-stages.json"))
+    try:
+        state = service.start({"set_ids": SETS, "nickname": "Tester", "locale": "zhCN"}, seed=17)
+        with pytest.raises(WebLifecycleError) as error:
+            service.retire({"run_id": state["run_id"], "revision": state["revision"]})
+        assert error.value.status_code == 409 and error.value.snapshot["mode"] == "hero"
+
+        state = service.choose_hero({
+            "run_id": state["run_id"], "revision": state["revision"],
+            "hero_id": state["hero_offer"][0]["id"],
+        })
+        with pytest.raises(WebLifecycleError) as error:
+            service.retire({"run_id": state["run_id"], "revision": state["revision"]})
+        assert error.value.status_code == 409 and error.value.snapshot["mode"] == "draft"
+
+        for _ in range(30):
+            state = service.choose_card({
+                "run_id": state["run_id"], "revision": state["revision"],
+                "card_id": state["card_offer"][0]["id"],
+            })
+        state = service.retire({"run_id": state["run_id"], "revision": state["revision"]})
+        with pytest.raises(WebLifecycleError) as error:
+            service.retire({"run_id": state["run_id"], "revision": state["revision"]})
+        assert error.value.status_code == 409 and error.value.snapshot["mode"] == "complete"
+    finally:
+        service.close()
 
 
 def test_unfinished_battle_recovers_without_counting_a_loss(tmp_path: Path):

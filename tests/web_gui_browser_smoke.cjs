@@ -329,7 +329,7 @@ async function main() {
     await lobbyPage.route("**/api/state", (route) => route.fulfill({
       status: 200,
       contentType: "application/json; charset=utf-8",
-      body: JSON.stringify({ mode: "lobby", opponent: "heuristic" }),
+      body: JSON.stringify({ mode: "lobby", opponent: "radical" }),
     }));
     await lobbyPage.route("**/api/decks*", (route) => route.fulfill({
       status: 200,

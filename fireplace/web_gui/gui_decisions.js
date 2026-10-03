@@ -5,6 +5,15 @@ export function createDecisions(deps) {
     onRender, onSubmitAction, onLoadState, getBusy,
   } = deps;
 
+  var logCache = {
+    signature: null,
+    sessionId: null,
+    locale: null,
+    byKey: new Map(),
+    sequences: new Set(),
+    emptyNode: null,
+  };
+
   function selectedActions() {
     return state.selectedActions();
   }
@@ -529,62 +538,221 @@ export function createDecisions(deps) {
     return suffix.join("");
   }
 
+  function eventFingerprint(event) {
+    try {
+      return JSON.stringify(event);
+    } catch (_error) {
+      return String(event);
+    }
+  }
+
+  function eventSequence(event, index) {
+    return event && event.seq !== undefined && event.seq !== null
+      ? String(event.seq) : `index:${index}`;
+  }
+
+  function eventLogKey(event, index) {
+    return eventSequence(event, index) + "|" + eventFingerprint(event);
+  }
+
+  function updateLogItem(record, event, latest, animateLatest) {
+    var item = record.node;
+    item.className = "event-item";
+    if (latest) {
+      if (!animateLatest) item.style.animation = "none";
+      else item.style.removeProperty("animation");
+      item.classList.add("latest");
+    } else {
+      item.style.removeProperty("animation");
+    }
+    if (event && event.seq !== undefined && event.seq !== null) {
+      item.setAttribute("data-event-seq", String(event.seq));
+    } else {
+      item.removeAttribute("data-event-seq");
+    }
+    record.actor.className = "event-actor " + (event.actor === "opponent" ? "opponent" : "self");
+    record.actor.textContent = event.actor === "opponent" ? locale.tr("eventOpponent") : locale.tr("eventSelf");
+    record.message.textContent = eventText(event);
+    if (event.turn !== undefined && event.turn !== null) {
+      if (!record.turn) {
+        record.turn = document.createElement("span");
+        record.turn.className = "event-turn";
+        item.appendChild(record.turn);
+      }
+      record.turn.textContent = locale.tr("eventTurn", { value: event.turn });
+    } else if (record.turn) {
+      record.turn.remove();
+      record.turn = null;
+    }
+  }
+
+  function newLogItem() {
+    var item = document.createElement("li");
+    item.className = "event-item";
+    var actor = document.createElement("span");
+    actor.className = "event-actor self";
+    item.appendChild(actor);
+    var message = document.createElement("span");
+    item.appendChild(message);
+    return { node: item, actor: actor, message: message, turn: null };
+  }
+
   function renderLog(events) {
     var latestEventSeq = state.current.latestEventSeq;
-    dom.clear(elements["event-log"]);
-    var list = data.asArray(events).slice().reverse();
+    var snapshot = state.current.snapshot;
+    var sessionId = snapshot && snapshot.session_id !== undefined && snapshot.session_id !== null
+      ? String(snapshot.session_id) : "";
+    var localeId = locale.locale || "";
+    var list = data.asArray(events);
+    var log = elements["event-log"];
+    if (!log) return;
+    var contents = list.map(eventFingerprint).join("\u001f");
+    var signature = [sessionId, localeId, latestEventSeq === null ? "" : latestEventSeq, contents].join("\u001e");
+    var cachedNodes = new Set(Array.from(logCache.byKey.values()).map(function (record) { return record.node; }));
+    var cacheAttached = list.length
+      ? log.childElementCount === list.length && Array.from(log.children).every(function (node) { return cachedNodes.has(node); })
+      : (logCache.emptyNode && log.firstElementChild === logCache.emptyNode && log.childElementCount === 1);
+    if (signature === logCache.signature && cacheAttached) return;
+    if (logCache.sessionId !== null && logCache.sessionId !== sessionId) {
+      dom.clear(log);
+      logCache.byKey.clear();
+      logCache.sequences.clear();
+      logCache.emptyNode = null;
+    }
+    logCache.sessionId = sessionId;
+    logCache.locale = localeId;
+    logCache.signature = signature;
+
     if (!list.length) {
-      var empty = document.createElement("li");
-      empty.className = "empty-log";
-      empty.textContent = locale.tr("publicEvent");
-      elements["event-log"].appendChild(empty);
+      logCache.byKey.clear();
+      logCache.sequences.clear();
+      if (!logCache.emptyNode) {
+        logCache.emptyNode = document.createElement("li");
+        logCache.emptyNode.className = "empty-log";
+      }
+      logCache.emptyNode.textContent = locale.tr("publicEvent");
+      if (log.firstElementChild !== logCache.emptyNode || log.childElementCount !== 1) {
+        dom.clear(log);
+        log.appendChild(logCache.emptyNode);
+      }
       return;
     }
-    list.forEach(function (event) {
-      var item = document.createElement("li");
-      item.className = "event-item" + (data.safeNumber(event.seq, -1) === latestEventSeq ? " latest" : "");
-      var actor = document.createElement("span");
-      actor.className = "event-actor " + (event.actor === "opponent" ? "opponent" : "self");
-      actor.textContent = event.actor === "opponent" ? locale.tr("eventOpponent") : locale.tr("eventSelf");
-      item.appendChild(actor);
-      var message = document.createElement("span");
-      message.textContent = eventText(event);
-      item.appendChild(message);
-      if (event.turn !== undefined && event.turn !== null) {
-        var turn = document.createElement("span");
-        turn.className = "event-turn";
-        turn.textContent = locale.tr("eventTurn", { value: event.turn });
-        item.appendChild(turn);
-      }
-      elements["event-log"].appendChild(item);
+
+    logCache.emptyNode = null;
+    var previousByKey = logCache.byKey;
+    var previousSequences = logCache.sequences;
+    var nextByKey = new Map();
+    var nextSequences = new Set();
+    var desired = [];
+    list.slice().reverse().forEach(function (event, reverseIndex) {
+      event = data.isObject(event) ? event : {};
+      var sourceIndex = list.length - reverseIndex - 1;
+      var key = eventLogKey(event, sourceIndex);
+      var sequence = eventSequence(event, sourceIndex);
+      var record = previousByKey.get(key);
+      var isNewSequence = !previousSequences.has(sequence);
+      if (!record) record = newLogItem();
+      var latest = data.safeNumber(event.seq, -1) === latestEventSeq;
+      updateLogItem(record, event, latest, latest && isNewSequence);
+      desired.push(record.node);
+      nextByKey.set(key, record);
+      nextSequences.add(sequence);
     });
+    desired.forEach(function (node, index) {
+      var current = log.children[index];
+      if (current !== node) log.insertBefore(node, current || null);
+    });
+    Array.from(log.children).slice(desired.length).forEach(function (node) { node.remove(); });
+    logCache.byKey = nextByKey;
+    logCache.sequences = nextSequences;
   }
 
   function eventText(event) {
     if (!data.isObject(event)) {
       return locale.tr("publicEvent");
     }
-    var type = data.labelForType(event.type);
+    var eventType = data.safeText(event.type, "").toUpperCase();
+    var type = data.labelForType(eventType);
     function visibleName(id, fallback) {
       var card = findVisibleEntity(id);
       return card ? data.cardName(card) : data.safeText(fallback, locale.tr("target"));
     }
-    if (event.type === "PLAY_CARD") {
-      return locale.tr("play") + " " + visibleName(event.source_entity_id, event.source_name || locale.tr("unknownCard")) + (event.position !== undefined ? locale.tr("playedAt", { value: event.position }) : "");
+    function sourceName() {
+      var fallback = data.safeText(event.source_name, "");
+      var id = data.entityId(event.source_entity_id);
+      if (id !== null) {
+        var card = findVisibleEntity(id);
+        if (card) return data.cardName(card);
+      }
+      return fallback;
     }
-    if (event.type === "ATTACK") {
+    function targetName() {
+      return visibleName(event.target_entity_id, event.target_name || locale.tr("target"));
+    }
+    function withSource(knownKey, unknownKey, variables) {
+      var source = sourceName();
+      if (!source) return locale.tr(unknownKey, variables);
+      return locale.tr(knownKey, Object.assign({}, variables, { source: source }));
+    }
+    if (eventType === "PRESENTATION_FAST_FORWARD") return locale.tr("effectsFastForwarded");
+    if (eventType === "DECK_DESTROY") {
+      return locale.tr("eventDeckDestroy", {
+        amount: data.safeNumber(event.amount, 0),
+      });
+    }
+    if (eventType === "DECK_EMPTY") return locale.tr("eventDeckEmpty");
+    if (eventType === "FATIGUE") return locale.tr("eventFatigue");
+    if (eventType === "BATTLECRY") {
+      return withSource("eventBattlecry", "eventBattlecryUnknown", {});
+    }
+    if (eventType === "DEATHRATTLE") {
+      return withSource("eventDeathrattle", "eventDeathrattleUnknown", {});
+    }
+    if (eventType === "DAMAGE") {
+      var damage = data.safeNumber(event.amount, 0);
+      var target = targetName();
+      if (damage <= 0) {
+        if (event.shield_broken === true) {
+          return withSource("eventShieldBreak", "eventShieldBreakUnknownSource", { target: target });
+        }
+        return withSource("eventDamageBlocked", "eventDamageBlockedUnknownSource", { target: target });
+      }
+      return withSource("eventDamage", "eventDamageUnknownSource", { target: target, amount: damage });
+    }
+    if (eventType === "HEAL" || eventType === "ARMOR") {
+      var value = data.safeNumber(event.amount, 0);
+      var valueTarget = targetName();
+      var valueKey = eventType === "HEAL" ? "eventHeal" : "eventArmor";
+      var unknownValueKey = eventType === "HEAL" ? "eventHealUnknownSource" : "eventArmorUnknownSource";
+      return withSource(valueKey, unknownValueKey, { target: valueTarget, amount: value });
+    }
+    if (eventType === "DEATH") {
+      return locale.tr("eventDeath", { target: targetName() });
+    }
+    if (eventType === "DESTROY") {
+      return locale.tr("eventDestroy", { target: targetName() });
+    }
+    if (eventType === "SUMMON") {
+      return locale.tr("eventSummon", { target: targetName() });
+    }
+    if (eventType === "PLAY_CARD" || eventType === "PLAY") {
+      return locale.tr("eventPlay", {
+        source: visibleName(event.source_entity_id, event.source_name || locale.tr("unknownCard")),
+      }) + (event.position !== undefined ? locale.tr("playedAt", { value: event.position }) : "");
+    }
+    if (eventType === "ATTACK") {
       return visibleName(event.source_entity_id, event.source_name || locale.tr("minions", { value: 1 })) + " " + locale.tr("attackTarget") + " " + visibleName(event.target_entity_id, event.target_name || locale.tr("target"));
     }
-    if (event.type === "USE_HERO_POWER") {
+    if (eventType === "USE_HERO_POWER") {
       return locale.tr("eventHeroPower") + (event.target_name ? locale.tr("arrow") + visibleName(event.target_entity_id, event.target_name) : "");
     }
-    if (event.type === "MULLIGAN") {
+    if (eventType === "MULLIGAN") {
       return locale.tr("eventMulligan");
     }
-    if (event.type === "CHOOSE") {
+    if (eventType === "CHOOSE") {
       return locale.tr("eventChoice") + (event.source_name ? (locale.locale === "enUS" ? ": " : "：") + String(event.source_name) : "");
     }
-    return type;
+    return type || locale.tr("eventEffectUnknown");
   }
 
   function sourceTypesFor(sourceId) {

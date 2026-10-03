@@ -527,23 +527,25 @@ html[lang="en"] .catalog-link-en {
   font-weight: 800;
 }
 
-.catalog-script-badge {
+.catalog-quality-badge {
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.catalog-card-badge.is-script-present,
-.catalog-detail-badge.is-script-present {
-  border-color: rgb(120 219 116 / 52%);
-  color: #c8f5c5;
+.catalog-card-badge.is-quality-yellow,
+.catalog-detail-badge.is-quality-yellow {
+  border-color: rgb(245 201 92 / 68%);
+  background: rgb(245 201 92 / 10%);
+  color: #f7df9e;
 }
 
-.catalog-card-badge.is-script-missing,
-.catalog-detail-badge.is-script-missing {
-  border-color: rgb(226 138 111 / 52%);
-  color: #f2c8bb;
+.catalog-card-badge.is-quality-red,
+.catalog-detail-badge.is-quality-red {
+  border-color: rgb(235 111 111 / 68%);
+  background: rgb(235 111 111 / 10%);
+  color: #f5bcbc;
 }
 
 .catalog-error,
@@ -734,16 +736,6 @@ html[lang="en"] .catalog-link-en {
 
 .catalog-detail-badge.is-muted {
   color: #d6b5a9;
-}
-
-.catalog-script-note {
-  margin: -6px 0 18px;
-  border-left: 2px solid rgb(201 155 83 / 56%);
-  padding: 8px 11px;
-  background: rgb(9 15 25 / 34%);
-  color: #c7bfd0;
-  font-size: .75rem;
-  line-height: 1.55;
 }
 
 .catalog-detail-stats {

@@ -195,6 +195,11 @@ export function createSync({
     document.querySelectorAll("button").forEach((button) => { button.disabled = Boolean(disabled); });
   }
 
+  function setOpponentDisabled(disabled) {
+    const select = elements["opponent-select"] || document.getElementById("opponent-select");
+    if (select) select.disabled = Boolean(disabled);
+  }
+
   function submitAction(index, presentationHint = null) {
     const snapshot = state.current.snapshot;
     const action = state.current.actionIndex.actions[index];
@@ -270,21 +275,24 @@ export function createSync({
       });
   }
 
-  function startMatch(nickname) {
+  function startMatch(nickname, opponent) {
     if (busy) return;
     if (!nickname) return;
     const generation = ++requestGeneration;
     busy = true;
     elements["start-match-button"].disabled = true;
+    setOpponentDisabled(true);
     onSetLobbyStatus(locale.tr("lobby.starting"));
     dom.setConnection(locale.tr("status.connecting"), false);
     const selectedDeck = document.getElementById("deck-select");
     const deckId = selectedDeck && typeof selectedDeck.value === "string"
       ? selectedDeck.value.trim()
       : "";
-    const body = { nickname, locale: locale.locale };
-    // Keep the legacy random-match request byte-for-byte compatible.  A deck
-    // identifier is sent only when the user explicitly chose a saved deck.
+    const selectedOpponent = typeof opponent === "string" && opponent.trim()
+      ? opponent.trim()
+      : (document.getElementById("opponent-select")?.value || "radical");
+    const body = { nickname, locale: locale.locale, opponent: selectedOpponent };
+    // A deck identifier is sent only when the user explicitly chose a saved deck.
     if (deckId) body.deck_id = deckId;
     return window.fetch(API.start, {
       method: "POST",
@@ -312,6 +320,7 @@ export function createSync({
         if (generation !== requestGeneration) return;
         busy = false;
         elements["start-match-button"].disabled = false;
+        setOpponentDisabled(false);
       });
   }
 

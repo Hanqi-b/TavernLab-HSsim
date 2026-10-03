@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 from dataclasses import dataclass
 from typing import Any
 
@@ -82,6 +84,45 @@ class CardInfo:
         return self.as_dict()
 
 
+@dataclass(frozen=True, slots=True)
+class HistoricalCard:
+    """Scalar metadata for one card in the frozen 2016 legal pool.
+
+    This is deliberately separate from :class:`CardInfo`: the historical
+    bundle carries the source-era DBF ID and exact set/type metadata, while
+    ``CardInfo`` mirrors the current card database and its existing callers.
+    """
+
+    id: str
+    name: str
+    dbf_id: int
+    card_class: str
+    card_set: str
+    card_type: str
+    rarity: str
+    cost: int
+
+    @property
+    def classes(self) -> tuple[str, ...]:
+        return () if self.card_class == "NEUTRAL" else (self.card_class,)
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "id": self.id,
+            "name": self.name,
+            "dbf_id": self.dbf_id,
+            "card_class": self.card_class,
+            "card_set": self.card_set,
+            "card_type": self.card_type,
+            "rarity": self.rarity,
+            "cost": self.cost,
+            "classes": list(self.classes),
+        }
+
+    def to_dict(self) -> dict[str, Any]:
+        return self.as_dict()
+
+
 def _is_eligible_card(card: object, allowed_sets: frozenset[str], hero_class: str) -> bool:
     card_id = getattr(card, "id", "")
     card_set = _enum_name(getattr(card, "card_set", None))
@@ -156,4 +197,136 @@ def eligible_cards(set_ids, hero_id: str) -> tuple[CardInfo, ...]:
     return tuple(result)
 
 
-__all__ = ["CardInfo", "eligible_cards"]
+def _historical_json(path):
+    """Read one historical JSON artifact without importing it at module load."""
+
+    from .formats import HistoricalFormatError
+
+    try:
+        data = path.read_bytes()
+    except OSError as exc:
+        raise HistoricalFormatError(f"historical Arena data is unavailable: {path}") from exc
+    digest = hashlib.sha256(data).hexdigest()
+    try:
+        payload = json.loads(data.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise HistoricalFormatError(f"historical Arena file is not valid JSON: {path}") from exc
+    return payload, data, digest
+
+
+def load_historical_pool() -> tuple[dict[str, Any], bytes, str]:
+    """Load and checksum the pinned historical pool artifact lazily."""
+
+    from .formats import PROVENANCE_PATH, POOL_PATH, HistoricalFormatError
+
+    payload, data, digest = _historical_json(POOL_PATH)
+    manifest, _, _ = _historical_json(PROVENANCE_PATH)
+    if not isinstance(manifest, dict):
+        raise HistoricalFormatError("historical Arena manifest must be an object")
+    if digest != manifest.get("pool_sha256"):
+        raise HistoricalFormatError("historical legal pool checksum does not match manifest")
+    if not isinstance(payload, dict) or not isinstance(payload.get("cards"), list):
+        raise HistoricalFormatError("historical pool must contain a cards list")
+    return payload, data, digest
+
+
+def _historical_cards_from_payload(payload: dict[str, Any]) -> tuple[HistoricalCard, ...]:
+    """Validate frozen metadata and materialize sorted historical cards."""
+
+    from .formats import (
+        FIXED_SETS,
+        HERO_CLASSES,
+        HistoricalFormatError,
+        KNOWN_CARD_TYPES,
+        KNOWN_RARITIES,
+    )
+
+    required = {"id", "name", "dbf_id", "card_class", "card_set", "card_type", "rarity", "cost"}
+    cards: list[HistoricalCard] = []
+    seen: set[str] = set()
+    class_counts = {hero_class: 0 for hero_class in HERO_CLASSES.values()}
+    rows = payload["cards"]
+    for row in rows:
+        if not isinstance(row, dict) or set(row) != required:
+            card_id = row.get("id") if isinstance(row, dict) else None
+            raise HistoricalFormatError(f"invalid legal card metadata keys for {card_id!r}")
+        card_id = row["id"]
+        if not isinstance(card_id, str) or not card_id or card_id in seen:
+            raise HistoricalFormatError("historical legal card IDs must be unique strings")
+        if not isinstance(row["name"], str) or not row["name"]:
+            raise HistoricalFormatError(f"invalid card name for {card_id}")
+        if type(row["dbf_id"]) is not int or row["dbf_id"] <= 0:
+            raise HistoricalFormatError(f"missing current dbf ID for {card_id}")
+        card_class = row["card_class"]
+        card_set = row["card_set"]
+        card_type = row["card_type"]
+        rarity = row["rarity"]
+        if card_class not in set(HERO_CLASSES.values()) | {"NEUTRAL"}:
+            raise HistoricalFormatError(f"unknown historical card class for {card_id}: {card_class!r}")
+        if card_set not in FIXED_SETS:
+            raise HistoricalFormatError(f"historical card set is outside fixed manifest for {card_id}")
+        if card_type not in KNOWN_CARD_TYPES:
+            raise HistoricalFormatError(f"historical card type is not draftable for {card_id}")
+        if rarity not in KNOWN_RARITIES:
+            raise HistoricalFormatError(f"unknown historical card rarity for {card_id}: {rarity!r}")
+        if type(row["cost"]) is not int or row["cost"] < 0:
+            raise HistoricalFormatError(f"invalid historical card cost for {card_id}")
+        if card_class != "NEUTRAL":
+            class_counts[card_class] += 1
+        cards.append(
+            HistoricalCard(
+                id=card_id,
+                name=row["name"],
+                dbf_id=row["dbf_id"],
+                card_class=card_class,
+                card_set=card_set,
+                card_type=card_type,
+                rarity=rarity,
+                cost=row["cost"],
+            )
+        )
+        seen.add(card_id)
+    if any(count < 3 for count in class_counts.values()):
+        missing = [hero_class for hero_class, count in class_counts.items() if count < 3]
+        raise HistoricalFormatError(
+            "historical legal pool must contain at least three cards for every hero class: "
+            + ", ".join(missing)
+        )
+    return tuple(sorted(cards, key=lambda card: card.id))
+
+
+def load_historical_cards() -> tuple[HistoricalCard, ...]:
+    """Load, validate, and sort the complete pinned legal card pool."""
+
+    payload, _, _ = load_historical_pool()
+    return _historical_cards_from_payload(payload)
+
+
+def historical_eligible_cards(hero_id: str) -> tuple[HistoricalCard, ...]:
+    """Return the pinned 2016 legal pool for one classic hero.
+
+    The historical bundle is loaded lazily so importing or using
+    ``custom_v1`` keeps the original pool path untouched.
+    """
+
+    from .formats import HERO_CLASSES
+
+    value = getattr(hero_id, "name", hero_id)
+    if not isinstance(value, str) or value not in HERO_CLASSES:
+        raise ValueError(f"unknown historical Arena hero: {hero_id!r}")
+    hero_class = HERO_CLASSES[value]
+    return tuple(
+        card
+        for card in load_historical_cards()
+        if card.card_class in {"NEUTRAL", hero_class}
+    )
+
+
+__all__ = [
+    "CardInfo",
+    "HistoricalCard",
+    "eligible_cards",
+    "historical_eligible_cards",
+    "load_historical_cards",
+    "load_historical_pool",
+]

@@ -1,7 +1,10 @@
+import { createEffects } from "./gui_effects.js";
+
 /** Visual playback for public, already resolved Actions. Never decides game rules. */
 export function createPresentation({ document, window, elements, data, eventText }) {
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   let active = new Set();
+  let presentationGeneration = 0;
 
   const duration = (normal) => reducedMotion.matches ? 1 : normal;
   const idOf = (card) => data.entityId(card && card.entity_id);
@@ -68,6 +71,8 @@ export function createPresentation({ document, window, elements, data, eventText
     clone.removeAttribute("role");
     clone.removeAttribute("tabindex");
     clone.removeAttribute("id");
+    clone.classList.remove("targetable", "sourceable", "playable", "powered-up",
+      "mulligan-selected", "hand-drag-target", "hand-drag-hover", "promote-interaction");
     clone.querySelectorAll("[id]").forEach((child) => child.removeAttribute("id"));
     clone.querySelectorAll("[tabindex]").forEach((child) => child.removeAttribute("tabindex"));
     Object.assign(clone.style, {
@@ -80,6 +85,20 @@ export function createPresentation({ document, window, elements, data, eventText
   }
 
   function remove(node) { if (node && node.isConnected) node.remove(); }
+
+  const effectAnimator = createEffects({
+    document,
+    window,
+    elements,
+    data,
+    eventText,
+    entityNode,
+    center,
+    animate,
+    ghost,
+    remove,
+    reducedMotion,
+  });
 
   function boardDestination(frame, event) {
     const side = event.actor === "opponent" ? "opponent-board" : "self-board";
@@ -114,9 +133,10 @@ export function createPresentation({ document, window, elements, data, eventText
 
   async function playIntent(event, frame) {
     if (!event) return;
+    const eventType = data.safeText(event.type, "").toUpperCase();
     const source = openingNode(event);
     const target = entityNode(event.target_entity_id);
-    if (event.type === "ATTACK" && source && target) {
+    if (eventType === "ATTACK" && source && target) {
       const from = center(source);
       const to = center(target);
       const dx = (to.x - from.x) * .72;
@@ -128,7 +148,7 @@ export function createPresentation({ document, window, elements, data, eventText
       ], 570, "cubic-bezier(.2,.8,.2,1)");
       return;
     }
-    if (event.type === "PLAY_CARD" && source) {
+    if (eventType === "PLAY_CARD" && source) {
       const from = center(source);
       const to = boardDestination(frame, event);
       if (!from || !to) return;
@@ -148,7 +168,13 @@ export function createPresentation({ document, window, elements, data, eventText
       }
       return;
     }
-    if (event.type === "USE_HERO_POWER" && source) {
+    if (eventType === "USE_HERO_POWER" && source) {
+      // Targeted damage has its own telemetry flight.  Keep the intent cue
+      // for powers whose callback resolves to healing, armor, or another
+      // non-damage effect, and for public sources the effect animator cannot
+      // resolve (for example an opponent hero power hidden from the DOM).
+      const callbackSuppliesFlight = damageTelemetryProvidesFlight(event, frame);
+      if (callbackSuppliesFlight) return;
       const from = center(source);
       const to = center(target);
       if (to) {
@@ -172,7 +198,7 @@ export function createPresentation({ document, window, elements, data, eventText
       }
       return;
     }
-    if (event.type === "END_TURN") {
+    if (eventType === "END_TURN") {
       await turnBanner(event);
     }
   }
@@ -305,7 +331,41 @@ export function createPresentation({ document, window, elements, data, eventText
     return output;
   }
 
-  async function resolve(previous, next, deaths, reflow) {
+  function deckEmptyTransitions(previous, next) {
+    const sides = [];
+    for (const side of ["self", "opponent"]) {
+      const oldCount = data.safeNumber(previous?.[side]?.deck_count, 0);
+      const nextCount = data.safeNumber(next?.[side]?.deck_count, 0);
+      if (oldCount > 0 && nextCount === 0) sides.push(side);
+    }
+    return sides;
+  }
+
+  async function animateDraws(previous, next, options = {}) {
+    const motions = [];
+    for (const draw of draws(previous, next)) {
+      const root = elements[draw.side === "self" ? "hand" : "opponent-hand"];
+      const card = draw.side === "self"
+        ? root?.querySelector(`[data-entity-id="${draw.id}"]`)
+        : root?.children[root.children.length - 1 - draw.index];
+      if (card) motions.push(animate(card, [
+        { opacity: 0, transform: "translate(70px, -65px) scale(.55) rotate(12deg)" },
+        { opacity: 1, transform: "translate(0, 0) scale(1) rotate(0)" },
+      ], 480, "cubic-bezier(.2,.8,.2,1)"));
+    }
+    const skippedDeckEmpty = options.skipDeckEmptyActors instanceof Set
+      ? options.skipDeckEmptyActors
+      : new Set(asCards(options.skipDeckEmptyActors));
+    const cues = deckEmptyTransitions(previous, next)
+      .filter((side) => !skippedDeckEmpty.has(side))
+      .map((side) => effectAnimator.playDeckCue({
+        type: "DECK_EMPTY",
+        actor: side,
+      }, options));
+    await Promise.all([...motions, ...cues]);
+  }
+
+  async function resolve(previous, next, deaths, options = {}) {
     const changes = damageChanges(previous, next);
     const pulses = changes.map(({ id, amount, kind }) => impact(entityNode(id), amount, kind));
     const oldCharacters = publicCharacters(previous);
@@ -317,30 +377,98 @@ export function createPresentation({ document, window, elements, data, eventText
         { opacity: 1, transform: "translateY(0) scale(1)", filter: "brightness(1)" },
       ], 470, "cubic-bezier(.18,.85,.27,1)"));
     }
-    for (const draw of draws(previous, next)) {
-      const root = elements[draw.side === "self" ? "hand" : "opponent-hand"];
-      const card = draw.side === "self"
-        ? root?.querySelector(`[data-entity-id="${draw.id}"]`)
-        : root?.children[root.children.length - 1 - draw.index];
-      if (card) pulses.push(animate(card, [
-        { opacity: 0, transform: "translate(70px, -65px) scale(.55) rotate(12deg)" },
-        { opacity: 1, transform: "translate(0, 0) scale(1) rotate(0)" },
-      ], 480, "cubic-bezier(.2,.8,.2,1)"));
-    }
     deaths.forEach((node) => pulses.push(animate(node, [
       { opacity: 1, filter: "brightness(1)", transform: "scale(1)" },
       { opacity: .8, filter: "brightness(2) grayscale(.5)", transform: "scale(1.12)", offset: .35 },
       { opacity: 0, filter: "brightness(.4) grayscale(1)", transform: "scale(.4) rotate(12deg)" },
-    ], 580).finally(() => remove(node))));
-    pulses.push(reflow);
-    await Promise.all(pulses);
+      ], 580).finally(() => remove(node))));
+    await Promise.all([
+      Promise.all(pulses),
+      animateDraws(previous, next, options),
+    ]);
+  }
+
+  function frameEffects(frame) {
+    return frame && Array.isArray(frame.effects) ? frame.effects : null;
+  }
+
+  function eventOf(entry) {
+    if (!entry || typeof entry !== "object") return null;
+    return entry.event && typeof entry.event === "object" ? entry.event : entry;
+  }
+
+  function effectType(entry) {
+    const event = eventOf(entry);
+    return event && data.safeText(event.type, "").toUpperCase();
+  }
+
+  function sameEntity(left, right) {
+    const leftId = data.entityId(left);
+    const rightId = data.entityId(right);
+    return leftId !== null && rightId !== null && leftId === rightId;
+  }
+
+  function damageTelemetryProvidesFlight(event, frame) {
+    if (data.safeText(event?.type, "").toUpperCase() !== "USE_HERO_POWER") return false;
+    const entries = frameEffects(frame);
+    if (!entries) return false;
+    return entries.some((entry) => {
+      if (effectType(entry) !== "DAMAGE") return false;
+      const damage = eventOf(entry);
+      if (!sameEntity(event.source_entity_id, damage.source_entity_id) ||
+          !sameEntity(event.target_entity_id, damage.target_entity_id)) return false;
+      // The effect callback must be able to resolve both endpoints.  This
+      // keeps the intent flight for a public opponent power whose power card
+      // is not rendered in the opponent hero row.
+      return Boolean(entityNode(damage.source_entity_id) && entityNode(damage.target_entity_id));
+    });
+  }
+
+  function isEffectBatch(left, right, type) {
+    if (effectType(left) !== type || effectType(right) !== type) return false;
+    const leftEvent = eventOf(left);
+    const rightEvent = eventOf(right);
+    const leftBatch = data.safeText(leftEvent && leftEvent.batch_id, "");
+    const rightBatch = data.safeText(rightEvent && rightEvent.batch_id, "");
+    return Boolean(leftBatch) && leftBatch === rightBatch;
+  }
+
+  function addAnchors(target, captured) {
+    if (!captured) return;
+    captured.forEach((node, id) => {
+      if (target.has(id)) {
+        // Prefer a fresh clone while the entity is still on the board: it
+        // carries the latest health/armor and exact position.  Keep the old
+        // anchor only when captureAnchors could not see the entity at all.
+        effectAnimator.releaseAnchors(new Map([[id, target.get(id)]]));
+      }
+      target.set(id, node);
+    });
+  }
+
+  function commitEffectObservation(applySnapshot, frame, observation, events, sessionId) {
+    if (!observation) return;
+    applySnapshot.commit({
+      session_id: sessionId || frame.session_id,
+      revision: frame.revision,
+      observation,
+      legal_actions: [],
+      outcome: null,
+      events,
+    });
   }
 
   /** Reconcile one presentation frame, then the authoritative final snapshot. */
   async function play(steps, finalSnapshot, applySnapshot, isCurrent, options = {}) {
     const initial = finalSnapshot && finalSnapshot.session_id;
+    const playGeneration = presentationGeneration;
+    const live = () => playGeneration === presentationGeneration && isCurrent();
+    const deadline = window.performance.now() + Math.max(0, options.maxPlaybackMs ?? 20000);
+    let fastForwarded = false;
+    framePlayback:
     for (const [index, frame] of steps.entries()) {
-      if (!isCurrent() || !frame || !frame.observation || initial !== finalSnapshot.session_id) return;
+      if (!live() || !frame || !frame.observation || initial !== finalSnapshot.session_id) return;
+      if (window.performance.now() >= deadline) { fastForwarded = true; break; }
       const prior = applySnapshot.current();
       if (!prior || prior.session_id !== initial || frame.revision <= prior.revision) continue;
       const event = frame.event;
@@ -348,30 +476,167 @@ export function createPresentation({ document, window, elements, data, eventText
         const notice = elements.notice;
         if (notice) { notice.textContent = eventText(event); notice.hidden = false; }
       }
-      if (!(index === 0 && options.skipFirstIntent && event?.actor === "self" && event.type === "PLAY_CARD")) {
-        await playIntent(event, frame);
-      }
-      if (!isCurrent()) return;
-      const priorObservation = prior.observation || {};
-      const deaths = collectDeaths(priorObservation, frame.observation);
-      const before = boardPositions();
+      const skipIntent = index === 0 && options.skipFirstIntent && event?.actor === "self" && event.type === "PLAY_CARD";
+      if (!skipIntent) await playIntent(event, frame);
+      if (!live()) return;
+
       const events = [...(prior.events || []), ...(event ? [event] : [])];
-      const transient = {
-        session_id: initial, revision: frame.revision, observation: frame.observation,
-        legal_actions: [], outcome: null, events,
-      };
-      applySnapshot.commit(transient);
-      await resolve(priorObservation, frame.observation, deaths, animateBoardReflow(before));
+      const effects = frameEffects(frame);
+      if (!effects) {
+        const before = boardPositions();
+        const deaths = collectDeaths(prior.observation || {}, frame.observation);
+        commitEffectObservation(applySnapshot, frame, frame.observation, events, initial);
+        await Promise.all([
+          resolve(prior.observation || {}, frame.observation, deaths, { isCurrent: live }),
+          animateBoardReflow(before),
+        ]);
+        continue;
+      }
+
+      const anchors = new Map();
+      let currentObservation = prior.observation || {};
+      let effectIndex = 0;
+      try {
+        while (effectIndex < effects.length) {
+          if (!live()) return;
+          if (window.performance.now() >= deadline) {
+            fastForwarded = true;
+            break framePlayback;
+          }
+          const firstEntry = effects[effectIndex];
+          const type = effectType(firstEntry);
+          let group = [firstEntry];
+          if (type === "DAMAGE" && data.safeText(eventOf(firstEntry)?.batch_id, "")) {
+            while (effectIndex + group.length < effects.length &&
+                isEffectBatch(firstEntry, effects[effectIndex + group.length], "DAMAGE")) {
+              group.push(effects[effectIndex + group.length]);
+            }
+          } else if (type === "DEATH") {
+            while (effectIndex + group.length < effects.length &&
+                isEffectBatch(firstEntry, effects[effectIndex + group.length], "DEATH")) {
+              group.push(effects[effectIndex + group.length]);
+            }
+          }
+
+          const captured = effectAnimator.captureAnchors(group);
+          addAnchors(anchors, captured);
+          const lastEntry = group[group.length - 1];
+          const lastObservation = lastEntry && lastEntry.observation ? lastEntry.observation : frame.observation;
+          const context = {
+            anchors,
+            observation: lastObservation,
+            previousObservation: currentObservation,
+            preserveAnchors: true,
+            isCurrent: live,
+          };
+          const drawOptions = {
+            isCurrent: live,
+            skipDeckEmptyActors: type === "DECK_DESTROY"
+              ? new Set([data.safeText(eventOf(firstEntry)?.actor, "self")])
+              : undefined,
+          };
+
+          // A damage/death group is shown against the board that caused it;
+          // its callback snapshot is committed only after the visual cue.
+          if (type === "DAMAGE" || type === "DEATH" || type === "DESTROY" || type === "HEAL" || type === "ARMOR") {
+            if (!await effectAnimator.play(group, context) || !live()) return;
+            const beforeCommit = boardPositions();
+            commitEffectObservation(applySnapshot, frame, lastObservation, events, initial);
+            await Promise.all([
+              animateBoardReflow(beforeCommit),
+              animateDraws(currentObservation, lastObservation, drawOptions),
+            ]);
+          } else {
+            // Triggers and summons need their callback snapshot first so a
+            // newly played/source card is available for the pulse or entrance.
+            const beforeCommit = boardPositions();
+            commitEffectObservation(applySnapshot, frame, lastObservation, events, initial);
+            const reflow = animateBoardReflow(beforeCommit);
+            const drawsPlayback = animateDraws(currentObservation, lastObservation, drawOptions);
+            if (type === "FATIGUE") {
+              await Promise.all([reflow, drawsPlayback]);
+              if (!live() || !await effectAnimator.play(group, context) || !live()) return;
+            } else {
+              const [played] = await Promise.all([
+                effectAnimator.play(group, context),
+                reflow,
+                drawsPlayback,
+              ]);
+              if (!played || !live()) return;
+            }
+          }
+          currentObservation = lastObservation || currentObservation;
+          effectIndex += group.length;
+        }
+        if (!live()) return;
+        if (!effects.length) {
+          const beforeCommit = boardPositions();
+          commitEffectObservation(applySnapshot, frame, frame.observation, events, initial);
+          await Promise.all([
+            animateBoardReflow(beforeCommit),
+            animateDraws(currentObservation, frame.observation, { isCurrent: live }),
+          ]);
+        } else if (currentObservation !== frame.observation) {
+          const remainingDeaths = frame.effects_truncated
+            ? collectDeaths(currentObservation, frame.observation) : [];
+          const beforeCommit = boardPositions();
+          commitEffectObservation(applySnapshot, frame, frame.observation, events, initial);
+          if (frame.effects_truncated) {
+            await Promise.all([
+              animateBoardReflow(beforeCommit),
+              resolve(currentObservation, frame.observation, remainingDeaths, { isCurrent: live }),
+            ]);
+          } else {
+            await Promise.all([
+              animateBoardReflow(beforeCommit),
+              animateDraws(currentObservation, frame.observation, { isCurrent: live }),
+            ]);
+          }
+          currentObservation = frame.observation;
+        }
+      } finally {
+        effectAnimator.releaseAnchors(anchors);
+      }
     }
-    if (isCurrent()) {
+    if (live()) {
+      const beforeFinal = applySnapshot.current();
+      if (beforeFinal && beforeFinal.session_id === initial && finalSnapshot.observation) {
+        const finalBeforePositions = boardPositions();
+        const skippedDeaths = fastForwarded
+          ? collectDeaths(beforeFinal.observation || {}, finalSnapshot.observation) : [];
+        // Reconcile hand changes after the final callback. A fast-forward
+        // also presents the remaining board delta before restoring input.
+        commitEffectObservation(applySnapshot, {
+          revision: finalSnapshot.revision,
+        }, finalSnapshot.observation, finalSnapshot.events || beforeFinal.events || [], initial);
+        const finalReflow = animateBoardReflow(finalBeforePositions);
+        if (fastForwarded) {
+          await Promise.all([
+            finalReflow,
+            resolve(beforeFinal.observation || {}, finalSnapshot.observation, skippedDeaths, { isCurrent: live }),
+          ]);
+        } else {
+          await Promise.all([
+            finalReflow,
+            animateDraws(beforeFinal.observation || {}, finalSnapshot.observation, { isCurrent: live }),
+          ]);
+        }
+      }
+      if (!live()) return;
       if (typeof options.beforeFinal === "function") options.beforeFinal();
       applySnapshot.commit(finalSnapshot, true);
+      if (fastForwarded && elements.notice) {
+        elements.notice.textContent = eventText({ type: "PRESENTATION_FAST_FORWARD" });
+        elements.notice.hidden = false;
+      }
     }
   }
 
   function cancel() {
+    presentationGeneration += 1;
     for (const animation of active) animation.cancel();
     active.clear();
+    effectAnimator.cancel();
     document.querySelectorAll(".presentation-ghost, .presentation-bolt, .presentation-number, .presentation-turn")
       .forEach(remove);
   }

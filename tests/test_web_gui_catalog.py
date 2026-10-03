@@ -148,6 +148,7 @@ def test_catalog_is_lazy_and_returns_json_safe_localized_dto(
         "rarity": "COMMON",
         "collectible": True,
         "has_python_script": False,
+        "quality_status": None,
     }
     assert json.loads(json.dumps(card, ensure_ascii=False)) == card
     assert calls == [(card_defs, "zhCN")]
@@ -217,7 +218,48 @@ def test_python_script_flag_is_json_safe_and_metadata_only(card_defs: Path):
     card = catalog.get_card("A_CARD")
     assert card is not None
     assert card["has_python_script"] is False
+    assert card["quality_status"] is None
     assert json.loads(json.dumps(card))["has_python_script"] is False
+
+
+def test_real_quality_status_is_present_in_list_and_detail():
+    catalog = CardCatalog()
+
+    listed = catalog.list_cards(query="EX1_560", page_size=10)
+    yellow = next(item for item in listed["items"] if item["id"] == "EX1_560")
+    assert yellow["quality_status"] == "YELLOW"
+    assert catalog.get_card("EX1_560")["quality_status"] == "YELLOW"
+    assert catalog.get_card("BT_035")["quality_status"] == "GREEN"
+
+
+def test_quality_status_reader_accepts_red_and_silently_ignores_unknown_values(
+    card_defs: Path, tmp_path: Path
+):
+    quality_csv = tmp_path / "quality.csv"
+    quality_csv.write_text(
+        "\ufeffcard_id,status\n"
+        "A_CARD,RED\n"
+        "B_MULTI,BLUE\n"
+        "C_TOKEN,\n"
+        "D_SKIN, green\n"
+        "NOT_A_CARD,UNKNOWN\n",
+        encoding="utf-8",
+    )
+
+    catalog = CardCatalog(card_defs, quality_csv_path=quality_csv)
+    cards = catalog.list_cards(scope="all", page_size=100)["items"]
+    by_id = {card["id"]: card for card in cards}
+    assert by_id["A_CARD"]["quality_status"] == "RED"
+    assert by_id["B_MULTI"]["quality_status"] is None
+    assert by_id["C_TOKEN"]["quality_status"] is None
+    assert by_id["D_SKIN"]["quality_status"] is None
+
+
+def test_missing_quality_report_does_not_break_catalog(card_defs: Path, tmp_path: Path):
+    catalog = CardCatalog(
+        card_defs, quality_csv_path=tmp_path / "missing-quality-report.csv"
+    )
+    assert catalog.get_card("A_CARD")["quality_status"] is None
 
 
 def test_real_catalog_separates_heroes_and_reports_script_presence():

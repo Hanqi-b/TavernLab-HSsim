@@ -284,7 +284,10 @@ async function main() {
       if (typeof original === "function") {
         Element.prototype.animate = function (keyframes, options) {
           const className = typeof this.className === "string" ? this.className : this.className?.baseVal || "";
-          window.__presentationAnimations.push({ className, duration: options?.duration || 0 });
+          window.__presentationAnimations.push({ className, duration: options?.duration || 0,
+            effectType: this.dataset?.effectType || null,
+            targetEntityId: Number(this.dataset?.targetEntityId || 0),
+          });
           return original.call(this, keyframes, options);
         };
       }
@@ -478,8 +481,11 @@ async function main() {
     assert(!tradeResult.payload.observation.opponent.board.some((card) => card.entity_id === liveEnemyMinion.entity_id),
       "trading Stonetusk Boar must remove the dead Wisp from the board");
     const deathAnimations = await page.evaluate((count) => window.__presentationAnimations.slice(count)
-      .filter((item) => item.className.includes("presentation-ghost")), animationCountBeforeTrade);
-    assert(deathAnimations.length >= 2, `both deaths should animate as visible ghosts: ${JSON.stringify(deathAnimations)}`);
+      .filter((item) => item.effectType === "DEATH" || item.className.includes("presentation-ghost")), animationCountBeforeTrade);
+    for (const id of [boarOnBoard.entity_id, liveEnemyMinion.entity_id]) {
+      assert(deathAnimations.some(item => item.targetEntityId === id && item.effectType === "DEATH"),
+        `dead entity ${id} must visibly animate before removal: ${JSON.stringify(deathAnimations)}`);
+    }
     assert.equal(await page.locator(".presentation-ghost").count(), 0, "death ghosts should clean up after resolution");
     assert.deepEqual(pageErrors, [], `browser should not report page errors: ${pageErrors.join("\n")}`);
 

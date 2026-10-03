@@ -81,7 +81,28 @@ class BOT_507:
         PlayReq.REQ_FRIENDLY_TARGET: 0,
         PlayReq.REQ_MINION_TARGET: 0,
     }
-    play = Summon(CONTROLLER, ExactCopy(SELF_ADJACENT))
+
+    def play(self):
+        left = self.left_minion
+        right = self.right_minion
+        copier = ExactCopy(SELF)
+        summons = [
+            Summon(
+                CONTROLLER,
+                copier.copy(self, original),
+                position_offset=0,
+            )
+            for original in left
+        ]
+        summons += [
+            Summon(
+                CONTROLLER,
+                copier.copy(self, original),
+                position_offset=1,
+            )
+            for original in right
+        ]
+        yield from summons
 
 
 class BOT_523:

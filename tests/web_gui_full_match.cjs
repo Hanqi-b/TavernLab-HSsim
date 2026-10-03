@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* Real-draft, multi-turn browser acceptance for the Heuristic AI. */
+/* Real-draft, multi-turn browser acceptance for the Radical AI. */
 "use strict";
 
 const assert = require("node:assert/strict");
@@ -130,8 +130,10 @@ async function startMatchFromLobby(page, { locale, nickname }) {
     await enterLobby.click();
   }
   await page.locator("#lobby-setup").waitFor({ state: "visible", timeout: 60000 });
-  assert.equal(await page.locator("#opponent-heuristic-title").innerText(), locale === "enUS" ? "Default AI" : "默认AI");
-  assert.equal(await page.locator("input[name=opponent]").count(), 0, "the lobby must not offer a policy selector");
+  const opponentSelect = page.locator("#opponent-select");
+  assert.equal(await opponentSelect.count(), 1, "the lobby must offer an opponent policy selector");
+  assert.equal(await opponentSelect.inputValue(), "radical");
+  assert.equal(await opponentSelect.locator("option").count(), 2);
 
   const requestPromise = page.waitForRequest((request) =>
     request.method() === "POST" && new URL(request.url()).pathname === "/api/start", { timeout: 60000 });
@@ -140,9 +142,9 @@ async function startMatchFromLobby(page, { locale, nickname }) {
   await page.locator("#start-match-button").click();
   const [request, response] = await Promise.all([requestPromise, responsePromise]);
   const requestBody = request.postDataJSON();
-  assert.deepEqual(requestBody, { nickname, locale }, "lobby controls must use the fixed Heuristic opponent");
+  assert.deepEqual(requestBody, { nickname, locale, opponent: "radical" }, "lobby controls must send the selected opponent");
   const state = await response.json();
-  assert.equal(response.status(), 200, `heuristic/${locale}: start failed: ${JSON.stringify(state)}`);
+  assert.equal(response.status(), 200, `radical/${locale}: start failed: ${JSON.stringify(state)}`);
   assert.equal(state.mode, "match");
   assert.equal(state.locale, locale, "server must lock the selected language for the match");
   assert.equal(state.nickname, nickname);
@@ -155,7 +157,7 @@ async function startMatchFromLobby(page, { locale, nickname }) {
   assert.equal(await page.locator("html").getAttribute("lang"), locale === "enUS" ? "en" : "zh-CN");
   assert.equal(await page.locator("#hand-title").innerText(), locale === "enUS" ? "Your hand" : "你的手牌");
   assert.equal(await page.locator("#decision-title").innerText(), locale === "enUS" ? "Your actions" : "你的操作");
-  await assertOpponentHidden(page, state, `heuristic/${locale} initial snapshot`);
+  await assertOpponentHidden(page, state, `radical/${locale} initial snapshot`);
   return state;
 }
 
@@ -231,18 +233,27 @@ async function playMatch(page, { locale, nickname, screenshot }) {
   let steps = 0;
   for (; steps < 500 && !state.outcome; steps += 1) {
     phases.add(state.observation.phase);
-    await assertOpponentHidden(page, state, `heuristic/${locale} step ${steps}`);
+    await assertOpponentHidden(page, state, `radical/${locale} step ${steps}`);
     const action = chooseAction(state);
     lastAction = action;
     types.add(action.type);
     const actionKey = await page.evaluate((value) => window.FireplaceActionModel.actionKey(value), action);
     const responsePromise = page.waitForResponse((response) =>
       response.request().method() === "POST" && new URL(response.url()).pathname === "/api/action", { timeout: 60000 });
-    routes[await clickAction(page, action, actionKey)] += 1;
-    const response = await responsePromise;
+    let response;
+    try {
+      const [result, route] = await Promise.all([responsePromise, clickAction(page, action, actionKey)]);
+      response = result;
+      routes[route] += 1;
+    } catch (error) {
+      await page.screenshot({ path: path.join(artifacts, "web-gui-action-failure.png"), fullPage: true });
+      const current = await page.evaluate(async () => (await fetch("/api/state", { cache: "no-store" })).json());
+      console.error(JSON.stringify({ locale, steps, action, revision: state.revision, current }, null, 2));
+      throw error;
+    }
     const next = await response.json();
-    assert.equal(response.status(), 200, `heuristic/${locale}: action rejected at step ${steps}: ${JSON.stringify(next)}`);
-    assert(next.revision > state.revision, `heuristic/${locale}: revision did not advance`);
+    assert.equal(response.status(), 200, `radical/${locale}: action rejected at step ${steps}: ${JSON.stringify(next)}`);
+    assert(next.revision > state.revision, `radical/${locale}: revision did not advance`);
     await page.waitForFunction((revision) => {
       const match = document.querySelector('[data-testid="revision"]')?.textContent.match(/(\d+)/);
       return match && Number(match[1]) >= revision && window.fireplaceWebGui &&
@@ -250,17 +261,17 @@ async function playMatch(page, { locale, nickname, screenshot }) {
     }, next.revision, { timeout: 60000 });
     state = next;
   }
-  assert(state.outcome, `heuristic/${locale}: no terminal result after ${steps} GUI decisions`);
+  assert(state.outcome, `radical/${locale}: no terminal result after ${steps} GUI decisions`);
   assert.equal(state.observation.phase, "GAME_OVER");
   assert(phases.has("MULLIGAN") && phases.has("MAIN"));
-  assert(types.has("END_TURN"), `heuristic/${locale}: no turn ended through GUI`);
-  assert(routes.direct >= 4, `heuristic/${locale}: direct battlefield actions were not exercised across turns`);
-  assert(routes["end-turn"] >= 1, `heuristic/${locale}: dedicated end-turn button was not exercised`);
-  assert(state.events.length > 40, `heuristic/${locale}: expected a multi-turn real match`);
+  assert(types.has("END_TURN"), `radical/${locale}: no turn ended through GUI`);
+  assert(routes.direct >= 4, `radical/${locale}: direct battlefield actions were not exercised across turns`);
+  assert(routes["end-turn"] >= 1, `radical/${locale}: dedicated end-turn button was not exercised`);
+  assert(state.events.length > 40, `radical/${locale}: expected a multi-turn real match`);
   await page.locator('[data-testid="game-over"]').waitFor({ state: "visible", timeout: 60000 });
   assert.equal(await page.locator("#game-over-return").innerText(), locale === "enUS" ? "Return to lobby" : "返回开始界面");
   await page.screenshot({ path: path.join(artifacts, screenshot), fullPage: true });
-  const result = { opponent: "heuristic", locale, steps, phases: [...phases], types: [...types], routes, events: state.events.length, outcome: state.outcome };
+  const result = { opponent: "radical", locale, steps, phases: [...phases], types: [...types], routes, events: state.events.length, outcome: state.outcome };
   await returnToLobby(page, state, locale, nickname);
   return { result, staleAction: { session_id: state.session_id, revision: state.revision, action: lastAction } };
 }
@@ -306,13 +317,13 @@ async function playMatch(page, { locale, nickname, screenshot }) {
     }
 
     const first = await playMatch(page, {
-      locale: "zhCN", nickname: "Acceptance Player", screenshot: "web-gui-full-heuristic-zhCN.png",
+      locale: "zhCN", nickname: "Acceptance Player", screenshot: "web-gui-full-radical-zhCN.png",
     });
 
     // Reuse the local server to prove the lobby can switch language and start a
-    // fresh Heuristic session after a completed match.
+    // fresh Radical session after a completed match.
     const second = await playMatch(page, {
-      locale: "enUS", nickname: "Acceptance Player", screenshot: "web-gui-full-heuristic-enUS.png",
+      locale: "enUS", nickname: "Acceptance Player", screenshot: "web-gui-full-radical-enUS.png",
     });
     const surrendered = await exerciseSurrender(page, {
       locale: "zhCN", nickname: "Surrender Fixture Player",

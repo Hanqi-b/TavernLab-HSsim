@@ -24,6 +24,7 @@ _STATIC_MIME_TYPES = {
     "arena.html": "text/html; charset=utf-8",
     "collection.html": "text/html; charset=utf-8",
     "account.html": "text/html; charset=utf-8",
+    "history.html": "text/html; charset=utf-8",
     "app.js": "text/javascript; charset=utf-8",
     "catalog_app.js": "text/javascript; charset=utf-8",
     "card_face.js": "text/javascript; charset=utf-8",
@@ -31,6 +32,7 @@ _STATIC_MIME_TYPES = {
     "collection_app.js": "text/javascript; charset=utf-8",
     "account_app.js": "text/javascript; charset=utf-8",
     "account_session.js": "text/javascript; charset=utf-8",
+    "history_app.js": "text/javascript; charset=utf-8",
     "action_model.js": "text/javascript; charset=utf-8",
     "i18n.js": "text/javascript; charset=utf-8",
     "status_view.js": "text/javascript; charset=utf-8",
@@ -51,12 +53,14 @@ _STATIC_MIME_TYPES = {
     "style-collection.css": "text/css; charset=utf-8",
     "style-card-face.css": "text/css; charset=utf-8",
     "style-account.css": "text/css; charset=utf-8",
+    "style-history.css": "text/css; charset=utf-8",
     "style-base.css": "text/css; charset=utf-8",
     "style-board.css": "text/css; charset=utf-8",
     "style-cards.css": "text/css; charset=utf-8",
     "style-hand.css": "text/css; charset=utf-8",
     "style-presentation.css": "text/css; charset=utf-8",
     "gui_presentation.js": "text/javascript; charset=utf-8",
+    "gui_effects.js": "text/javascript; charset=utf-8",
     "gui_hand_drag.js": "text/javascript; charset=utf-8",
     "style-decision.css": "text/css; charset=utf-8",
     "style-support.css": "text/css; charset=utf-8",
@@ -195,6 +199,9 @@ class _RequestHandler(BaseHTTPRequestHandler):
         except (OSError, sqlite3.Error):
             self._send_json(int(HTTPStatus.SERVICE_UNAVAILABLE), {"error": "account storage is unavailable"})
             return False
+        except ValueError as exc:
+            self._send_json(int(HTTPStatus.CONFLICT), {"error": str(exc)})
+            return False
         if account is None:
             self._send_json(int(HTTPStatus.UNAUTHORIZED), {"error": "login required"})
             return False
@@ -204,6 +211,12 @@ class _RequestHandler(BaseHTTPRequestHandler):
             self._leased_account_id = account_id
         except (OSError, sqlite3.Error):
             self._send_json(int(HTTPStatus.SERVICE_UNAVAILABLE), {"error": "account storage is unavailable"})
+            return False
+        except ValueError as exc:
+            # AccountGameRegistry acquires the account archive/Arena owner
+            # lock here.  A second process serving the same account is a
+            # client-visible conflict, rather than a dropped connection.
+            self._send_json(int(HTTPStatus.CONFLICT), {"error": str(exc)})
             return False
         return True
 
@@ -354,8 +367,62 @@ class _RequestHandler(BaseHTTPRequestHandler):
         if path == "/api/account/session" and self.account_games is not None:
             self._account_session()
             return
-        if (path in {"/api/state", "/api/decks", "/api/arena/state"} or path.startswith("/assets/")) and not self._require_account():
+        if (
+            path in {
+                "/api/state",
+                "/api/decks",
+                "/api/arena/state",
+                "/api/matches",
+                "/api/matches/detail",
+                "/api/matches/download",
+            }
+            or path.startswith("/assets/")
+        ) and not self._require_account():
             return
+        if path == "/api/matches":
+            try:
+                query = self._query({"offset", "limit"})
+                offset = int(query.get("offset", "0"))
+                limit = int(query.get("limit", "50"))
+                state = self.web_game.matches_list(offset=offset, limit=limit)
+            except WebLifecycleError as exc:
+                response = dict(exc.snapshot)
+                response["error"] = str(exc)
+                self._send_json(exc.status_code, response)
+                return
+            except (ValueError, TypeError) as exc:
+                self._send_json(int(HTTPStatus.BAD_REQUEST), {"error": str(exc)})
+                return
+            self._send_json(int(HTTPStatus.OK), state)
+            return
+        if path in {"/api/matches/detail", "/api/matches/download"}:
+            try:
+                query = self._query({"game_id"})
+                game_id = query.get("game_id")
+                if not game_id:
+                    raise ValueError("game_id is required")
+                if path.endswith("/detail"):
+                    payload = self.web_game.match_detail(game_id)
+                    self._send_json(int(HTTPStatus.OK), payload)
+                    return
+                _game_id, log = self.web_game.match_download(game_id)
+                self._send_bytes(
+                    int(HTTPStatus.OK),
+                    _json_bytes(log),
+                    "application/json; charset=utf-8",
+                    headers={
+                        "Content-Disposition": 'attachment; filename="match-%s.json"' % _game_id
+                    },
+                )
+                return
+            except WebLifecycleError as exc:
+                response = dict(exc.snapshot)
+                response["error"] = str(exc)
+                self._send_json(exc.status_code, response)
+                return
+            except (ValueError, TypeError) as exc:
+                self._send_json(int(HTTPStatus.BAD_REQUEST), {"error": str(exc)})
+                return
         if path == "/api/arena/state":
             handler = getattr(self.web_game, "arena_state", None)
             if handler is None:
@@ -426,6 +493,9 @@ class _RequestHandler(BaseHTTPRequestHandler):
             return
         if path == "/account":
             self._serve_static("account.html")
+            return
+        if path == "/history":
+            self._serve_static("history.html")
             return
         if path.startswith("/") and path.count("/") == 1:
             name = unquote(path[1:])
@@ -586,13 +656,18 @@ class _RequestHandler(BaseHTTPRequestHandler):
             "/api/arena/hero": "arena_choose_hero",
             "/api/arena/pick": "arena_choose_card",
             "/api/arena/battle": "arena_start_battle",
+            "/api/arena/retire": "arena_retire",
             "/api/arena/reset": "arena_reset",
+        }
+        match_routes = {
+            "/api/matches/resume": "resume_match",
+            "/api/matches/abandon": "abandon_match",
         }
         deck_routes = {
             "/api/decks/save": "decks_save",
             "/api/decks/delete": "decks_delete",
         }
-        if path not in {"/api/action", "/api/concede", "/api/start", "/api/return"} | set(arena_routes) | set(deck_routes) | account_routes:
+        if path not in {"/api/action", "/api/concede", "/api/start", "/api/return"} | set(arena_routes) | set(deck_routes) | set(match_routes) | account_routes:
             self._not_found()
             return
         if not self._check_origin():
@@ -603,6 +678,9 @@ class _RequestHandler(BaseHTTPRequestHandler):
             self._not_found()
             return
         if path in deck_routes and not hasattr(self.web_game, deck_routes[path]):
+            self._not_found()
+            return
+        if path in match_routes and not hasattr(self.web_game, match_routes[path]):
             self._not_found()
             return
         if path == "/api/concede" and not hasattr(self.web_game, "concede"):
@@ -625,6 +703,8 @@ class _RequestHandler(BaseHTTPRequestHandler):
                 response = getattr(self.web_game, arena_routes[path])(payload)
             elif path in deck_routes:
                 response = getattr(self.web_game, deck_routes[path])(payload)
+            elif path in match_routes:
+                response = getattr(self.web_game, match_routes[path])(payload)
             else:
                 response = self.web_game.return_to_lobby(payload)
         except (WebActionError, WebLifecycleError) as exc:
@@ -644,7 +724,7 @@ def make_server(
     port: int = 8000,
     *,
     seed: int | None = None,
-    opponent: str = "heuristic",
+    opponent: str = "radical",
     catalog: CardCatalog | None = None,
     catalog_assets: AssetService | None = None,
 ) -> WebGameHTTPServer:
@@ -670,7 +750,7 @@ def serve(
     port: int = 8000,
     *,
     seed: int | None = None,
-    opponent: str = "heuristic",
+    opponent: str = "radical",
 ) -> None:
     """Run a server until interrupted, closing its listening socket."""
 

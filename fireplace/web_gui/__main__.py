@@ -18,7 +18,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     # Game construction is delayed until an authenticated user starts a match.
-    # The local web opponent is always the heuristic policy.
+    # Regular battles choose Radical or MCTS; Arena always uses MCTS.
     # Account sessions and each account's Arena/deck/match manager are
     # created lazily by the server.  Keep loopback binding until a separate
     # TLS-enabled LAN deployment path is added.

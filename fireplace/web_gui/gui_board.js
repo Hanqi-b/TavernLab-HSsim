@@ -25,7 +25,8 @@ export function createBoard(deps) {
     dom.setText(elements["mana-value"], manaText(self));
     dom.setText(elements["opponent-mana-value"], manaText(opponent));
     dom.setText(elements["opponent-hand-count"], locale.tr("cardsInHand", { value: data.safeNumber(opponent.hand_count, 0) }));
-    dom.setText(elements["deck-count"], locale.tr("deck", { value: data.safeNumber(self.deck_count, 0) }));
+    renderDeckCount(elements["deck-count"], self.deck_count, "yourDeckCount");
+    renderDeckCount(elements["opponent-deck-count"], opponent.deck_count, "opponentDeckCount");
     dom.setText(elements["self-board-count"], boardCountText(self.board));
     dom.setText(elements["opponent-board-count"], boardCountText(opponent.board));
     dom.setText(elements["action-count"], locale.tr("actions", { value: actionIndex.actions.length }));
@@ -62,6 +63,12 @@ export function createBoard(deps) {
   function boardCountText(board) {
     var count = data.asArray(board).length;
     return locale.tr("minions", { value: count });
+  }
+
+  function renderDeckCount(element, value, labelKey) {
+    var count = data.safeNumber(value, 0);
+    dom.setText(element, locale.tr("deck", { value: count }));
+    element.setAttribute("aria-label", locale.tr(labelKey, { value: count }));
   }
 
   function renderHiddenHand(count) {
@@ -176,12 +183,39 @@ export function createBoard(deps) {
       weaponButton.type = "button";
       weaponButton.className = "extra-chip weapon-chip";
       weaponButton.setAttribute("data-testid", own ? "self-weapon" : "opponent-weapon");
+      var attack = data.safeNumber(weapon.atk, 0);
+      var durability = data.safeNumber(weapon.durability, 0);
+      var weaponName = data.cardName(weapon);
+      var attackLabel = String(attack) + " " + locale.tr("attack");
+      var durabilityLabel = String(durability) + " " + locale.tr("durability");
+      weaponButton.setAttribute("aria-label", locale.tr("weapon") + ": " + weaponName + " · " + attackLabel + " / " + durabilityLabel);
       weaponButton.appendChild(cards.createCardArt(weapon, "tile"));
-      var weaponText = document.createElement("span");
-      weaponText.textContent = locale.tr("weapon") + ": " + data.cardName(weapon) + " · " +
-        String(data.safeNumber(weapon.atk, 0)) + " " + locale.tr("attack") + " / " +
-        String(data.safeNumber(weapon.durability, 0)) + " " + locale.tr("durability");
-      weaponButton.appendChild(weaponText);
+      var weaponCopy = document.createElement("span");
+      weaponCopy.className = "weapon-copy";
+      var weaponNameNode = document.createElement("span");
+      weaponNameNode.className = "weapon-name";
+      weaponNameNode.setAttribute("data-testid", "weapon-name");
+      weaponNameNode.textContent = locale.tr("weapon") + ": " + weaponName;
+      weaponCopy.appendChild(weaponNameNode);
+      var weaponStats = document.createElement("span");
+      weaponStats.className = "weapon-stats";
+      weaponStats.setAttribute("data-testid", "weapon-stats");
+      weaponStats.setAttribute("aria-label", attackLabel + " / " + durabilityLabel);
+      var attackNode = document.createElement("span");
+      attackNode.className = "weapon-stat weapon-attack";
+      attackNode.textContent = attackLabel;
+      weaponStats.appendChild(attackNode);
+      var separator = document.createElement("span");
+      separator.className = "weapon-stat-separator";
+      separator.setAttribute("aria-hidden", "true");
+      separator.textContent = "/";
+      weaponStats.appendChild(separator);
+      var durabilityNode = document.createElement("span");
+      durabilityNode.className = "weapon-stat weapon-durability";
+      durabilityNode.textContent = durabilityLabel;
+      weaponStats.appendChild(durabilityNode);
+      weaponCopy.appendChild(weaponStats);
+      weaponButton.appendChild(weaponCopy);
       weaponButton.addEventListener("click", function () { onOpenCard(weapon); });
       container.appendChild(weaponButton);
     }

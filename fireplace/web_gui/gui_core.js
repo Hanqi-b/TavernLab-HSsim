@@ -3,18 +3,18 @@ import { announceAccountChange, watchAccountSession } from "./account_session.js
 const ELEMENT_IDS = [
   "app-shell", "lobby-screen", "lobby-form", "lobby-title", "lobby-subtitle",
   "nickname-input", "nickname-label", "nickname-hint", "language-label",
-  "locale-zhCN", "locale-enUS", "opponent-label", "opponent-heuristic-option",
-  "opponent-heuristic-title", "opponent-heuristic-description", "opponent-fixed",
+  "locale-zhCN", "locale-enUS", "opponent-label", "opponent-select", "opponent-hint",
   "start-match-button", "lobby-status", "lobby-footer", "lobby-login-actions",
   "lobby-account-toolbar", "lobby-account-label", "lobby-account-import", "lobby-account-logout",
   "enter-lobby-button", "lobby-setup", "lobby-mode-navigation", "battle-entry",
   "battle-entry-title", "battle-entry-description", "arena-entry", "arena-entry-title",
   "arena-entry-description", "collection-entry", "collection-entry-title",
-  "collection-entry-description", "deck-choice-field", "deck-label", "deck-select", "deck-hint",
+  "collection-entry-description", "history-entry", "history-entry-title", "history-entry-description",
+  "deck-choice-field", "deck-label", "deck-select", "deck-hint",
   "game", "table", "page-title", "brand-caption",
   "match-account-toolbar", "match-account-label", "match-account-import", "match-account-logout",
   "opponent-title", "self-title", "phase-value", "turn-value", "active-seat-value",
-  "revision-value", "notice", "opponent-hand-count", "opponent-mana-value", "opponent-hand",
+  "revision-value", "notice", "opponent-hand-count", "opponent-deck-count", "opponent-mana-value", "opponent-hand",
   "opponent-hero-status", "opponent-hero-row", "opponent-extras", "opponent-board-count",
   "opponent-board", "self-hero-row", "self-hero-status", "self-extras", "self-board-count",
   "self-board", "hand-title", "decision-title", "log-title", "hero-power-row", "mana-value",
@@ -49,6 +49,8 @@ export function createLobby({
   let legacyAvailable = false;
   let surrenderReturnFocus = null;
   const preferredDeckId = requestedDeckId();
+  const opponentStorageKey = "fireplace.opponent";
+  const opponentIds = new Set(["radical", "mcts"]);
 
   async function init() {
     if (!(await ensureAccount())) return;
@@ -107,7 +109,9 @@ export function createLobby({
     setLobbyFormValues();
     bindModeNavigation();
     bindDeckSelection();
+    bindOpponentSelection();
     renderDeckOptions();
+    syncOpponentSelection();
     loadDeckOptions();
     onLoadState(false);
     pollTimer = window.setInterval(onPollState, 2500);
@@ -269,6 +273,44 @@ export function createLobby({
     });
   }
 
+  function validOpponent(value) {
+    const candidate = String(value || "").trim();
+    return opponentIds.has(candidate) ? candidate : "radical";
+  }
+
+  function opponentSelectionPreference() {
+    const select = elements["opponent-select"];
+    if (select && select.value && select.dataset.userSelected === "true") {
+      return validOpponent(select.value);
+    }
+    return validOpponent(locale.readStored(opponentStorageKey, "radical"));
+  }
+
+  function syncOpponentSelection() {
+    const select = elements["opponent-select"];
+    if (!select) return;
+    const selected = opponentSelectionPreference();
+    select.value = selected;
+    ["radical", "mcts"].forEach((kind) => {
+      const option = select.querySelector(`option[value="${kind}"]`);
+      if (option) dom.setText(option, locale.tr(`lobby.${kind}`));
+    });
+    dom.setText(elements["opponent-hint"], locale.tr(`lobby.${selected}Description`));
+    select.setAttribute("aria-label", locale.tr("lobby.opponent"));
+  }
+
+  function bindOpponentSelection() {
+    const select = elements["opponent-select"];
+    if (!select) return;
+    select.addEventListener("change", () => {
+      const selected = validOpponent(select.value);
+      select.value = selected;
+      select.dataset.userSelected = "true";
+      locale.writeStored(opponentStorageKey, selected);
+      syncOpponentSelection();
+    });
+  }
+
   function deckSelectionPreference() {
     const select = elements["deck-select"];
     if (select && select.dataset.userSelected === "true") return select.value || "";
@@ -412,12 +454,15 @@ export function createLobby({
     dom.setText(elements["arena-entry-description"], locale.tr("lobby.arenaDescription"));
     dom.setText(elements["collection-entry-title"], locale.tr("lobby.collection"));
     dom.setText(elements["collection-entry-description"], locale.tr("lobby.collectionDescription"));
+    dom.setText(elements["history-entry-title"], locale.tr("lobby.history"));
+    dom.setText(elements["history-entry-description"], locale.tr("lobby.historyDescription"));
     renderAccountControls();
     if (elements["lobby-mode-navigation"]) {
       elements["lobby-mode-navigation"].setAttribute("aria-label", locale.tr("lobby.modesAria"));
     }
     dom.setText(elements["deck-label"], locale.tr("lobby.deckLabel"));
     if (elements["deck-select"]) elements["deck-select"].setAttribute("aria-label", locale.tr("lobby.deckLabel"));
+    syncOpponentSelection();
     setSelectorText(".opponent-panel .board-heading h3", locale.tr("opponentBoard"));
     setSelectorText(".self-panel .board-heading h3", locale.tr("yourBoard"));
     setSelectorText(".log-section .section-heading .muted", locale.tr("logRecent"));
@@ -462,6 +507,7 @@ export function createLobby({
     const input = elements["nickname-input"];
     if (!input) return;
     input.value = locale.readStored(nicknameStorageKey(), "") || (account ? account.username : "");
+    syncOpponentSelection();
     setLobbyStage(input.value.trim() || preferredDeckId ? "setup" : "login");
     updateLocaleControls();
   }
@@ -506,8 +552,8 @@ export function createLobby({
     const copy = [
       ["lobby-title", "lobby.title"], ["lobby-subtitle", "lobby.subtitle"], ["nickname-label", "lobby.nickname"],
       ["nickname-hint", "lobby.nicknameHint"], ["language-label", "lobby.language"], ["opponent-label", "lobby.opponent"],
-      ["opponent-heuristic-title", "lobby.heuristic"], ["opponent-heuristic-description", "lobby.heuristicDescription"],
-      ["opponent-fixed", "lobby.heuristicFixed"], ["start-match-button", "lobby.start"], ["lobby-footer", "lobby.footer"],
+      ["start-match-button", "lobby.start"], ["lobby-footer", "lobby.footer"],
+      ["history-entry-title", "lobby.history"], ["history-entry-description", "lobby.historyDescription"],
       ["deck-label", "lobby.deckLabel"],
       ["surrender-title", "surrender.title"], ["surrender-description", "surrender.description"],
       ["surrender-continue", "surrender.continue"], ["surrender-confirm", "surrender.confirm"],
@@ -515,6 +561,7 @@ export function createLobby({
     copy.forEach(([id, key]) => dom.setText(elements[id], locale.tr(key)));
     elements["nickname-input"].placeholder = locale.tr("lobby.nicknamePlaceholder");
     renderDeckOptions(deckSelectionPreference());
+    syncOpponentSelection();
     updateLocaleControls();
     setLobbyStage(lobbyStage);
   }
@@ -602,6 +649,12 @@ export function createLobby({
     nickname() {
       const value = elements["nickname-input"] ? elements["nickname-input"].value.trim() : "";
       if (value) locale.writeStored(nicknameStorageKey(), value);
+      return value;
+    },
+    opponent() {
+      const select = elements["opponent-select"];
+      const value = validOpponent(select ? select.value : opponentSelectionPreference());
+      locale.writeStored(opponentStorageKey, value);
       return value;
     },
     get mode() { return currentMode; },

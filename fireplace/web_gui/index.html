@@ -58,6 +58,13 @@
                 <small id="collection-entry-description">查看卡牌并组建自己的牌组。</small>
               </span>
             </a>
+            <a class="lobby-mode-card" id="history-entry" href="/history" data-testid="history-entry">
+              <span class="lobby-mode-icon" aria-hidden="true">▤</span>
+              <span class="lobby-mode-copy">
+                <strong id="history-entry-title">对局存档</strong>
+                <small id="history-entry-description">查看并继续未完成的对战。</small>
+              </span>
+            </a>
           </nav>
           <form class="lobby-form" id="lobby-form">
             <div class="lobby-field">
@@ -83,14 +90,14 @@
                 </select>
                 <p class="field-hint" id="deck-hint">没有完整自建牌组时，也可以使用随机牌组。</p>
               </fieldset>
-              <fieldset class="lobby-fieldset">
+              <fieldset class="lobby-fieldset deck-choice-field">
                 <legend id="opponent-label">对手 AI</legend>
-                <div class="opponent-choice" id="opponent-choice" aria-labelledby="opponent-label">
-                  <div class="opponent-option is-selected" id="opponent-heuristic-option" data-testid="opponent-heuristic" role="status">
-                    <span class="opponent-badge" aria-hidden="true">AI</span>
-                    <span class="option-copy"><strong id="opponent-heuristic-title">默认AI</strong><small id="opponent-heuristic-description">会根据场面选择更有利的行动。</small></span>
-                    <span class="opponent-fixed" id="opponent-fixed">固定对手</span>
-                  </div>
+                <div class="opponent-choice" id="opponent-choice">
+                  <select id="opponent-select" name="opponent" data-testid="opponent-select" aria-labelledby="opponent-label" aria-describedby="opponent-hint">
+                    <option value="radical" data-testid="opponent-radical">激进策略</option>
+                    <option value="mcts" data-testid="opponent-mcts">MCTS策略</option>
+                  </select>
+                  <p class="field-hint" id="opponent-hint">按牌组权重安排出牌，并计算有利的攻击组合。</p>
                 </div>
               </fieldset>
               <button class="lobby-start primary-button" id="start-match-button" type="submit" data-testid="start-match">开始对战</button>
@@ -133,6 +140,7 @@
             <div class="player-resources">
               <div class="mana" id="opponent-mana-value" aria-label="对手法力">— / —</div>
               <div class="hand-count" id="opponent-hand-count" aria-label="对手手牌数量" data-testid="opponent-hand-count">— 张手牌</div>
+              <div class="deck-count" id="opponent-deck-count" aria-label="对手牌库数量" data-testid="opponent-deck-count"></div>
             </div>
           </div>
           <div class="opponent-hand" id="opponent-hand" aria-label="对手手牌（仅显示数量）" data-testid="opponent-hand"></div>
@@ -157,7 +165,10 @@
               <h2 id="self-title">你</h2>
             </div>
           </div>
-          <div class="mana" id="mana-value" aria-label="你的法力" data-testid="mana">— / —</div>
+          <div class="player-resources self-resources">
+            <div class="mana" id="mana-value" aria-label="你的法力" data-testid="mana">— / —</div>
+            <div class="deck-count" id="deck-count" aria-label="你的牌库数量" data-testid="deck-count"></div>
+          </div>
           <div class="hero-status-rack self-hero-status" id="self-hero-status" data-testid="self-hero-status" aria-label="你的英雄上方状态" hidden></div>
           <div class="hero-row" id="self-hero-row" data-testid="self-hero"></div>
           <div class="extras-row" id="self-extras" aria-label="你的武器" hidden></div>
@@ -175,7 +186,6 @@
               <p class="eyebrow">PRIVATE</p>
               <h2 id="hand-title">你的手牌</h2>
             </div>
-            <span class="muted" id="deck-count"></span>
           </div>
           <div class="hand" id="hand" aria-label="你的手牌" data-testid="hand"></div>
         </section>

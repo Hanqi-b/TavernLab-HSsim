@@ -21,7 +21,8 @@ if __package__ in (None, ""):
 from hearthstone.enums import PlayState
 
 from fireplace.action_log import ActionLog
-from fireplace.agents import HeuristicAgent, HumanTUIAgent, UserQuit
+from fireplace.agent_factory import create_agent
+from fireplace.agents import HumanTUIAgent, UserQuit
 from fireplace.controller import GameSession
 from fireplace.game import Game
 from fireplace.match_factory import build_random_game
@@ -29,7 +30,7 @@ from fireplace.player import Player
 
 
 def build_game(
-    seed: int | None = None, opponent_name: str = "Heuristic"
+    seed: int | None = None, opponent_name: str = "Radical"
 ) -> tuple[Game, Player, Player]:
     """Create the terminal match through the shared random game factory."""
 
@@ -59,15 +60,19 @@ def main(argv: list[str] | None = None) -> int:
         help="seed the game RNG used for classes, decks, and game setup",
     )
     parser.add_argument(
+        "--opponent", choices=("radical", "mcts"), default="radical",
+        help="computer policy (default: radical)",
+    )
+    parser.add_argument(
         "--log",
         metavar="PATH",
         help="save accepted player decisions and game metadata as JSON",
     )
     args = parser.parse_args(argv)
 
-    opponent_name = "Heuristic"
+    opponent_name = {"radical": "Radical", "mcts": "MCTS"}[args.opponent]
     game, human, opponent = build_game(args.seed, opponent_name)
-    opponent_agent = HeuristicAgent()
+    opponent_agent = create_agent(args.opponent, seed=args.seed)
     agents = {human: HumanTUIAgent(), opponent: opponent_agent}
     action_log = ActionLog(
         game,

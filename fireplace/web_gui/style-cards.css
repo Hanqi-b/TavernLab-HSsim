@@ -147,17 +147,18 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  width: 16%;
   max-width: 16%;
 }
 
 .opponent-panel .extras-row {
-  top: 19.5%;
-  left: 34%;
+  top: 14%;
+  left: 64%;
 }
 
 .self-panel .extras-row {
-  bottom: 21%;
-  left: 32.5%;
+  bottom: 22.5%;
+  left: 21%;
 }
 
 .extra-chip {
@@ -203,11 +204,46 @@ button.extra-chip {
   position: relative;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  width: 100%;
   min-width: 0;
 }
 
 .weapon-chip .card-art {
   box-shadow: 0 0 0 2px rgb(201 155 83 / 42%), 0 0 15px rgb(201 155 83 / 28%);
+}
+
+.weapon-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.15;
+}
+
+.weapon-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.weapon-stats {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 2px 4px;
+  color: var(--gold-light);
+  font-size: .88em;
+  line-height: 1.1;
+}
+
+.weapon-stat {
+  white-space: nowrap;
+}
+
+.weapon-stat-separator {
+  color: var(--muted);
 }
 
 .hidden-secret {
@@ -686,8 +722,8 @@ html[lang="en"] .board-card.targetable::before {
 .power-row {
   position: absolute;
   z-index: 10;
-  bottom: 18%;
-  left: 76%;
+  bottom: 31%;
+  left: 82%;
   justify-content: center;
   width: 10.5%;
   min-height: 0;
@@ -734,9 +770,10 @@ html[lang="en"] .board-card.targetable::before {
 
 .power-copy {
   position: absolute;
-  bottom: -30px;
-  left: -65%;
-  width: 230%;
+  bottom: calc(100% + 4px);
+  left: 0;
+  width: 100%;
+  pointer-events: none;
   text-align: center;
   text-shadow: 0 2px 3px #000;
 }

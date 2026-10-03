@@ -16,7 +16,7 @@ export function createModal({
     const message = winner
       ? (outcome.human_won === true ? locale.tr("outcomeWon") : locale.tr("outcomeLost"))
       : locale.tr("outcomeDraw");
-    const winnerLabel = outcomeWinnerLabel(winner);
+    const winnerLabel = outcome.human_won === true ? winner : outcomeWinnerLabel(winner);
     const suffix = winnerLabel
       ? (locale.locale === "enUS" ? ` (${winnerLabel})` : `（${winnerLabel}）`)
       : "";
@@ -29,8 +29,9 @@ export function createModal({
 
   function outcomeWinnerLabel(winner) {
     if (!winner) return "";
-    return String(winner).trim().toLowerCase() === "heuristic"
-      ? locale.tr("lobby.heuristic")
+    const policy = String(winner).trim().toLowerCase();
+    return ["heuristic", "radical", "mcts"].includes(policy)
+      ? locale.tr(`lobby.${policy}`)
       : String(winner);
   }
 

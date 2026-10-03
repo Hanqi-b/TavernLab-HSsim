@@ -54,12 +54,12 @@ Card catalog:
 | 功能 | 状态 | 当前范围 |
 | --- | --- | --- |
 | 核心模拟与动作 API | 可用，持续完善 | 基于 Fireplace 的规则与实体；部分卡牌效果尚未完整实现。 |
-| 浏览器对战 | 可用 | 本机单人与默认 AI 对战，可用随机牌组或完整的自建卡组。 |
-| 竞技场 | 可用 | 选卡池、三选一选英雄、30 轮三选一选牌；7 胜或 3 负结束。 |
+| 浏览器对战 | 可用 | 本机单人可选择激进策略或 MCTS，竞技场固定使用 MCTS，可用随机牌组或完整的自建卡组。 |
+| 竞技场 | 可用 | 自选版保留原有规则（7 胜/3 负）；2016 历史版固定卡池，AI 按 Lightforge 评分完成 30 轮三选一（12 胜/3 负）。详见[模式与限制](docs/arena-formats.md)。 |
 | 卡牌目录与收藏 | 可用 | 浏览、搜索、筛选历史卡牌资料，并创建和保存卡组；不是官方账号的卡牌库存。 |
 | 本地账号 | 可用 | 用户名和密码登录；卡组、竞技场进度和活动对局按账号隔离。 |
-| Agent/AI | 部分可用 | 框架含默认策略、随机策略和终端人工 Agent；浏览器目前只提供默认 AI 对手。 |
-| 对局日志与回放 | 命令行可用 | 可记录对局；完整标准对局日志可在匹配的代码和卡牌数据版本下回放。 |
+| Agent/AI | 可用，实验性 | 普通对战可选择激进策略或 MCTS，竞技场固定使用 MCTS；原有 AI 的对局入口已关闭，算法仍保留供内部回退和研究。 |
+| 对局存档与回放 | 可用 | GUI 普通对战和竞技场自动按账号保存；可查看记录、继续未完成对局、下载已结束对局日志。恢复和完整日志回放要求匹配的规则代码及卡牌数据版本。 |
 | 局域网/在线 PvP | 未实现 | 当前服务器只监听本机回环地址。 |
 
 ### 版本与卡牌支持范围
@@ -69,7 +69,7 @@ Card catalog:
 | 卡牌资料 | 基础 <code>CardDefs.xml</code> 保持历史 build **53261**；通灵学园单独叠加首发 **18.0.0.54613** 数据，不更新其他扩展包。目录中有 **2,641** 条可收集记录（不含英雄皮肤）；合并 XML 共 **9,573** 条记录。 |
 | 扩展包 | 基础、经典及多个历史扩展包，扩展至**通灵学园首发版**；通灵学园 **135/135** 张可收集卡已接入效果脚本及行为测试。见[实现与验证说明](docs/scholomance-implementation.md)。 |
 | 卡牌效果 | 目录中的“有 Python 定义”只表示找到了对应或复用的代码定义，**不保证**效果完整、可正常加入对局或与官方规则完全一致；部分卡牌目前是白板。 |
-| 竞技场卡池 | 基础与经典固定加入；另从当前列出的 **15 个大包、5 个小包**中使用 **14–18 点**选择扩展包（大包 3 点、小包 1 点）。当前提供 9 个经典职业英雄。 |
+| 竞技场卡池 | 自选版：基础与经典固定加入；从 **15 个大包、5 个小包**中使用 **14–18 点**选择扩展包（大包 3 点、小包 1 点）。历史版：固定 2016-09-02 九系列 card ID manifest。两个模式均提供 9 个经典职业英雄。 |
 
 旧版 Fireplace README 的卡牌完成度百分比保存在[历史文档](LEGACY_FIREPLACE_README.md)，不代表 TavernLab-HSsim 当前的可玩效果覆盖率。
 
@@ -97,12 +97,22 @@ python -m fireplace.web_gui
 
 下载 [v0.1.0-alpha 完整源码 ZIP](https://github.com/Hanqi-b/TavernLab-HSsim/releases/download/v0.1.0-alpha/TavernLab-HSsim-v0.1.0-alpha-full-source.zip) 时无需 Git LFS；此文件包含完整的 <code>CardDefs.xml</code>。GitHub 自动生成的 Source code ZIP/TAR 可能只有 LFS 指针，请使用上述完整包或通过 Git LFS 克隆。
 
+大厅和竞技场的“对局存档”入口可以查看自动保存的对局。服务重启后，从这里继续未完成对局；已结束对局可下载 JSON 日志。存档位于账号目录的 <code>matches/</code> 中，详见[对局存档说明](docs/game-archives.md)。
+
 终端对战及回放：
 
 ~~~bash
 python examples/human_vs_heuristic.py --seed 7 --log games/match.json
+python examples/human_vs_heuristic.py --opponent radical --seed 7
+python examples/human_vs_heuristic.py --opponent mcts --seed 7
 python examples/replay_log.py games/match.json
 ~~~
+
+### 搜索 AI
+
+激进策略采用费用背包选牌、人工出牌优先级和局部攻击搜索；MCTS 联合搜索出牌、目标、攻击和英雄技能的顺序。两者参考 `xjw580/Hearthstone-Script` 的算法结构，用 Python 接入 Tavern 的规则引擎，普通对战默认使用激进策略，竞技场固定使用 MCTS，原有 AI 的对局入口已关闭。用 `GameSession` 运行搜索 Agent；直接调用普通 `choose_action` 时没有模拟接口，会采用可用的基础策略。
+
+搜索仅处理当前回合，使用独立局面和随机数。未知牌库、敌方手牌和未知奥秘使用占位状态；未知抽牌不能被当成真实卡牌打出。发现等待选择效果会结束模拟分支，由真实控制器处理选择后重新搜索。这些策略仍依赖现有卡牌脚本，不能据此推断对局胜率。见[算法与接口说明](docs/search-agents.md)。
 
 ## English
 
@@ -111,12 +121,12 @@ python examples/replay_log.py games/match.json
 | Feature | Status | Current scope |
 | --- | --- | --- |
 | Simulation core and Action API | Available, evolving | Built on Fireplace rules and entities; some card effects remain incomplete. |
-| Browser battles | Available | Local single-player matches against the default AI, using random or completed custom decks. |
-| Arena | Available | Choose a pool, pick one of three heroes, draft 30 cards from three-card offers, and finish at seven wins or three losses. |
+| Browser battles | Available | Choose Radical or MCTS with random or completed custom decks; Arena always uses MCTS. |
+| Arena | Available | Custom keeps the existing rules (7 wins/3 losses). The 2016 format uses a fixed pool and 30 Lightforge-scored AI picks (12 wins/3 losses). See [formats and limitations](docs/arena-formats.md). |
 | Card catalog and Collection | Available | Browse, search, and filter historical card data; build and save decks. This is not an official account card inventory. |
 | Local accounts | Available | Username/password sign-in; decks, Arena progress, and active matches are separated by account. |
-| Agents/AI | Partly available | The framework has a heuristic policy, random policy, and terminal human agent; the browser currently offers only the default AI opponent. |
-| Game logs and replay | Available in the CLI | Record games and replay complete standard logs with matching code and card-data versions. |
+| Agents/AI | Available, experimental | Regular battles offer Radical or MCTS; Arena always uses MCTS. The heuristic entry is disabled, with its implementation retained for internal fallbacks and research. |
+| Game archives and replay | Available | GUI battles and Arena games save automatically per account. View records, resume unfinished games, and download finished logs. Recovery and replay require matching rules and card-data versions. |
 | LAN/online PvP | Not implemented | The server binds to the local loopback address only. |
 
 ### Version and card scope
@@ -126,7 +136,7 @@ python examples/replay_log.py games/match.json
 | Card data | The base <code>CardDefs.xml</code> remains historical build **53261**. A Scholomance-only overlay supplies launch **18.0.0.54613** data without updating other sets. The catalog has **2,641** collectible records (excluding hero skins); merged XML contains **9,573** entities. |
 | Expansions | Basic, Classic, and historical sets through **Scholomance Academy at launch**. All **135/135** Scholomance collectibles have scripts and behavioral test references. See [implementation and validation](docs/scholomance-implementation.md). |
 | Card effects | A “Python definition” badge means a matching or reused definition was found. It **does not guarantee** a complete effect, normal playability, or exact official behavior. Some cards currently have no scripted effect. |
-| Arena pool | Basic and Classic are always included. The selectable list has **15 large sets and 5 small sets** with a **14–18-point** budget (large: 3; small: 1). Nine classic heroes are available. |
+| Arena pool | Custom includes Basic and Classic plus **15 large sets and 5 small sets** with a **14–18-point** budget (large: 3; small: 1). Historical uses a fixed nine-set card ID manifest dated 2016-09-02. Both offer nine classic heroes. |
 
 The old Fireplace README's completion percentages are preserved in a [historical document](LEGACY_FIREPLACE_README.md). They do not measure TavernLab-HSsim's current playable effect coverage.
 
@@ -154,9 +164,17 @@ Open [http://127.0.0.1:8765/](http://127.0.0.1:8765/) on the same computer. Regi
 
 The [v0.1.0-alpha full-source ZIP](https://github.com/Hanqi-b/TavernLab-HSsim/releases/download/v0.1.0-alpha/TavernLab-HSsim-v0.1.0-alpha-full-source.zip) includes the complete <code>CardDefs.xml</code> and does not require Git LFS. GitHub's automatically generated Source code ZIP/TAR may contain only the LFS pointer; use the full-source asset or clone with Git LFS.
 
+Open “Game archives” from the lobby or Arena to view saved games, continue an unfinished game after restarting the server, or download a finished JSON log. Files are stored in each account's <code>matches/</code> directory.
+
 Terminal play and replay:
 
 ~~~bash
 python examples/human_vs_heuristic.py --seed 7 --log games/match.json
+python examples/human_vs_heuristic.py --opponent radical --seed 7
+python examples/human_vs_heuristic.py --opponent mcts --seed 7
 python examples/replay_log.py games/match.json
 ~~~
+
+The two experimental search policies use copied, information-limited game
+states and bounded searches. See [Search agents](docs/search-agents.md) for
+their algorithms, configuration, and simulation limits.

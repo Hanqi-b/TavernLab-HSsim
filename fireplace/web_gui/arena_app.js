@@ -10,10 +10,41 @@ import { announceAccountChange, watchAccountSession } from "./account_session.js
 
 const MIN_POOL_BUDGET = 14;
 const MAX_POOL_BUDGET = 18;
+const CUSTOM_FORMAT_ID = "custom_v1";
+const HISTORICAL_FORMAT_ID = "wild_2016_09_02";
+const HISTORICAL_SET_IDS = ["BASIC", "EXPERT1", "NAXX", "GVG", "BRM", "TGT", "LOE", "OG", "KARA"];
+const HISTORICAL_SET_LABELS = {
+  BASIC: { zhCN: "基础", enUS: "Basic" },
+  EXPERT1: { zhCN: "经典", enUS: "Classic" },
+  NAXX: { zhCN: "纳克萨玛斯", enUS: "Naxxramas" },
+  GVG: { zhCN: "地精大战侏儒", enUS: "GvG" },
+  BRM: { zhCN: "黑石山的火焰", enUS: "Blackrock Mountain" },
+  TGT: { zhCN: "冠军的试炼", enUS: "The Grand Tournament" },
+  LOE: { zhCN: "探险者协会", enUS: "The League of Explorers" },
+  OG: { zhCN: "上古之神的低语", enUS: "Whispers of the Old Gods" },
+  KARA: { zhCN: "卡拉赞之夜", enUS: "One Night in Karazhan" },
+};
+const ARENA_CLASS_LABELS = {
+  DRUID: { zhCN: "德鲁伊", enUS: "Druid" },
+  HUNTER: { zhCN: "猎人", enUS: "Hunter" },
+  MAGE: { zhCN: "法师", enUS: "Mage" },
+  PALADIN: { zhCN: "圣骑士", enUS: "Paladin" },
+  PRIEST: { zhCN: "牧师", enUS: "Priest" },
+  ROGUE: { zhCN: "盗贼", enUS: "Rogue" },
+  SHAMAN: { zhCN: "萨满祭司", enUS: "Shaman" },
+  WARLOCK: { zhCN: "术士", enUS: "Warlock" },
+  WARRIOR: { zhCN: "战士", enUS: "Warrior" },
+  DEMONHUNTER: { zhCN: "恶魔猎手", enUS: "Demon Hunter" },
+  DEMON_HUNTER: { zhCN: "恶魔猎手", enUS: "Demon Hunter" },
+  DEATHKNIGHT: { zhCN: "死亡骑士", enUS: "Death Knight" },
+  DEATH_KNIGHT: { zhCN: "死亡骑士", enUS: "Death Knight" },
+  NEUTRAL: { zhCN: "中立", enUS: "Neutral" },
+};
 
 const COPY = {
   zhCN: {
     back: "返回开始界面",
+    history: "对局存档",
     title: "竞技场",
     subtitle: "选择卡池，挑选英雄，组建三十张牌组。",
     language: "界面语言",
@@ -28,6 +59,20 @@ const COPY = {
     nickname: "竞技场昵称",
     nicknamePlaceholder: "例如：旅店老板",
     nicknameHint: "昵称只保存在这台设备上。",
+    format: "竞技场格式",
+    formatHint: "开始后本轮竞技场不能更换格式。",
+    customFormat: "自定义卡池（当前）",
+    historicalFormat: "历史狂野卡池 · 2016-09-02",
+    historicalSetupIntro: "固定使用截至 2016-09-02 的历史卡池，不选择扩展包。",
+    historicalPoolTitle: "固定历史卡池",
+    historicalPoolDescription: "Basic、Classic、Naxxramas、GvG、Blackrock Mountain、The Grand Tournament、The League of Explorers、Whispers of the Old Gods 和 One Night in Karazhan。",
+    historicalPoolLabel: "Basic · Classic · Naxxramas · GvG · Blackrock Mountain · The Grand Tournament · The League of Explorers · Whispers of the Old Gods · One Night in Karazhan",
+    historicalOfferApprox: "选牌权重为近似值：本次运行使用重建的历史策略。",
+    historicalCombatLimit: "对战限制：实际对战使用当前 Fireplace 实现。",
+    historicalKnownLimitations: "限制：选牌按历史卡池重建；卡牌效果、发现和随机生成仍使用当前 Fireplace 实现。",
+    recordTarget: "目标：{maxWins} 胜或 {maxLosses} 负",
+    fixedMcts: "MCTS 策略（固定）",
+    fixedMctsDescription: "竞技场对手始终使用 MCTS 搜索策略。",
     basicLocked: "BASIC · 已锁定",
     basicDescription: "基础卡牌始终加入竞技场卡池，不占扩展包预算。",
     classicLocked: "经典 · 已锁定",
@@ -49,6 +94,10 @@ const COPY = {
     draftTitle: "选择一张卡牌",
     draftIntro: "每轮从三张牌中选择一张加入牌组。白板牌也会出现在首版卡池中。",
     draftProgress: "第 {current} / {total} 轮",
+    ratingSource: "评分来源：{name} · {asOf} · {cardClass} 当前职业",
+    ratingNote: "“*”保留原表标记；显示原始分数，不额外修正，也不按 100 分制归一化。",
+    ratingLabel: "评分 {raw}",
+    highestRating: "最高分",
     pickCard: "选择这张牌",
     deckTitle: "你的竞技场牌组",
     deckCount: "{count} / 30 张",
@@ -65,14 +114,19 @@ const COPY = {
     readyIntro: "三十张牌已经加入牌组。确认后进入本机对战。",
     enterBattle: "进入对战",
     launching: "正在进入对战……",
+    retireArena: "退出本轮竞技场",
+    retireConfirm: "退出后本轮竞技场将结束，确定退出吗？",
+    retiring: "正在结束本轮竞技场……",
     completeTitle: "竞技场结束",
-    completeIntro: "本次竞技场已达到 7 胜或 3 负。",
+    completeIntro: "本次竞技场已达到 {maxWins} 胜或 {maxLosses} 负。",
+    retiredTitle: "本轮竞技场已结束",
+    retiredIntro: "你主动结束了本轮竞技场，牌组和当前战绩已保留。",
     finalRecord: "最终战绩",
     startAgain: "重新开始",
     loading: "正在读取竞技场状态……",
     waiting: "正在等待服务器……",
-    scriptYes: "有 Python 定义",
-    scriptNo: "无 Python 定义",
+    qualityYellow: "效果待验证",
+    qualityRed: "效果存在问题",
     unknownSet: "未标记系列",
     unknownClass: "中立",
     missingArt: "暂无图片",
@@ -81,9 +135,13 @@ const COPY = {
     invalidBudget: "请选择总计 14–18 点的扩展包。",
     network: "无法连接本机竞技场服务。",
     reset: "返回选包",
+    resumeTitle: "有一局未完成对战",
+    resumeIntro: "竞技场牌组已经准备好，但当前对战没有在此页面保持活动状态。",
+    resumeOpenArchives: "有一局未完成对战，打开存档继续",
   },
   enUS: {
     back: "Back to start",
+    history: "Game archives",
     title: "Arena",
     subtitle: "Choose a pool, pick a hero, and draft a 30-card deck.",
     language: "Language",
@@ -98,6 +156,20 @@ const COPY = {
     nickname: "Arena nickname",
     nicknamePlaceholder: "For example: Innkeeper",
     nicknameHint: "Your nickname stays on this device.",
+    format: "Arena format",
+    formatHint: "The format cannot change after this run starts.",
+    customFormat: "Custom pool (current)",
+    historicalFormat: "Historical Wild pool · 2016-09-02",
+    historicalSetupIntro: "Use the fixed card pool from 2016-09-02; no expansion selection is needed.",
+    historicalPoolTitle: "Fixed historical pool",
+    historicalPoolDescription: "Basic, Classic, Naxxramas, GvG, Blackrock Mountain, The Grand Tournament, The League of Explorers, Whispers of the Old Gods, and One Night in Karazhan.",
+    historicalPoolLabel: "Basic · Classic · Naxxramas · GvG · Blackrock Mountain · The Grand Tournament · The League of Explorers · Whispers of the Old Gods · One Night in Karazhan",
+    historicalOfferApprox: "Offer weights are approximate: this run uses a reconstructed historical policy.",
+    historicalCombatLimit: "Combat limitation: battles use the current Fireplace implementation.",
+    historicalKnownLimitations: "Known limitation: drafting uses the reconstructed historical pool; card effects, Discover, and random generation use the current Fireplace implementation.",
+    recordTarget: "Target: {maxWins} wins or {maxLosses} losses",
+    fixedMcts: "MCTS strategy (fixed)",
+    fixedMctsDescription: "Arena opponents always use the MCTS search strategy.",
     basicLocked: "BASIC · Locked",
     basicDescription: "Basic cards are always in the arena pool and do not use expansion points.",
     classicLocked: "Classic · Locked",
@@ -119,6 +191,10 @@ const COPY = {
     draftTitle: "Choose a card",
     draftIntro: "Pick one of three cards to add to your deck. Blank cards are allowed in the first version.",
     draftProgress: "Round {current} / {total}",
+    ratingSource: "Ratings: {name} · {asOf} · {cardClass} current class",
+    ratingNote: "“*” is kept as the original table mark; the original score is shown without added modifiers or normalization to a 100-point scale.",
+    ratingLabel: "Rating {raw}",
+    highestRating: "Highest score",
     pickCard: "Choose this card",
     deckTitle: "Your arena deck",
     deckCount: "{count} / 30 cards",
@@ -135,14 +211,19 @@ const COPY = {
     readyIntro: "Thirty cards are in your deck. Enter local battle when ready.",
     enterBattle: "Enter battle",
     launching: "Entering battle…",
+    retireArena: "Retire arena run",
+    retireConfirm: "Retiring ends this entire arena run. Retire now?",
+    retiring: "Ending arena run…",
     completeTitle: "Arena complete",
-    completeIntro: "This arena ended at 7 wins or 3 losses.",
+    completeIntro: "This arena ended at {maxWins} wins or {maxLosses} losses.",
+    retiredTitle: "Arena run ended",
+    retiredIntro: "You ended this arena run. Your deck and current record were kept.",
     finalRecord: "Final record",
     startAgain: "Start again",
     loading: "Loading arena state…",
     waiting: "Waiting for the server…",
-    scriptYes: "Python definition found",
-    scriptNo: "No Python definition",
+    qualityYellow: "Effects not fully verified",
+    qualityRed: "Known effect issues",
     unknownSet: "Unmarked set",
     unknownClass: "Neutral",
     missingArt: "No image",
@@ -151,6 +232,9 @@ const COPY = {
     invalidBudget: "Choose 14–18 expansion points.",
     network: "The local arena service is unavailable.",
     reset: "Back to packs",
+    resumeTitle: "An unfinished match is waiting",
+    resumeIntro: "Your Arena deck is ready, but the active match is no longer open on this page.",
+    resumeOpenArchives: "Open archives to continue the unfinished match",
   },
 };
 
@@ -180,6 +264,7 @@ const model = {
   imageGeneration: 0,
   account: null,
   legacyAvailable: false,
+  selectedFormatId: CUSTOM_FORMAT_ID,
 };
 
 function readLocale() {
@@ -325,6 +410,62 @@ function list(value) {
   return Array.isArray(value) ? value : [];
 }
 
+function normalizeFormatId(value) {
+  const id = text(value).trim();
+  return id === HISTORICAL_FORMAT_ID ? HISTORICAL_FORMAT_ID : CUSTOM_FORMAT_ID;
+}
+
+function formatId(state) {
+  return normalizeFormatId(state?.format_id);
+}
+
+function isHistoricalFormat(state) {
+  return formatId(state) === HISTORICAL_FORMAT_ID;
+}
+
+function positiveLimit(value, fallback) {
+  const number = Number(value);
+  return Number.isInteger(number) && number > 0 ? number : fallback;
+}
+
+function formatOptions(state) {
+  const options = list(state?.formats).map((option) => {
+    const id = normalizeFormatId(option?.id);
+    if (!text(option?.id).trim() || (text(option?.id).trim() !== CUSTOM_FORMAT_ID && text(option?.id).trim() !== HISTORICAL_FORMAT_ID)) return null;
+    const fallbackLabel = id === HISTORICAL_FORMAT_ID ? t("historicalFormat") : t("customFormat");
+    return {
+      id,
+      label: text(option?.label).trim() || fallbackLabel,
+      max_wins: positiveLimit(option?.max_wins, id === HISTORICAL_FORMAT_ID ? 12 : 7),
+      max_losses: positiveLimit(option?.max_losses, 3),
+    };
+  }).filter(Boolean);
+  const unique = [];
+  options.forEach((option) => {
+    if (!unique.some((candidate) => candidate.id === option.id)) unique.push(option);
+  });
+  if (!unique.length) {
+    unique.push({ id: CUSTOM_FORMAT_ID, label: t("customFormat"), max_wins: 7, max_losses: 3 });
+  }
+  return unique;
+}
+
+function formatOption(state, id) {
+  return formatOptions(state).find((option) => option.id === normalizeFormatId(id)) || formatOptions(state)[0];
+}
+
+function historicalSetName(setId) {
+  return HISTORICAL_SET_LABELS[setId]?.[model.locale] || setId;
+}
+
+function knownLimitations(state) {
+  const provided = list(state?.known_limitations).map((value) => text(value).trim()).filter(Boolean);
+  // The current service keeps these metadata strings language-neutral. Keep
+  // the historical notice translated even when a Chinese state contains the
+  // English compatibility payload.
+  return model.locale === "zhCN" ? [t("historicalKnownLimitations")] : (provided.length ? provided : [t("historicalKnownLimitations")]);
+}
+
 function numberOrDash(value) {
   return value === null || value === undefined || value === "" ? "—" : text(value);
 }
@@ -342,11 +483,65 @@ function cardId(card) {
 }
 
 function cardClass(card) {
-  return text(card?.class, text(card?.hero_class, text(card?.player_class, t("unknownClass"))));
+  const value = text(card?.class, text(card?.hero_class, text(card?.player_class, t("unknownClass"))));
+  const normalized = value.trim().toUpperCase();
+  return ARENA_CLASS_LABELS[normalized]?.[model.locale] || value;
 }
 
 function cardSet(card) {
   return text(card?.card_set, text(card?.set, t("unknownSet")));
+}
+
+function qualityNotice(card) {
+  const status = text(card?.quality_status).trim().toUpperCase();
+  if (status === "YELLOW") return { status, label: t("qualityYellow") };
+  if (status === "RED") return { status, label: t("qualityRed") };
+  return null;
+}
+
+function historicalRating(card) {
+  const source = card?.arena_rating;
+  if (!source || typeof source !== "object") return null;
+  const rawNumeric = source.numeric;
+  if (rawNumeric === null || rawNumeric === undefined || (typeof rawNumeric === "string" && !rawNumeric.trim())) return null;
+  if (typeof rawNumeric !== "number" && typeof rawNumeric !== "string") return null;
+  const numeric = Number(rawNumeric);
+  if (!Number.isFinite(numeric)) return null;
+  const raw = text(source.raw).trim() || String(rawNumeric).trim();
+  return raw ? { raw, numeric } : null;
+}
+
+function highestHistoricalRatingIds(cards) {
+  const rated = list(cards).map((card) => ({ id: cardId(card), rating: historicalRating(card) }))
+    .filter((entry) => entry.rating);
+  if (!rated.length) return new Set();
+  const highest = Math.max(...rated.map((entry) => entry.rating.numeric));
+  return new Set(rated.filter((entry) => entry.rating.numeric === highest).map((entry) => entry.id));
+}
+
+function historicalRatingSource(state, cards) {
+  const metadata = state?.rating_source && typeof state.rating_source === "object" ? state.rating_source : {};
+  const ratedCard = list(cards).find((card) => historicalRating(card));
+  const cardSource = ratedCard?.arena_rating && typeof ratedCard.arena_rating === "object" ? ratedCard.arena_rating : {};
+  const hero = state?.hero && typeof state.hero === "object" ? state.hero : {};
+  const sourceName = text(metadata.name).trim() || text(cardSource.source).trim() || "Lightforge";
+  const asOf = text(metadata.as_of).trim() || text(cardSource.as_of).trim() || "2016-09-02";
+  const sourceClass = text(metadata.card_class).trim()
+    || text(cardSource.card_class).trim()
+    || text(hero.class).trim()
+    || text(hero.hero_class).trim()
+    || t("unknownClass");
+  return { name: sourceName, asOf, cardClass: cardClass({ class: sourceClass }) };
+}
+
+function renderHistoricalRatingHeader(state, cards) {
+  if (!isHistoricalFormat(state)) return "";
+  const source = historicalRatingSource(state, cards);
+  return `
+    <aside class="arena-rating-header" data-testid="arena-rating-source">
+      <strong>${escapeHtml(t("ratingSource", source))}</strong>
+      <p>${escapeHtml(t("ratingNote"))}</p>
+    </aside>`;
 }
 
 function artUrl(card) {
@@ -364,11 +559,19 @@ function cardArt(card, alt = "") {
 
 function normalizeState(payload) {
   const value = payload && typeof payload === "object" ? payload : {};
+  const normalizedFormatId = normalizeFormatId(value.format_id);
   return {
     ...value,
-    mode: ["setup", "hero", "draft", "ready", "match", "complete"].includes(value.mode) ? value.mode : "setup",
+    mode: ["setup", "hero", "draft", "ready", "match", "resume", "complete"].includes(value.mode) ? value.mode : "setup",
+    format_id: normalizedFormatId,
+    formats: list(value.formats),
+    max_wins: positiveLimit(value.max_wins, normalizedFormatId === HISTORICAL_FORMAT_ID ? 12 : 7),
+    max_losses: positiveLimit(value.max_losses, 3),
+    known_limitations: list(value.known_limitations),
+    offer_policy_accuracy: text(value.offer_policy_accuracy).trim().toLowerCase(),
     wins: Number.isFinite(Number(value.wins)) ? Number(value.wins) : 0,
     losses: Number.isFinite(Number(value.losses)) ? Number(value.losses) : 0,
+    retired: value.retired === true,
     selected_sets: list(value.selected_sets),
     pack_options: {
       large: list(value.pack_options?.large),
@@ -402,12 +605,19 @@ function updateRecord() {
   const state = model.state || {};
   refs.headerWins.textContent = text(state.wins, "0");
   refs.headerLosses.textContent = text(state.losses, "0");
+  const record = refs.headerWins.closest(".arena-record");
+  if (record) {
+    record.setAttribute("aria-label", t("recordTarget", {
+      maxWins: positiveLimit(state.max_wins, 7),
+      maxLosses: positiveLimit(state.max_losses, 3),
+    }));
+  }
 }
 
 function updateProgress() {
   const order = ["setup", "hero", "draft", "ready"];
   const mode = currentMode();
-  const index = mode === "complete" ? order.length : Math.max(0, order.indexOf(mode));
+  const index = mode === "complete" || mode === "resume" ? order.length : Math.max(0, order.indexOf(mode));
   refs.progress.forEach((node) => {
     const stepIndex = order.indexOf(node.dataset.step);
     node.classList.toggle("is-current", stepIndex === index && mode !== "complete");
@@ -428,8 +638,13 @@ function setError(message = "") {
 function setBusy(value) {
   model.busy = Boolean(value);
   refs.stage?.querySelectorAll("button").forEach((button) => {
-    const budgetInvalid = button.dataset.action === "start" && !isBudgetValid(model.state);
+    const budgetInvalid = button.dataset.action === "start"
+      && setupFormatId(model.state) !== HISTORICAL_FORMAT_ID
+      && !isBudgetValid(model.state);
     button.disabled = model.busy || budgetInvalid || button.dataset.alwaysEnabled === "true";
+  });
+  refs.stage?.querySelectorAll("select[data-format-select]").forEach((select) => {
+    select.disabled = model.busy || currentMode() !== "setup";
   });
   const localeLocked = model.state && currentMode() !== "setup";
   refs.localeButtons.forEach((button) => { button.disabled = model.busy || localeLocked; });
@@ -496,7 +711,10 @@ function applyState(payload) {
     return;
   }
   model.state = next;
-  if (next.mode === "setup" && Array.isArray(next.selected_sets)) {
+  model.selectedFormatId = formatId(next);
+  if (next.mode === "setup" && isHistoricalFormat(next)) {
+    model.selectedPacks.clear();
+  } else if (next.mode === "setup" && Array.isArray(next.selected_sets)) {
     model.selectedPacks = new Set(next.selected_sets.filter((value) => text(value) && !["BASIC", "EXPERT1"].includes(text(value))));
   }
   refs.loading.hidden = true;
@@ -517,6 +735,7 @@ function render() {
   else if (state.mode === "hero") refs.stage.innerHTML = renderHeroStage(state);
   else if (state.mode === "draft") refs.stage.innerHTML = renderDraftStage(state);
   else if (state.mode === "ready") refs.stage.innerHTML = renderReadyStage(state);
+  else if (state.mode === "resume") refs.stage.innerHTML = renderResumeStage(state);
   else if (state.mode === "complete") refs.stage.innerHTML = renderCompleteStage(state);
   else refs.stage.innerHTML = renderSetup(state);
   bindImages();
@@ -551,9 +770,65 @@ function isBudgetValid(state) {
   return budget >= MIN_POOL_BUDGET && budget <= MAX_POOL_BUDGET;
 }
 
+function setupFormatId(state) {
+  const selected = normalizeFormatId(model.selectedFormatId);
+  return formatOptions(state).some((option) => option.id === selected) ? selected : formatId(state);
+}
+
+function formatTarget(state, id = formatId(state)) {
+  const option = formatOption(state, id);
+  const useStateLimits = formatId(state) === normalizeFormatId(id);
+  return {
+    maxWins: useStateLimits ? positiveLimit(state?.max_wins, positiveLimit(option?.max_wins, 7)) : positiveLimit(option?.max_wins, 7),
+    maxLosses: useStateLimits ? positiveLimit(state?.max_losses, positiveLimit(option?.max_losses, 3)) : positiveLimit(option?.max_losses, 3),
+  };
+}
+
+function renderFormatSelector(state) {
+  if (formatOptions(state).length < 2) return "";
+  const selectedId = setupFormatId(state);
+  const options = formatOptions(state).map((option) => `
+      <option value="${escapeHtml(option.id)}" ${option.id === selectedId ? "selected" : ""}>${escapeHtml(option.label)}</option>`).join("");
+  return `
+    <div class="arena-field arena-format-field" data-testid="arena-format-field">
+      <label for="arena-format">${escapeHtml(t("format"))}</label>
+      <select id="arena-format" data-testid="arena-format" data-format-select aria-describedby="arena-format-hint">${options}</select>
+      <small id="arena-format-hint">${escapeHtml(t("formatHint"))}</small>
+    </div>`;
+}
+
+function renderHistoricalPool(state) {
+  const target = formatTarget(state, HISTORICAL_FORMAT_ID);
+  const sets = HISTORICAL_SET_IDS.map((setId) => `<span data-set-id="${escapeHtml(setId)}">${escapeHtml(historicalSetName(setId))}</span>`).join("");
+  return `
+    <section class="arena-historical-pool" data-testid="arena-historical-pool" aria-labelledby="arena-historical-pool-title">
+      <div class="arena-group-heading"><h3 id="arena-historical-pool-title">${escapeHtml(t("historicalPoolTitle"))}</h3><span>${escapeHtml(t("recordTarget", target))}</span></div>
+      <p>${escapeHtml(t("historicalPoolDescription"))}</p>
+      <div class="arena-historical-set-list" aria-label="${escapeHtml(t("historicalPoolTitle"))}">${sets}</div>
+    </section>`;
+}
+
+function renderFormatNotice(state) {
+  if (!isHistoricalFormat(state)) return "";
+  const target = formatTarget(state, HISTORICAL_FORMAT_ID);
+  const limitations = knownLimitations(state).map((value) => `<li>${escapeHtml(value)}</li>`).join("");
+  const approximate = state.offer_policy_accuracy === "reconstructed"
+    ? `<p class="arena-format-notice-warning" data-testid="arena-offer-policy-notice">${escapeHtml(t("historicalOfferApprox"))}</p>`
+    : "";
+  return `
+    <aside class="arena-format-notice" data-testid="arena-format-notice">
+      <div class="arena-format-notice-heading"><strong>${escapeHtml(t("historicalFormat"))}</strong><span>${escapeHtml(t("recordTarget", target))}</span></div>
+      <ul>${limitations}</ul>
+      ${approximate}
+      <p class="arena-format-notice-warning" data-testid="arena-combat-limitation">${escapeHtml(t("historicalCombatLimit"))}</p>
+    </aside>`;
+}
+
 function renderSetup(state) {
+  const selectedId = setupFormatId(state);
+  const historical = selectedId === HISTORICAL_FORMAT_ID;
   const budget = selectedBudget(state);
-  const ready = isBudgetValid(state);
+  const ready = historical || isBudgetValid(state);
   const large = list(state.pack_options.large).map((option) => packOption(option, "large")).join("");
   const small = list(state.pack_options.small).map((option) => packOption(option, "small")).join("");
   const storedName = (() => {
@@ -572,6 +847,8 @@ function renderSetup(state) {
           <input id="arena-nickname" type="text" maxlength="24" autocomplete="nickname" value="${escapeHtml(storedName)}" placeholder="${escapeHtml(t("nicknamePlaceholder"))}" data-testid="arena-nickname">
           <small>${escapeHtml(t("nicknameHint"))}</small>
         </div>
+        ${renderFormatSelector(state)}
+        ${historical ? `<p class="arena-lead arena-format-intro">${escapeHtml(t("historicalSetupIntro"))}</p>${renderHistoricalPool(state)}${renderFormatNotice({ ...state, format_id: HISTORICAL_FORMAT_ID, max_wins: undefined, max_losses: undefined, offer_policy_accuracy: "reconstructed" })}` : `
         <div class="arena-basic-lock" data-testid="arena-basic-lock">
           <span class="arena-basic-seal" aria-hidden="true">B</span>
           <span><strong>${escapeHtml(t("basicLocked"))}</strong><small>${escapeHtml(t("basicDescription"))}</small></span>
@@ -591,21 +868,22 @@ function renderSetup(state) {
           <div class="arena-pack-grid" data-testid="arena-pack-small">${small || `<p class="arena-empty-copy">${escapeHtml(t("unknownSet"))}</p>`}</div>
         </div>
         <p class="arena-rule-note">${escapeHtml(t("budgetRule"))}</p>
+        `}
       </section>
       <aside class="arena-panel arena-budget-panel" aria-labelledby="arena-budget-title">
-        <div class="arena-budget-ring${ready ? " is-ready" : ""}" aria-label="${escapeHtml(t("budget"))}: ${budget}; ${MIN_POOL_BUDGET}–${MAX_POOL_BUDGET}">
-          <strong>${budget}</strong><span>${MIN_POOL_BUDGET}–${MAX_POOL_BUDGET} ${escapeHtml(t("points"))}</span>
+        <div class="arena-budget-ring${ready ? " is-ready" : ""}" aria-label="${escapeHtml(historical ? t("recordTarget", formatTarget(state, HISTORICAL_FORMAT_ID)) : `${t("budget")}: ${budget}; ${MIN_POOL_BUDGET}–${MAX_POOL_BUDGET}`)}">
+          ${historical ? `<strong>${escapeHtml(String(formatTarget(state, HISTORICAL_FORMAT_ID).maxWins))}</strong><span>${escapeHtml(t("wins"))}</span>` : `<strong>${budget}</strong><span>${MIN_POOL_BUDGET}–${MAX_POOL_BUDGET} ${escapeHtml(t("points"))}</span>`}
         </div>
         <p class="eyebrow">ARENA POOL</p>
-        <h2 id="arena-budget-title">${escapeHtml(t("budget"))}</h2>
-        <p class="arena-budget-copy">${escapeHtml(ready ? t("budgetReady") : t("budgetInvalid"))}</p>
-        <p class="arena-selected-count"><span>${escapeHtml(t("selectedPacks"))}</span><strong>${model.selectedPacks.size}</strong></p>
+        <h2 id="arena-budget-title">${escapeHtml(historical ? t("historicalPoolTitle") : t("budget"))}</h2>
+        <p class="arena-budget-copy">${escapeHtml(historical ? t("recordTarget", formatTarget(state, HISTORICAL_FORMAT_ID)) : (ready ? t("budgetReady") : t("budgetInvalid")))}</p>
+        ${historical ? "" : `<p class="arena-selected-count"><span>${escapeHtml(t("selectedPacks"))}</span><strong>${model.selectedPacks.size}</strong></p>`}
         <button class="primary-button arena-action-button" type="button" data-action="start" data-testid="arena-start" ${ready ? "" : "disabled"}>${escapeHtml(t("startArena"))}</button>
       </aside>
     </div>`;
 }
 
-function renderChoiceCard(card, kind) {
+function renderChoiceCard(card, kind, context = {}) {
   const id = cardId(card);
   const name = cardName(card);
   const textValue = text(card?.text, t("noText"));
@@ -614,16 +892,24 @@ function renderChoiceCard(card, kind) {
     card?.attack === undefined ? "" : `<span>${escapeHtml(t("attack"))} ${escapeHtml(numberOrDash(card.attack))}</span>`,
     card?.health === undefined ? "" : `<span>${escapeHtml(t("health"))} ${escapeHtml(numberOrDash(card.health))}</span>`,
   ].filter(Boolean).join("");
-  const script = card?.has_python_script === true || card?.has_script === true;
+  const quality = qualityNotice(card);
+  const rating = kind === "card" && context.showRating === true ? historicalRating(card) : null;
+  const highest = Boolean(rating && context.bestIds instanceof Set && context.bestIds.has(id));
+  const ratingLabel = rating ? [
+    t("ratingLabel", { raw: rating.raw }),
+    highest ? t("highestRating") : "",
+  ].filter(Boolean).join(" · ") : "";
+  const accessibleName = [name, ratingLabel].filter(Boolean).join(" — ");
   return `
     <article class="arena-choice-card" data-card-id="${escapeHtml(id)}">
-      <button class="arena-choice-button" type="button" data-action="${kind === "hero" ? "choose-hero" : "pick-card"}" data-choice-id="${escapeHtml(id)}" aria-label="${escapeHtml(name)}">
+      <button class="arena-choice-button" type="button" data-action="${kind === "hero" ? "choose-hero" : "pick-card"}" data-choice-id="${escapeHtml(id)}" aria-label="${escapeHtml(accessibleName)}">
         <div class="arena-choice-art-wrap">${cardArt(card, name)}${cost}</div>
         <div class="arena-choice-copy">
           <div class="arena-choice-title"><h3>${escapeHtml(name)}</h3>${stats ? `<span class="arena-card-stats">${stats}</span>` : ""}</div>
           <p class="arena-card-meta"><span>${escapeHtml(cardClass(card))}</span><span>${escapeHtml(cardSet(card))}</span></p>
           <p class="arena-card-text">${escapeHtml(textValue)}</p>
-          ${kind === "card" ? `<span class="arena-script-badge ${script ? "has-script" : "no-script"}">${escapeHtml(script ? t("scriptYes") : t("scriptNo"))}</span>` : ""}
+          ${rating ? `<div class="arena-rating-row" data-testid="arena-rating" data-rating-numeric="${escapeHtml(String(rating.numeric))}"><span class="arena-rating-badge">${escapeHtml(t("ratingLabel", { raw: rating.raw }))}</span>${highest ? `<span class="arena-rating-highest">${escapeHtml(t("highestRating"))}</span>` : ""}</div>` : ""}
+          ${kind === "card" && quality ? `<span class="arena-quality-badge is-quality-${quality.status.toLowerCase()}">${escapeHtml(quality.label)}</span>` : ""}
           <span class="arena-choice-cta">${escapeHtml(kind === "hero" ? t("chooseHero") : t("pickCard"))} <span aria-hidden="true">→</span></span>
         </div>
       </button>
@@ -642,6 +928,7 @@ function renderHeroStage(state) {
       <section class="arena-panel arena-flow-panel" aria-labelledby="arena-hero-title">
         <div class="arena-panel-heading"><div><p class="eyebrow">HERO SELECTION</p><h2 id="arena-hero-title">${escapeHtml(t("heroTitle"))}</h2></div><span class="arena-panel-number">02</span></div>
         <p class="arena-lead">${escapeHtml(t("heroIntro"))}</p>
+        ${renderFormatNotice(state)}
         <div class="arena-offer-grid arena-hero-offers" data-testid="arena-hero-offer">${offers || `<p class="arena-empty-copy">${escapeHtml(t("waiting"))}</p>`}</div>
       </section>
       <aside class="arena-panel arena-side-panel"><p class="eyebrow">ARENA POOL</p><h2>${escapeHtml(t("selectedPacks"))}</h2>${renderSelectedPacks(state)}${heroSummary(state.hero)}</aside>
@@ -649,6 +936,9 @@ function renderHeroStage(state) {
 }
 
 function renderSelectedPacks(state) {
+  if (isHistoricalFormat(state)) {
+    return `<div class="arena-selected-packs arena-historical-selected-packs">${HISTORICAL_SET_IDS.map((setId) => `<span class="arena-basic-chip" data-set-id="${escapeHtml(setId)}">${escapeHtml(historicalSetName(setId))}</span>`).join("")}</div>`;
+  }
   const selected = list(state.selected_sets).filter((set) => !["BASIC", "EXPERT1"].includes(text(set)));
   return `<div class="arena-selected-packs"><span class="arena-basic-chip">BASIC</span><span class="arena-basic-chip">${escapeHtml(t("classicLocked"))}</span>${selected.map((set) => `<span>${escapeHtml(text(set))}</span>`).join("")}</div>`;
 }
@@ -697,16 +987,30 @@ function renderDeck(state) {
 
 function renderDraftStage(state) {
   const deck = list(state.deck);
-  const offers = list(state.card_offer).map((card) => renderChoiceCard(card, "card")).join("");
+  const cards = list(state.card_offer);
+  const historical = isHistoricalFormat(state);
+  const bestIds = historical ? highestHistoricalRatingIds(cards) : new Set();
+  const offers = cards.map((card) => renderChoiceCard(card, "card", { bestIds, showRating: historical })).join("");
   return `
     <div class="arena-layout arena-draft-layout">
       <section class="arena-panel arena-flow-panel" aria-labelledby="arena-draft-title">
         <div class="arena-panel-heading"><div><p class="eyebrow">CARD DRAFT</p><h2 id="arena-draft-title">${escapeHtml(t("draftTitle"))}</h2></div><span class="arena-panel-number">03</span></div>
         <p class="arena-lead">${escapeHtml(t("draftIntro"))}</p>
+        ${renderHistoricalRatingHeader(state, cards)}
+        ${renderFormatNotice(state)}
         <p class="arena-draft-progress" data-testid="arena-draft-count">${escapeHtml(t("draftProgress", { current: deck.length + 1, total: 30 }))}</p>
         <div class="arena-offer-grid arena-card-offers" data-testid="arena-card-offer">${offers || `<p class="arena-empty-copy">${escapeHtml(t("waiting"))}</p>`}</div>
       </section>
       ${renderDeck(state)}
+    </div>`;
+}
+
+function renderFixedMcts() {
+  return `
+    <div class="arena-basic-lock arena-fixed-opponent" data-testid="arena-fixed-opponent">
+      <span class="arena-basic-seal" aria-hidden="true">M</span>
+      <span><strong>${escapeHtml(t("fixedMcts"))}</strong><small>${escapeHtml(t("fixedMctsDescription"))}</small></span>
+      <span class="arena-lock-icon" aria-hidden="true">◆</span>
     </div>`;
 }
 
@@ -716,24 +1020,49 @@ function renderReadyStage(state) {
       <section class="arena-panel arena-ready-panel" aria-labelledby="arena-ready-title">
         <div class="arena-panel-heading"><div><p class="eyebrow">DECK COMPLETE</p><h2 id="arena-ready-title">${escapeHtml(t("readyTitle"))}</h2></div><span class="arena-panel-number">04</span></div>
         <p class="arena-lead">${escapeHtml(t("readyIntro"))}</p>
+        ${renderFormatNotice(state)}
         ${heroSummary(state.hero)}
         <div class="arena-ready-record"><span>${escapeHtml(t("wins"))}</span><strong>${escapeHtml(text(state.wins, "0"))}</strong><span>${escapeHtml(t("losses"))}</span><strong>${escapeHtml(text(state.losses, "0"))}</strong></div>
+        <p class="arena-record-target" data-testid="arena-record-target">${escapeHtml(t("recordTarget", formatTarget(state)))}</p>
+        ${renderFixedMcts()}
         <button class="primary-button arena-action-button" type="button" data-action="battle" data-testid="arena-battle">${escapeHtml(t("enterBattle"))}</button>
+        <button class="secondary-button arena-action-button arena-retire-button" type="button" data-action="retire" data-testid="arena-retire">${escapeHtml(t("retireArena"))}</button>
       </section>
       ${renderDeck(state)}
     </div>`;
 }
 
 function renderCompleteStage(state) {
+  const title = state.retired ? t("retiredTitle") : t("completeTitle");
+  const intro = state.retired ? t("retiredIntro") : t("completeIntro", formatTarget(state));
   return `
     <div class="arena-layout arena-complete-layout">
       <section class="arena-panel arena-complete-panel" aria-labelledby="arena-complete-title">
         <span class="arena-complete-sigil" aria-hidden="true">✦</span>
         <p class="eyebrow">ARENA RUN COMPLETE</p>
-        <h2 id="arena-complete-title">${escapeHtml(t("completeTitle"))}</h2>
-        <p class="arena-lead">${escapeHtml(t("completeIntro"))}</p>
+        <h2 id="arena-complete-title">${escapeHtml(title)}</h2>
+        <p class="arena-lead">${escapeHtml(intro)}</p>
+        ${renderFormatNotice(state)}
         <div class="arena-final-record"><span>${escapeHtml(t("wins"))}</span><strong>${escapeHtml(text(state.wins, "0"))}</strong><i>/</i><strong>${escapeHtml(text(state.losses, "0"))}</strong><span>${escapeHtml(t("losses"))}</span></div>
+        <p class="arena-record-target" data-testid="arena-record-target">${escapeHtml(t("recordTarget", formatTarget(state)))}</p>
         <button class="primary-button arena-action-button" type="button" data-action="reset" data-testid="arena-reset">${escapeHtml(t("startAgain"))}</button>
+      </section>
+      ${renderDeck(state)}
+    </div>`;
+}
+
+function renderResumeStage(state) {
+  const gameId = text(state.resume_game_id).trim();
+  const query = gameId ? `?game_id=${encodeURIComponent(gameId)}` : "";
+  return `
+    <div class="arena-layout arena-complete-layout">
+      <section class="arena-panel arena-complete-panel" aria-labelledby="arena-resume-title" data-testid="arena-resume">
+        <span class="arena-complete-sigil" aria-hidden="true">↻</span>
+        <p class="eyebrow">UNFINISHED MATCH</p>
+        <h2 id="arena-resume-title">${escapeHtml(t("resumeTitle"))}</h2>
+        <p class="arena-lead">${escapeHtml(t("resumeIntro"))}</p>
+        ${renderFormatNotice(state)}
+        <a class="primary-button arena-action-button" href="/history${query}" data-testid="arena-resume-link">${escapeHtml(t("resumeOpenArchives"))}</a>
       </section>
       ${renderDeck(state)}
     </div>`;
@@ -823,11 +1152,17 @@ async function handleAction(actionNode) {
       document.getElementById("arena-nickname")?.focus();
       return;
     }
-    if (!isBudgetValid(model.state)) {
+    const selectedFormat = setupFormatId(model.state);
+    if (selectedFormat !== HISTORICAL_FORMAT_ID && !isBudgetValid(model.state)) {
       setError(t("invalidBudget"));
       return;
     }
-    await post("/api/arena/start", { nickname, locale: model.locale, set_ids: [...model.selectedPacks] }, t("starting"));
+    await post("/api/arena/start", {
+      nickname,
+      locale: model.locale,
+      format_id: selectedFormat,
+      set_ids: selectedFormat === CUSTOM_FORMAT_ID ? [...model.selectedPacks] : [],
+    }, t("starting"));
     return;
   }
   if (action === "choose-hero") {
@@ -840,6 +1175,11 @@ async function handleAction(actionNode) {
   }
   if (action === "battle") {
     await post("/api/arena/battle", runBody(), t("launching"));
+    return;
+  }
+  if (action === "retire") {
+    if (!window.confirm(t("retireConfirm"))) return;
+    await post("/api/arena/retire", runBody(), t("retiring"));
     return;
   }
   if (action === "reset") {
@@ -860,10 +1200,19 @@ refs.stage.addEventListener("input", (event) => {
   }
 });
 
+refs.stage.addEventListener("change", (event) => {
+  if (event.target?.id !== "arena-format" || model.busy || currentMode() !== "setup") return;
+  const selected = text(event.target.value).trim();
+  const available = formatOptions(model.state).some((option) => option.id === selected);
+  model.selectedFormatId = available ? selected : CUSTOM_FORMAT_ID;
+  render();
+});
+
 refs.localeButtons.forEach((button) => {
   button.addEventListener("click", async () => {
     if (model.busy || !COPY[button.dataset.locale] || (model.state && currentMode() !== "setup")) return;
     const previousPacks = new Set(model.selectedPacks);
+    const previousFormat = model.selectedFormatId;
     model.locale = button.dataset.locale;
     storeLocale(model.locale);
     updateCopy();
@@ -874,8 +1223,9 @@ refs.localeButtons.forEach((button) => {
       const payload = await request(`/api/arena/state?locale=${encodeURIComponent(model.locale)}`);
       applyState(payload);
       if (model.state?.mode === "setup" && model.state.selected_sets.length === 0) {
+        model.selectedFormatId = previousFormat;
         model.selectedPacks = previousPacks;
-        render();
+              render();
       }
       setStatus("");
     } catch (error) {

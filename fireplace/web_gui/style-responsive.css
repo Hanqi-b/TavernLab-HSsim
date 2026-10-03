@@ -73,6 +73,7 @@
   .turn-label,
   .revision-label,
   .hand-count,
+  .deck-count,
   .mana {
     padding: 4px 7px;
   }
@@ -108,18 +109,26 @@
   }
 
   .opponent-panel .player-resources {
-    top: 0;
+    top: 5.6rem;
     right: 0;
+    pointer-events: none;
   }
 
   .opponent-panel .player-resources .mana {
     display: none;
   }
 
-  .self-panel > .mana {
+  .self-panel > .self-resources {
     right: auto;
     left: 3%;
-    bottom: 35%;
+    bottom: 31%;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 3px;
+  }
+
+  .self-panel > .self-resources .mana {
     font-size: .82rem;
   }
 
@@ -289,17 +298,18 @@
   }
 
   .opponent-panel .extras-row {
-    top: 21%;
-    left: 34%;
+    top: 14%;
+    left: 1%;
   }
 
   .self-panel .extras-row {
     bottom: 20%;
-    left: 16%;
+    left: 1%;
   }
 
   .extras-row {
-    max-width: 24%;
+    width: 30%;
+    max-width: 30%;
   }
 
   .extra-chip {
@@ -313,11 +323,17 @@
     height: 38px;
   }
 
-  .extra-chip span {
-    max-width: 56px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  .weapon-copy {
+    gap: 1px;
+  }
+
+  .weapon-name {
+    line-height: 1.1;
+  }
+
+  .weapon-stats {
+    gap: 1px 3px;
+    font-size: .86em;
   }
 
   .opponent-panel .board {
@@ -399,6 +415,9 @@
   }
 
   .power-row {
+    /* Keep the circular control in the gap between the own board and hand.
+       Mobile hand cards do not lift on hover, so this lane remains available
+       without covering board targets or the ten-card hand. */
     bottom: 25%;
     left: 75%;
     width: 19%;
@@ -412,8 +431,8 @@
 
   .power-copy {
     bottom: calc(100% + 4px);
-    left: -70%;
-    width: 180%;
+    left: 0;
+    width: 100%;
   }
 
   .power-copy .card-name {

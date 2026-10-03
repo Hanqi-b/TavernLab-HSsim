@@ -292,9 +292,13 @@ class Attack(GameAction):
         # Save the attacker/defender atk values in case they change during the attack
         # (eg. in case of Enrage)
         def_atk = defender.atk
-        source.game.queue_actions(attacker, [Hit(defender, attacker.atk)])
+        attacker_hit = Hit(defender, attacker.atk)
+        attacker_hit.combat_damage = True
+        source.game.queue_actions(attacker, [attacker_hit])
         if def_atk:
-            source.game.queue_actions(defender, [Hit(attacker, def_atk)])
+            defender_hit = Hit(attacker, def_atk)
+            defender_hit.combat_damage = True
+            source.game.queue_actions(defender, [defender_hit])
 
         self.broadcast(source, EventListener.AFTER, attacker, defender)
 
@@ -1206,6 +1210,7 @@ class Destroy(TargetedAction):
     """
 
     def do(self, source, target):
+        old_zone = target.zone
         if getattr(target, "dormant", False) and target.zone == Zone.PLAY:
             log.info("%r is dormant cannot be destroyed", target)
             return
@@ -1214,14 +1219,14 @@ class Destroy(TargetedAction):
             # It will be moved to the graveyard on the next Death event
             log.info("%r marks %r for imminent death", source, target)
             target.to_be_destroyed = True
-            source.game.manager.targeted_action(self, source, target)
+            source.game.manager.targeted_action(self, source, target, old_zone)
         else:
             log.info("%r destroys %r", source, target)
             if target.type == CardType.ENCHANTMENT:
                 target.remove()
             else:
                 target.zone = Zone.GRAVEYARD
-                source.game.manager.targeted_action(self, source, target)
+                source.game.manager.targeted_action(self, source, target, old_zone)
 
 
 class Discard(TargetedAction):
@@ -1789,7 +1794,7 @@ class Summon(TargetedAction):
         return super()._broadcast(entity, source, at, *args)
 
     def get_summon_index(self, source_index):
-        return source_index + 1
+        return source_index + self._kwargs.get("position_offset", 1)
 
     def do(self, source, target, cards):
         log.info("%s summons %r", target, cards)

@@ -20,6 +20,7 @@ from fireplace.arena.store import ArenaStore, default_state_path as legacy_arena
 
 from .decks import DeckStore, default_state_path as legacy_deck_path
 from .catalog import CardCatalog
+from .match_archives import MatchArchiveStore
 
 
 _ACCOUNT_ID = re.compile(r"^[0-9a-f]{32}$")
@@ -84,10 +85,12 @@ class AccountGameRegistry:
                 from .server import WebGameManager
 
                 folder = self._directory(account_id)
+                archive_store = MatchArchiveStore(folder / "matches")
                 game = WebGameManager(
                     seed=self.seed,
                     arena_store=ArenaStore(folder / "arena-run.json"),
                     deck_store=DeckStore(folder / "decks.json"),
+                    archive_store=archive_store,
                     catalog=self.catalog,
                 )
                 self._games[account_id] = game

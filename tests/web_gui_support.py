@@ -118,7 +118,7 @@ def web_game():
 def lobby_server():
     servers = []
 
-    def create(*, seed=11, opponent="heuristic", asset_resolver=None):
+    def create(*, seed=11, opponent="radical", asset_resolver=None):
         app = WebGameManager(
             seed=seed, opponent=opponent, asset_resolver=asset_resolver
         )

@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="dark">
+    <meta name="description" content="Fireplace 对局存档与公开记录">
+    <title>Fireplace · 对局存档</title>
+    <link rel="stylesheet" href="style-base.css">
+    <link rel="stylesheet" href="style-history.css">
+    <script type="module" src="history_app.js"></script>
+  </head>
+  <body class="history-page">
+    <main class="history-shell" id="history-app">
+      <div class="history-backdrop" aria-hidden="true"></div>
+
+      <header class="history-header">
+        <div class="history-heading">
+          <a class="history-back-link" href="/" data-copy="back" data-testid="history-back">返回开始界面</a>
+          <p class="eyebrow">FIREPLACE / MATCH ARCHIVES</p>
+          <h1 data-copy="title">对局存档</h1>
+          <p class="history-subtitle" data-copy="subtitle">查看已保存的对战、继续未完成的对局，或下载结束对局。</p>
+        </div>
+        <div class="history-header-actions">
+          <nav class="history-nav" id="history-nav" aria-label="页面导航">
+            <a href="/arena" data-copy="arena">竞技场</a>
+            <a href="/" data-copy="lobby">对战大厅</a>
+          </nav>
+          <div class="account-toolbar history-account-toolbar" id="history-account-toolbar" hidden data-testid="account-toolbar">
+            <a class="account-label account-link" id="history-account-label" href="/account"></a>
+            <button id="history-account-logout" type="button"></button>
+          </div>
+          <fieldset class="history-language" aria-labelledby="history-language-label">
+            <legend id="history-language-label" data-copy="language">界面语言</legend>
+            <div class="segmented-control" role="group" aria-labelledby="history-language-label">
+              <button class="segment-button is-selected" id="history-locale-zhCN" type="button" data-locale="zhCN" aria-pressed="true">中文</button>
+              <button class="segment-button" id="history-locale-enUS" type="button" data-locale="enUS" aria-pressed="false">English</button>
+            </div>
+          </fieldset>
+        </div>
+      </header>
+
+      <div class="history-status" id="history-status" role="status" aria-live="polite"></div>
+      <div class="history-error" id="history-error" role="alert" hidden></div>
+
+      <section class="history-overview" aria-labelledby="history-overview-title">
+        <div class="history-section-heading">
+          <div>
+            <p class="eyebrow">ARCHIVE INDEX</p>
+            <h2 id="history-overview-title" data-copy="overview">对局概览</h2>
+          </div>
+          <button class="history-refresh-button" id="history-refresh" type="button" data-copy="refresh">刷新</button>
+        </div>
+        <div class="history-metrics" id="history-metrics">
+          <div class="history-metric"><span data-copy="metricTotal">全部对局</span><strong id="history-total">—</strong></div>
+          <div class="history-metric"><span data-copy="metricActive">未完成</span><strong id="history-active">—</strong></div>
+          <div class="history-metric"><span data-copy="metricComplete">已结束</span><strong id="history-complete">—</strong></div>
+        </div>
+      </section>
+
+      <section class="history-list-section" aria-labelledby="history-list-title">
+        <div class="history-section-heading history-list-heading">
+          <div>
+            <p class="eyebrow">YOUR MATCHES</p>
+            <h2 id="history-list-title" data-copy="listTitle">你的对局</h2>
+          </div>
+          <p class="history-result-count" id="history-result-count" aria-live="polite"></p>
+        </div>
+        <div class="history-list" id="history-list" data-testid="history-list" aria-live="polite"></div>
+        <section class="history-empty" id="history-empty" data-testid="history-empty" hidden>
+          <span class="history-empty-mark" aria-hidden="true">◇</span>
+          <h3 data-copy="emptyTitle">还没有对局存档</h3>
+          <p data-copy="emptyIntro">开始一局对战后，结束或中断的进度会自动出现在这里。</p>
+          <a class="primary-button history-empty-action" href="/" data-copy="startMatch">开始对战</a>
+        </section>
+      </section>
+
+      <nav class="history-pagination" id="history-pagination" data-testid="history-pagination" aria-label="对局存档分页" hidden>
+        <button class="secondary-button" id="history-prev" type="button" data-copy="previous">上一页</button>
+        <span id="history-page" aria-live="polite"></span>
+        <button class="secondary-button" id="history-next" type="button" data-copy="next">下一页</button>
+      </nav>
+
+      <section class="history-detail" id="history-detail" data-testid="history-detail" aria-labelledby="history-detail-title" hidden>
+        <div class="history-section-heading">
+          <div>
+            <p class="eyebrow" data-copy="detailEyebrow">对战记录</p>
+            <h2 id="history-detail-title" data-copy="detailTitle">对战记录</h2>
+          </div>
+          <button class="history-close-button" id="history-detail-close" type="button" data-copy="closeDetail">收起记录</button>
+        </div>
+        <p class="history-detail-summary" id="history-detail-summary"></p>
+        <div class="history-detail-status" id="history-detail-status" role="status" aria-live="polite"></div>
+        <ol class="history-event-list" id="history-event-list" data-testid="history-event-list"></ol>
+      </section>
+
+      <footer class="history-footer">
+        <span data-copy="footer">查看当前账号保存的对局记录。</span>
+        <span>FIREPLACE / LOCAL SESSION</span>
+      </footer>
+    </main>
+
+    <div class="history-confirm-shell" id="history-confirm-shell" hidden>
+      <div class="history-confirm-backdrop" data-confirm-close="true"></div>
+      <section class="history-confirm" id="history-confirm" role="dialog" aria-modal="true" aria-labelledby="history-confirm-title" aria-describedby="history-confirm-description">
+        <p class="eyebrow">ARCHIVE ACTION</p>
+        <h2 id="history-confirm-title" data-copy="abandonTitle">放弃这局未完成对战？</h2>
+        <p id="history-confirm-description"></p>
+        <div class="history-confirm-actions">
+          <button class="secondary-button" id="history-confirm-cancel" type="button" data-copy="cancel">继续保留</button>
+          <button class="danger-button" id="history-confirm-submit" type="button" data-copy="abandonConfirm">确认放弃</button>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

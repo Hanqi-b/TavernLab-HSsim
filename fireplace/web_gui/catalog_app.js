@@ -56,7 +56,6 @@ const refs = {
   detailName: document.getElementById("catalog-detail-name"),
   detailId: document.getElementById("catalog-detail-id"),
   detailBadges: document.getElementById("catalog-detail-badges"),
-  scriptNote: document.getElementById("catalog-script-note"),
   detailStats: document.getElementById("catalog-detail-stats"),
   rulesTitle: document.getElementById("catalog-rules-title"),
   detailText: document.getElementById("catalog-detail-text"),
@@ -173,7 +172,8 @@ function normalizeCard(raw) {
   const className = classValues.map((value) => optionLabel(state.classes, value)).join(state.locale === "enUS" ? ", " : "、");
   const rarity = text(source.rarity);
   const collectible = source.collectible;
-  const hasPythonScript = typeof source.has_python_script === "boolean" ? source.has_python_script : null;
+  const rawQualityStatus = text(source.quality_status).trim().toUpperCase();
+  const qualityStatus = ["GREEN", "YELLOW", "RED"].includes(rawQualityStatus) ? rawQualityStatus : null;
   return {
     raw: source,
     id,
@@ -193,7 +193,7 @@ function normalizeCard(raw) {
     attack: source.attack,
     health: source.health,
     durability: source.durability,
-    hasPythonScript,
+    qualityStatus,
   };
 }
 
@@ -318,13 +318,23 @@ function createNode(tag, className, content) {
   return node;
 }
 
+function qualityNotice(status) {
+  if (status === "YELLOW") {
+    return { label: t("catalog.qualityYellow"), className: "is-quality-yellow" };
+  }
+  if (status === "RED") {
+    return { label: t("catalog.qualityRed"), className: "is-quality-red" };
+  }
+  return null;
+}
+
 function renderCard(card) {
   const button = createNode("button", "catalog-card");
   button.type = "button";
   button.dataset.cardId = card.id;
   button.dataset.testid = "catalog-card";
   if (card.catalogSetId) button.dataset.catalogSet = card.catalogSetId;
-  if (typeof card.hasPythonScript === "boolean") button.dataset.hasPythonScript = String(card.hasPythonScript);
+  if (card.qualityStatus) button.dataset.qualityStatus = card.qualityStatus;
   button.setAttribute("aria-label", t("catalog.openDetail", { value: card.name }));
   button.addEventListener("click", () => openDetail(card, button));
 
@@ -355,16 +365,8 @@ function renderCard(card) {
   metadata.append(set, className);
   copy.append(metadata);
   if (card.collectible === false) copy.append(createNode("span", "catalog-card-badge", t("catalog.nonCollectible")));
-  if (typeof card.hasPythonScript === "boolean") {
-    const scriptClass = card.hasPythonScript ? "is-script-present" : "is-script-missing";
-    const scriptBadge = createNode(
-      "span",
-      `catalog-card-badge catalog-script-badge ${scriptClass}`,
-      t(card.hasPythonScript ? "catalog.pythonScriptYes" : "catalog.pythonScriptNo"),
-    );
-    scriptBadge.setAttribute("aria-label", `${t("catalog.pythonScript")}: ${scriptBadge.textContent}`);
-    copy.append(scriptBadge);
-  }
+  const quality = qualityNotice(card.qualityStatus);
+  if (quality) copy.append(createNode("span", `catalog-card-badge catalog-quality-badge ${quality.className}`, quality.label));
   button.append(copy);
   return button;
 }
@@ -467,7 +469,6 @@ function renderStaticCopy() {
   refs.detailEyebrow.textContent = t("catalog.detailEyebrow");
   refs.dialogClose.setAttribute("aria-label", t("catalog.close"));
   refs.rulesTitle.textContent = t("catalog.rules");
-  refs.scriptNote.textContent = t("catalog.pythonScriptCaveat");
   if (!state.detailCard) refs.detailText.textContent = t("catalog.noRules");
   refs.localeButtons.forEach((button) => {
     const selected = button.dataset.locale === state.locale;
@@ -627,19 +628,8 @@ function renderDetail(card) {
     ? t("catalog.nonCollectible")
     : card.collectible === true ? t("catalog.collectible") : "";
   if (collectionLabel) appendDetailBadge("", collectionLabel, card.collectible === false ? "is-muted" : "is-collectible");
-  if (typeof card.hasPythonScript === "boolean") {
-    const scriptClass = card.hasPythonScript ? "is-script-present" : "is-script-missing";
-    appendDetailBadge(
-      t("catalog.pythonScript"),
-      t(card.hasPythonScript ? "catalog.pythonScriptYes" : "catalog.pythonScriptNo"),
-      scriptClass,
-    );
-    refs.scriptNote.hidden = false;
-    refs.scriptNote.textContent = t("catalog.pythonScriptCaveat");
-  } else {
-    refs.scriptNote.hidden = true;
-    refs.scriptNote.textContent = "";
-  }
+  const quality = qualityNotice(card.qualityStatus);
+  if (quality) appendDetailBadge("", quality.label, `catalog-quality-badge ${quality.className}`);
   refs.detailStats.replaceChildren();
   appendStat(t("catalog.cardType"), enumLabel("type", card.type));
   appendStat(t("catalog.rarity"), enumLabel("rarity", card.rarity));

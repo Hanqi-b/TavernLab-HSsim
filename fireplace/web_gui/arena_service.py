@@ -4,10 +4,11 @@ from __future__ import annotations
 
 import copy
 from collections.abc import Mapping
-from typing import Any
+from typing import Any, Callable
 
 from fireplace.arena.rules import CLASSIC_SET, LARGE_SETS, SMALL_SETS
 from fireplace.arena.run import ArenaRun
+from fireplace.arena.formats import CUSTOM_FORMAT_ID, get_format
 from fireplace.arena.store import ArenaStore, ArenaStoreConflict
 
 from .catalog import CardCatalog
@@ -22,14 +23,22 @@ class ArenaService:
     """
 
     def __init__(
-        self, *, catalog: CardCatalog | None = None, store: ArenaStore | None = None
+        self,
+        *,
+        catalog: CardCatalog | None = None,
+        store: ArenaStore | None = None,
+        preserve_pending: Callable[[ArenaRun], bool] | None = None,
     ) -> None:
         self.catalog = catalog if catalog is not None else CardCatalog()
         self.store = store if store is not None else ArenaStore()
         self.store.acquire_owner()
         try:
             self.run = self.store.load()
-            if self.run is not None and self.run.stage == "match":
+            if (
+                self.run is not None
+                and self.run.stage == "match"
+                and not (preserve_pending is not None and preserve_pending(self.run))
+            ):
                 # A process restart cannot restore a live GameSession yet.
                 # After the prior process releases its owner lock, retry the
                 # unfinished battle without counting a loss.
@@ -81,6 +90,19 @@ class ArenaService:
         payload: dict[str, Any] = {
             "mode": run.stage if run is not None else "setup",
             "locale": locale,
+            "retired": False,
+            "format_id": run.format_id if run is not None else CUSTOM_FORMAT_ID,
+            "formats": [
+                {"id": "custom_v1", "label": "自选版" if locale == "zhCN" else "Custom", "max_wins": 7, "max_losses": 3},
+                {"id": "wild_2016_09_02", "label": "2016 历史版" if locale == "zhCN" else "2016 Wild", "max_wins": 12, "max_losses": 3},
+            ],
+            "max_wins": get_format(run.format_id if run else CUSTOM_FORMAT_ID).max_wins,
+            "max_losses": get_format(run.format_id if run else CUSTOM_FORMAT_ID).max_losses,
+            "offer_policy_accuracy": "reconstructed" if run and run.format_id != CUSTOM_FORMAT_ID else "existing",
+            "known_limitations": [
+                "Historical drafting uses current Fireplace card effects, Discover and random generation.",
+                "Offering probabilities and weights are reconstructed, not verified historical rates.",
+            ] if run and run.format_id != CUSTOM_FORMAT_ID else [],
             "pack_options": {
                 "basic": option("BASIC"),
                 "classic": option(CLASSIC_SET),
@@ -90,6 +112,31 @@ class ArenaService:
         }
         if run is None:
             return payload
+        card_offer = [self._card(card_id, locale) for card_id in run.choices]
+        if run.format_id != CUSTOM_FORMAT_ID and run.stage == "draft":
+            from fireplace.arena.formats import HERO_CLASSES
+            from fireplace.arena.ratings import get_rating
+
+            source = {
+                "name": "Lightforge",
+                "as_of": "2016-09-02",
+                "card_class": HERO_CLASSES[run.hero_id],
+            }
+            payload["rating_source"] = source
+            # Project only the player's current candidates. Copy catalog cards
+            # so rating annotations never leak into other views or formats.
+            card_offer = [
+                {
+                    **card,
+                    "arena_rating": {
+                        **get_rating(card["id"], source["card_class"]).to_dict(),
+                        "source": source["name"],
+                        "as_of": source["as_of"],
+                        "card_class": source["card_class"],
+                    },
+                }
+                for card in card_offer
+            ]
         payload.update(
             run_id=run.run_id,
             revision=run.revision,
@@ -97,8 +144,9 @@ class ArenaService:
             selected_sets=list(run.selected_sets),
             wins=run.wins,
             losses=run.losses,
+            retired=run.retired,
             hero_offer=[self._card(card_id, locale) for card_id in run.hero_choices],
-            card_offer=[self._card(card_id, locale) for card_id in run.choices],
+            card_offer=card_offer,
             deck=[self._card(card_id, locale) for card_id in run.deck],
             hero=self._card(run.hero_id, locale) if run.hero_id else None,
         )
@@ -115,6 +163,8 @@ class ArenaService:
         if run is None:
             raise WebLifecycleError("no Arena run", 409, self.state())
         current = self.state()
+        if "format_id" in data and data["format_id"] != run.format_id:
+            raise WebLifecycleError("Arena format cannot change during a run", 409, current)
         revision = data.get("revision")
         if (
             data.get("run_id") != run.run_id
@@ -131,7 +181,9 @@ class ArenaService:
         if self.run is not None and self.run.stage != "complete":
             raise WebLifecycleError("finish the current Arena run first", 409, self.state())
         try:
-            set_ids = data.get("set_ids")
+            format_id = data.get("format_id", CUSTOM_FORMAT_ID)
+            get_format(format_id)
+            set_ids = data.get("set_ids", [] if format_id != CUSTOM_FORMAT_ID else None)
             if not isinstance(set_ids, list):
                 raise ValueError("set_ids must be a list")
             run = ArenaRun.create(
@@ -139,6 +191,7 @@ class ArenaService:
                 data.get("nickname"),
                 data.get("locale"),
                 seed=seed,
+                format_id=format_id,
             )
         except (TypeError, ValueError) as exc:
             raise WebLifecycleError(str(exc), 400, self.state()) from exc
@@ -169,16 +222,49 @@ class ArenaService:
         run, _data = self._current(body, "ready")
         return run
 
-    def mark_battle_started(self) -> dict[str, Any]:
+    def retire(self, body: object) -> dict[str, Any]:
+        run, _data = self._current(body, "ready")
+        next_run = copy.deepcopy(run)
+        try:
+            next_run.retire()
+        except ValueError as exc:
+            raise WebLifecycleError(str(exc), 400, self.state()) from exc
+        self._commit(next_run, run)
+        return self.state()
+
+    def mark_battle_started(self, *, ai_draft: dict[str, Any] | None = None) -> dict[str, Any]:
         if self.run is None:
             raise ValueError("no Arena run")
         previous = self.run
         next_run = copy.deepcopy(previous)
+        if previous.format_id != CUSTOM_FORMAT_ID:
+            from fireplace.arena.ai_draft import AIDraft
+            if ai_draft is None:
+                raise ValueError("historical Arena requires a completed AI draft")
+            draft = AIDraft.from_dict(ai_draft)
+            if draft.data_profile != previous.data_profile:
+                raise ValueError("historical Arena AI draft profile does not match the run")
+            if (draft.trace[0]["header"]["seed"] != previous.seed + 100_000 + previous.match_index
+                    or draft.hero_id == previous.hero_id):
+                raise ValueError("historical Arena AI draft does not match the run seed or hero")
+            checked = draft.to_dict()
+            next_run.ai_drafts[str(previous.match_index)] = checked
         next_run.start_match()
         self._commit(next_run, previous)
         state = self.state()
         state["match_url"] = "/?arena=1"
         return state
+
+    def recover_pending_without_match(self) -> dict[str, Any]:
+        """Return a pending run to READY when no battle archive was created."""
+
+        if self.run is None or self.run.stage != "match":
+            return self.state()
+        previous = self.run
+        recovered = copy.deepcopy(previous)
+        recovered.recover_without_match()
+        self._commit(recovered, previous)
+        return self.state()
 
     def settle(self, match_id: str, human_won: bool | None) -> dict[str, Any]:
         if self.run is None:

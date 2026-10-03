@@ -228,13 +228,30 @@ class GameSession:
             self.action_log.finish(self.game)
         return result
 
+    def choose_action(self, player, *, agent=None):
+        """Select a decision without executing it (also used by the browser)."""
+        agent = self.agents[player] if agent is None else agent
+        observation = self.observation(player)
+        actions = self.legal_actions(player)
+        search = getattr(agent, "choose_action_with_search", None)
+        if callable(search) and observation["phase"] == "MAIN":
+            from .search_api import SearchUnavailable
+            from .search_simulation import EngineSearchPosition
+
+            try:
+                position = EngineSearchPosition.from_game(
+                    self.game, player, seed=getattr(agent, "seed", 0)
+                )
+            except SearchUnavailable:
+                return agent.choose_action(observation, actions)
+            return search(observation, actions, position)
+        return agent.choose_action(observation, actions)
+
     def _run_agent_action(self, player):
         actions = self.legal_actions(player)
         if not actions:
             raise RuntimeError("No legal decision for %s" % player.name)
-        action = self.agents[player].choose_action(
-            self.observation(player), actions
-        )
+        action = self.choose_action(player)
         if action not in actions:
             raise ActionError("Action is unavailable or stale in the current phase")
         return self.execute(player, action)

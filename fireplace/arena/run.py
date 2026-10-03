@@ -7,12 +7,14 @@ the result reported after it ends.
 
 from __future__ import annotations
 
+import copy
 import random
 import uuid
 from dataclasses import dataclass, field
 from typing import Any
 
 from .draft import card_offer, hero_offer
+from .formats import CUSTOM_FORMAT_ID, get_format
 from .pool import eligible_cards
 from .rules import CLASSIC_SET, LARGE_SETS, SMALL_SETS, validate_pool_sets, validate_sets
 
@@ -26,7 +28,7 @@ def _ids(cards: object) -> tuple[str, ...]:
 
 @dataclass
 class ArenaRun:
-    """Validated transition state for one 30-pick, seven-win/three-loss run."""
+    """Validated thirty-pick run with format-specific record limits."""
 
     run_id: str
     seed: int
@@ -43,12 +45,26 @@ class ArenaRun:
     losses: int = 0
     match_index: int = 0
     pending_match_id: str | None = None
+    retired: bool = False
+    format_id: str = CUSTOM_FORMAT_ID
+    data_profile: dict[str, Any] = field(default_factory=dict)
+    ai_drafts: dict[str, dict[str, Any]] = field(default_factory=dict)
 
     @classmethod
     def create(
-        cls, set_ids: list[str], nickname: str, locale: str, *, seed: int | None = None
+        cls, set_ids: list[str], nickname: str, locale: str, *,
+        seed: int | None = None, format_id: str = CUSTOM_FORMAT_ID,
     ) -> "ArenaRun":
-        selected_sets = validate_sets(set_ids)
+        config = get_format(format_id)
+        data_profile: dict[str, Any] = {}
+        if format_id == CUSTOM_FORMAT_ID:
+            selected_sets = validate_sets(set_ids)
+        else:
+            from .formats import historical_profile
+            if set_ids and tuple(set_ids) != config.fixed_sets:
+                raise ValueError("historical Arena has a fixed card pool")
+            selected_sets = config.fixed_sets
+            data_profile = historical_profile()
         if not isinstance(nickname, str) or not nickname.strip() or len(nickname.strip()) > 32:
             raise ValueError("nickname must contain 1 to 32 characters")
         if locale not in {"zhCN", "enUS"}:
@@ -63,6 +79,8 @@ class ArenaRun:
             nickname=nickname.strip(),
             locale=locale,
             selected_sets=selected_sets,
+            format_id=format_id,
+            data_profile=data_profile,
         )
         run.hero_choices = hero_offer(random.Random(seed))
         return run
@@ -75,8 +93,19 @@ class ArenaRun:
     def _next_choices(self) -> tuple[str, ...]:
         if self.hero_id is None:
             raise ValueError("choose a hero before drafting cards")
-        pool = eligible_cards(self.selected_sets, self.hero_id)
-        return _ids(card_offer(self._draft_rng(len(self.deck)), pool))
+        if self.format_id == CUSTOM_FORMAT_ID:
+            pool = eligible_cards(self.selected_sets, self.hero_id)
+            return _ids(card_offer(self._draft_rng(len(self.deck)), pool))
+        from .draft import historical_card_offer
+        from .pool import historical_eligible_cards
+        from .formats import historical_profile, historical_draft_rng
+        if historical_profile() != self.data_profile:
+            raise ValueError("historical Arena data profile changed; cannot continue drafting")
+        pick_number = len(self.deck) + 1
+        pool = historical_eligible_cards(self.hero_id)
+        return _ids(historical_card_offer(
+            historical_draft_rng(self.seed, pick_number, purpose="human"), pool, pick_number
+        ))
 
     def choose_hero(self, hero_id: str) -> None:
         if self.stage != "hero" or hero_id not in self.hero_choices:
@@ -116,7 +145,21 @@ class ArenaRun:
             raise ValueError("human_won must be true, false, or null")
         self.match_index += 1
         self.pending_match_id = None
-        self.stage = "complete" if self.wins >= 7 or self.losses >= 3 else "ready"
+        config = get_format(self.format_id)
+        self.stage = (
+            "complete" if self.wins >= config.max_wins or self.losses >= config.max_losses
+            else "ready"
+        )
+        self.revision += 1
+
+    def retire(self) -> None:
+        """End a ready run without changing its deck or record."""
+
+        if self.stage != "ready":
+            raise ValueError("the Arena run is not ready to retire")
+        self.pending_match_id = None
+        self.retired = True
+        self.stage = "complete"
         self.revision += 1
 
     def recover_without_match(self) -> None:
@@ -128,7 +171,7 @@ class ArenaRun:
             self.revision += 1
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        value = {
             "version": 1,
             "run_id": self.run_id,
             "seed": self.seed,
@@ -145,14 +188,30 @@ class ArenaRun:
             "losses": self.losses,
             "match_index": self.match_index,
             "pending_match_id": self.pending_match_id,
+            "retired": self.retired,
         }
+        if self.format_id != CUSTOM_FORMAT_ID:
+            value.update(
+                version=2, format_id=self.format_id,
+                data_profile=copy.deepcopy(self.data_profile),
+                ai_drafts=copy.deepcopy(self.ai_drafts),
+            )
+        return value
 
     @classmethod
     def from_dict(cls, value: dict[str, Any]) -> "ArenaRun":
-        if not isinstance(value, dict) or value.get("version") != 1:
+        if not isinstance(value, dict) or value.get("version") not in (1, 2):
             raise ValueError("unsupported Arena save version")
+        format_id = CUSTOM_FORMAT_ID if value["version"] == 1 else value.get("format_id")
+        config = get_format(format_id)
+        if value["version"] == 2 and format_id == CUSTOM_FORMAT_ID:
+            raise ValueError("custom Arena saves use version 1")
         saved_sets = tuple(value["selected_sets"])
-        if CLASSIC_SET in saved_sets:
+        if format_id != CUSTOM_FORMAT_ID:
+            if saved_sets != config.fixed_sets:
+                raise ValueError("invalid historical Arena saved card pool")
+            selected_sets = saved_sets
+        elif CLASSIC_SET in saved_sets:
             # Runs created before Classic became fixed counted it as a large
             # expansion. Let those drafts finish with their original choices.
             expansions = tuple(set_id for set_id in saved_sets if set_id != CLASSIC_SET)
@@ -167,6 +226,11 @@ class ArenaRun:
         stage = value["stage"]
         if stage not in {"hero", "draft", "ready", "match", "complete"}:
             raise ValueError("invalid Arena save stage")
+        retired = value.get("retired", False)
+        if type(retired) is not bool:
+            raise ValueError("invalid Arena saved retired marker")
+        if retired and stage != "complete":
+            raise ValueError("invalid Arena saved retired stage")
         deck = value["deck"]
         if not isinstance(deck, list) or len(deck) > 30 or any(not isinstance(card, str) for card in deck):
             raise ValueError("invalid Arena saved deck")
@@ -186,9 +250,32 @@ class ArenaRun:
             losses=int(value["losses"]),
             match_index=int(value["match_index"]),
             pending_match_id=value["pending_match_id"],
+            retired=retired,
+            format_id=format_id,
         )
         if run.wins < 0 or run.losses < 0 or run.revision < 0:
             raise ValueError("invalid Arena saved record")
+        if format_id != CUSTOM_FORMAT_ID:
+            profile = value.get("data_profile")
+            drafts = value.get("ai_drafts")
+            if not isinstance(profile, dict) or not profile or not isinstance(drafts, dict):
+                raise ValueError("invalid historical Arena saved draft profile")
+            from .ai_draft import AIDraft
+            for index, draft in drafts.items():
+                if not isinstance(index, str) or not index.isdecimal():
+                    raise ValueError("invalid historical Arena draft match index")
+                checked = AIDraft.from_dict(draft)
+                if checked.data_profile != profile:
+                    raise ValueError("historical Arena AI draft profile does not match the run")
+                if (checked.trace[0]["header"]["seed"] != run.seed + 100_000 + int(index)
+                        or checked.hero_id == run.hero_id):
+                    raise ValueError("historical Arena AI draft does not match the run seed or hero")
+            if stage == "match" and str(run.match_index) not in drafts:
+                raise ValueError("historical Arena pending match has no saved AI draft")
+            if any(int(index) > run.match_index for index in drafts):
+                raise ValueError("historical Arena saved draft has a future match index")
+            run.data_profile = copy.deepcopy(profile)
+            run.ai_drafts = copy.deepcopy(drafts)
         return run
 
 

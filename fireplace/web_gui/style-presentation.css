@@ -9,6 +9,18 @@
   display: none;
 }
 
+.presentation-ghost .card-live-stats,
+.presentation-ghost .keyword-icon {
+  display: none;
+}
+
+.presentation-ghost.targetable::before,
+.presentation-ghost.sourceable::before,
+.presentation-ghost.playable::before {
+  display: none !important;
+  content: none !important;
+}
+
 .presentation-bolt {
   position: fixed;
   z-index: 1002;
@@ -20,6 +32,59 @@
   box-shadow: 0 0 24px 9px rgb(110 184 255 / 65%);
 }
 
+.presentation-effect-bolt {
+  width: 24px;
+  height: 24px;
+  z-index: 1004;
+  background: radial-gradient(circle, #fff9c4 0%, #ffe08a 34%, #ff7d4e 64%, transparent 73%);
+  box-shadow: 0 0 20px 7px rgb(255 157 96 / 68%);
+}
+
+.presentation-effect-caption {
+  position: fixed;
+  z-index: 1005;
+  width: min(34vw, 300px);
+  max-width: calc(100vw - 28px);
+  padding: 5px 10px;
+  border: 1px solid rgb(244 211 149 / 72%);
+  border-radius: 999px;
+  pointer-events: none;
+  background: rgb(24 19 25 / 92%);
+  box-shadow: 0 5px 18px rgb(0 0 0 / 50%), 0 0 15px rgb(244 186 89 / 35%);
+  color: #ffe3a8;
+  font: 700 clamp(11px, 1.3vw, 17px) Georgia, serif;
+  line-height: 1.25;
+  text-align: center;
+  text-shadow: 0 1px 2px #170b09;
+  transform: translate(-50%, 0);
+  overflow-wrap: anywhere;
+}
+
+.presentation-damage-copy,
+.presentation-destroy-copy { border-color: rgb(255 140 106 / 76%); color: #ffd0bb; }
+.presentation-heal-copy { border-color: rgb(150 240 170 / 76%); color: #c8ffd4; }
+.presentation-armor-copy { border-color: rgb(143 205 255 / 76%); color: #d4ecff; }
+.presentation-deck-empty-copy,
+.presentation-fatigue-copy { border-color: rgb(247 196 100 / 82%); color: #ffe8ad; }
+.presentation-deathrattle,
+.presentation-battlecry { border-color: rgb(204 172 255 / 78%); color: #e7d4ff; }
+.presentation-summon-copy { border-color: rgb(135 224 183 / 76%); color: #c8ffe1; }
+
+.presentation-source-anchor {
+  z-index: 1001;
+  filter: drop-shadow(0 0 15px rgb(204 172 255 / 62%));
+  box-shadow: 0 0 0 3px rgb(204 172 255 / 68%), 0 0 24px rgb(204 172 255 / 58%);
+}
+
+.presentation-effect-anchor {
+  transition: visibility 0s linear;
+}
+
+.presentation-ghost[data-effect-type="DEATH"],
+.presentation-ghost[data-effect-type="DESTROY"] {
+  z-index: 1002;
+}
+
 .presentation-number {
   position: fixed;
   z-index: 1003;
@@ -28,6 +93,11 @@
   text-shadow: 0 2px 2px #170b09, 0 0 11px #170b09;
   white-space: nowrap;
 }
+
+.presentation-number[data-effect-type="DAMAGE"] { z-index: 1006; }
+.presentation-number[data-effect-type="HEAL"],
+.presentation-number[data-effect-type="ARMOR"] { z-index: 1006; }
+.presentation-shield-break { color: #fff2a6; }
 
 .presentation-damage { color: #ff9a78; }
 .presentation-heal { color: #a4f6b7; }
@@ -79,6 +149,10 @@
 .hero-card.attack-source { animation: attack-nudge 450ms ease-out; }
 
 @media (prefers-reduced-motion: reduce) {
+  .presentation-effect-caption {
+    transition: none !important;
+  }
+
   .game-over:not([hidden]),
   .game-over:not([hidden]) .game-over-card { animation-duration: 1ms; }
   .board-card.summon-flash,

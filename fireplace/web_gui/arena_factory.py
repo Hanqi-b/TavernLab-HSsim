@@ -24,6 +24,7 @@ def build_arena_game(
     hero_id: str,
     deck: list[str],
     selected_sets: tuple[str, ...],
+    ai_draft: object | None = None,
 ) -> tuple[Game, Player, Player]:
     """Return a configured game; ``WebGame`` starts its session afterward."""
 
@@ -32,8 +33,14 @@ def build_arena_game(
     if not cards.db.initialized:
         cards.db.initialize()
     human = Player(nickname, list(deck), hero_id)
-    opponent = Player("Heuristic", [], "HERO_01")
+    opponent = Player("MCTS", [], "HERO_01")
     game = Game((human, opponent), seed=seed)
+    if ai_draft is not None:
+        from fireplace.arena.ai_draft import AIDraft
+        prepared = AIDraft.from_dict(ai_draft)
+        opponent.starting_hero = prepared.hero_id
+        opponent.starting_deck = list(prepared.deck)
+        return game, human, opponent
     opponent_heroes = [candidate for candidate in HERO_IDS if candidate != hero_id]
     opponent_hero = game.random.choice(opponent_heroes)
     opponent_pool = eligible_cards(selected_sets, opponent_hero)

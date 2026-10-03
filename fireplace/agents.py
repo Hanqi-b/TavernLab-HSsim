@@ -14,7 +14,9 @@ from pprint import pformat
 from typing import Callable, TextIO
 
 from .agent_api import Action
+from .mcts_agent import MCTSAgent
 from .heuristic_agent import HeuristicAgent
+from .radical_agent import RadicalAgent
 
 
 class UserQuit(Exception):
@@ -256,4 +258,11 @@ class HumanTUIAgent:
             self._write("Invalid input: choose a number from 1 to %d." % len(actions))
 
 
-__all__ = ["HeuristicAgent", "HumanTUIAgent", "RandomAgent", "UserQuit"]
+__all__ = [
+    "HeuristicAgent",
+    "HumanTUIAgent",
+    "MCTSAgent",
+    "RadicalAgent",
+    "RandomAgent",
+    "UserQuit",
+]

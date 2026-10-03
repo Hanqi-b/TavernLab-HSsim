@@ -1,5 +1,6 @@
 include fireplace/cards/CardDefs.xml
 include fireplace/cards/Scholomance.xml
+recursive-include fireplace/arena/data/wild_2016_09_02 *.json
 recursive-include fireplace/web_gui *.html *.js *.css *.webp
 include card_assets/placeholder.png
 include card_assets/SOURCES.md

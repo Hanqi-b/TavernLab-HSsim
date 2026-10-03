@@ -119,3 +119,108 @@ __all__ = [
     "card_offer",
     "hero_offer",
 ]
+
+
+def _historical_field(card: object, name: str, default: Any = None) -> Any:
+    if isinstance(card, Mapping):
+        return card.get(name, default)
+    return getattr(card, name, default)
+
+
+def _historical_rarity(card: object) -> str:
+    return str(_historical_field(card, "rarity", "")).upper()
+
+
+def _historical_offer_weight(card: object) -> int:
+    # The source material does not establish a measured expansion-rate boost.
+    # The frozen reconstruction therefore uses the documented Karazhan
+    # multiplier of one and gives class cards the documented two-to-one weight.
+    from .formats import CLASS_WEIGHT, EXPANSION_BOOST
+
+    card_class = str(
+        _historical_field(
+            card,
+            "card_class",
+            _historical_field(card, "class", "NEUTRAL"),
+        )
+    ).upper()
+    card_set = str(_historical_field(card, "card_set", "")).upper()
+    weight = EXPANSION_BOOST if card_set == "KARA" else 1
+    if card_class != "NEUTRAL":
+        weight *= CLASS_WEIGHT
+    return weight
+
+
+def historical_card_offer(
+    rng: random.Random,
+    pool: Sequence[CardInfo | Mapping[str, Any] | object],
+    pick_number: int,
+) -> tuple[str, str, str]:
+    """Offer three distinct IDs from one reconstructed rarity bucket.
+
+    Picks 1, 10, 20, and 30 select the entire three-card offer from one
+    Rare/Epic/Legendary bucket. Other rounds select the entire offer from the
+    shared Basic/Common bucket or one of those three rare-plus buckets. A
+    bucket with fewer than three unique cards is a deterministic error; no
+    fallback or silent renormalization is applied.
+    """
+
+    from .formats import (
+        GUARANTEED_RARE_PLUS_PICKS,
+        OFFER_SIZE,
+        RARITY_WEIGHTS,
+        RARE_PLUS_RARITIES,
+        REGULAR_RARITIES,
+    )
+
+    if not isinstance(rng, random.Random):
+        raise TypeError("rng must be an instance of random.Random")
+    if type(pick_number) is not int or pick_number < 1:
+        raise ValueError("pick_number must be a positive integer")
+
+    unique: list[object] = []
+    seen: set[str] = set()
+    for card in pool:
+        card_id = _historical_field(card, "id", _historical_field(card, "card_id"))
+        if not isinstance(card_id, str) or not card_id:
+            raise ValueError("each historical offer card must have a string id")
+        if card_id not in seen:
+            unique.append(card)
+            seen.add(card_id)
+    if len(unique) < OFFER_SIZE:
+        raise ValueError("historical card pool must contain at least three distinct cards")
+
+    category_candidates: dict[str, list[object]] = {
+        "COMMON": [card for card in unique if _historical_rarity(card) in REGULAR_RARITIES],
+        "RARE": [card for card in unique if _historical_rarity(card) == "RARE"],
+        "EPIC": [card for card in unique if _historical_rarity(card) == "EPIC"],
+        "LEGENDARY": [card for card in unique if _historical_rarity(card) == "LEGENDARY"],
+    }
+    if any(len(cards) < OFFER_SIZE for cards in category_candidates.values()):
+        raise ValueError("historical offer requires at least three cards in every rarity bucket")
+
+    eligible_categories = list(category_candidates)
+    if pick_number in GUARANTEED_RARE_PLUS_PICKS:
+        eligible_categories = [
+            category for category in eligible_categories if category in RARE_PLUS_RARITIES
+        ]
+    category = _weighted_choice(
+        rng,
+        eligible_categories,
+        [RARITY_WEIGHTS[category] for category in eligible_categories],
+    )
+
+    remaining = list(category_candidates[category])
+    selected: list[object] = []
+    while len(selected) < OFFER_SIZE:
+        weights = [_historical_offer_weight(card) for card in remaining]
+        chosen = _weighted_choice(rng, remaining, weights)
+        selected.append(chosen)
+        remaining.remove(chosen)
+    return tuple(
+        str(_historical_field(card, "id", _historical_field(card, "card_id")))
+        for card in selected
+    )  # type: ignore[return-value]
+
+
+__all__.append("historical_card_offer")

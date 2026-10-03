@@ -92,6 +92,10 @@ function assertCatalogQuery(record, setId, pageNumber) {
   assertCollectibleNeutralPage(record.payload);
 }
 
+function catalogApiUrl(url) {
+  return url.pathname === "/api/catalog";
+}
+
 async function main() {
   const testDataRoot = fs.mkdtempSync(path.join(os.tmpdir(), "fireplace-catalog-browser-"));
   const server = startServer(testDataRoot);
@@ -107,13 +111,37 @@ async function main() {
     const assetRequests = [];
     const assetResponses = [];
     const catalogResponses = [];
+    const qualityStatusById = new Map([["EX1_015", "GREEN"]]);
+    const qualityCardIds = {};
     const image = (color) => Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="80" height="120" viewBox="0 0 80 120"><rect x="1" y="1" width="78" height="118" rx="7" fill="#171b2b" stroke="${color}" stroke-width="3"/><circle cx="40" cy="50" r="24" fill="${color}"/><path d="M10 88h60v18H10z" fill="#e3c079"/></svg>`);
     await page.route("**/api/catalog?*", async (route) => {
       const url = new URL(route.request().url());
       const response = await route.fetch();
-      const body = await response.body();
-      if (response.ok()) catalogResponses.push({ url, payload: JSON.parse(body.toString("utf8")) });
-      await route.fulfill({ response, body });
+      const payload = JSON.parse((await response.body()).toString("utf8"));
+      if (response.ok()) {
+        if (url.searchParams.get("set") === "BASIC" && url.searchParams.get("page") === "1" && !url.searchParams.has("q")) {
+          const statusCards = payload.items.filter((card) => card.id !== "EX1_015").slice(0, 3);
+          ["GREEN", "YELLOW", "RED"].forEach((status, index) => {
+            const card = statusCards[index];
+            if (!card) return;
+            qualityStatusById.set(card.id, status);
+            qualityCardIds[status] = card.id;
+          });
+        }
+        payload.items = payload.items.map((card) => {
+          if (qualityStatusById.has(card.id)) card.quality_status = qualityStatusById.get(card.id);
+          return card;
+        });
+        catalogResponses.push({ url, payload });
+      }
+      await route.fulfill({ response, body: JSON.stringify(payload) });
+    });
+    await page.route("**/api/catalog/cards/**", async (route) => {
+      const response = await route.fetch();
+      const payload = JSON.parse((await response.body()).toString("utf8"));
+      const card = payload.card && typeof payload.card === "object" ? payload.card : payload;
+      if (qualityStatusById.has(card.id)) card.quality_status = qualityStatusById.get(card.id);
+      await route.fulfill({ response, body: JSON.stringify(payload) });
     });
     await page.route("**/catalog/assets/**", async (route) => {
       const requestUrl = new URL(route.request().url());
@@ -162,6 +190,23 @@ async function main() {
     const basicResponse = await waitForCatalogPayload(catalogResponses, "BASIC", 1);
     assertCatalogQuery(basicResponse, "BASIC", 1);
     assert(basicResponse.payload.total > 0, "the default Basic set should contain collectible Neutral cards");
+    assert.deepEqual(Object.keys(qualityCardIds).sort(), ["GREEN", "RED", "YELLOW"], "catalog fixture should cover all three quality statuses");
+    for (const [status, label] of [["GREEN", ""], ["YELLOW", "效果待验证"], ["RED", "效果存在问题"]]) {
+      const cardId = qualityCardIds[status];
+      const card = page.locator(`.catalog-card[data-card-id="${cardId}"]`);
+      assert.equal(await card.getAttribute("data-quality-status"), status, `${status} catalog card should expose its status`);
+      const gridBadge = card.locator(".catalog-quality-badge");
+      if (status === "GREEN") assert.equal(await gridBadge.count(), 0, "GREEN cards should have no extra catalog alert");
+      else assert.equal((await gridBadge.textContent()).trim(), label, `${status} grid alert should use the Chinese label`);
+      assert.equal(await card.locator(".catalog-script-badge").count(), 0, "catalog cards must not show Python script labels");
+      await card.click();
+      await page.locator('[data-testid="catalog-detail"]').waitFor({ state: "visible" });
+      const detailBadge = page.locator("#catalog-detail-badges .catalog-quality-badge");
+      if (status === "GREEN") assert.equal(await detailBadge.count(), 0, "GREEN details should have no extra catalog alert");
+      else assert.equal((await detailBadge.textContent()).trim(), label, `${status} detail alert should use the Chinese label`);
+      await page.locator("#catalog-dialog-close").click();
+    }
+    assert.equal(await page.locator(".catalog-script-badge").count(), 0, "the catalog must not show Python script labels");
     fs.mkdirSync(artifacts, { recursive: true });
     await page.screenshot({ path: path.join(artifacts, "catalog-desktop.png") });
 
@@ -251,7 +296,7 @@ async function main() {
     await page.screenshot({ path: path.join(artifacts, "catalog-rendered-mobile.png") });
     await page.setViewportSize({ width: 1440, height: 900 });
     await frameFace(page, cardFace, 160);
-    assert.equal(await page.locator('.catalog-card[data-card-id="EX1_015"] .catalog-script-badge').count(), 1, "cards must expose Python script status");
+    assert.equal(await page.locator('.catalog-card[data-card-id="EX1_015"] .catalog-script-badge').count(), 0, "cards must not expose Python script status");
     const retryResponse = [...catalogResponses].reverse().find((item) => item.url.searchParams.get("q") === "EX1_015");
     assert(retryResponse, "search should issue a catalog query");
     assertCatalogQuery(retryResponse, "BASIC", 1);
@@ -262,7 +307,7 @@ async function main() {
     assert(assetRequests.includes("/catalog/assets/render/EX1_015"), "detail cards must request rendered card assets");
     const detailBox = await page.locator("#catalog-detail-art").boundingBox();
     assert(detailBox && detailBox.width <= 221, "detail card art should stay within the compact width limit");
-    assert.equal(await page.locator("#catalog-script-note").getAttribute("hidden"), null, "detail must explain Python script status");
+    assert.equal(await page.locator("#catalog-script-note").count(), 0, "detail must not include the obsolete Python script note");
     await page.locator('#catalog-detail-image[data-image-state="loaded"]').waitFor({ timeout: 20000 });
     const detailImageUrl = await page.locator("#catalog-detail-image").getAttribute("src");
     const refreshedList = page.waitForResponse((response) =>
@@ -285,6 +330,27 @@ async function main() {
     await page.locator('.catalog-card[data-card-id="CS2_171"]').click();
     await page.waitForFunction(() => document.getElementById("catalog-detail-name")?.textContent === "Stonetusk Boar", null, { timeout: 20000 });
     await page.locator("#catalog-dialog-close").click();
+    for (const [status, label] of [["GREEN", ""], ["YELLOW", "Effects not fully verified"], ["RED", "Known effect issues"]]) {
+      const cardId = qualityCardIds[status];
+      const statusResponse = page.waitForResponse((response) => {
+        const url = new URL(response.url());
+        return catalogApiUrl(url) && url.searchParams.get("q") === cardId;
+      });
+      await page.locator('[data-testid="catalog-search"]').fill(cardId);
+      await statusResponse;
+      await page.waitForFunction(() => document.getElementById("catalog-grid")?.getAttribute("aria-busy") === "false");
+      const card = page.locator(`.catalog-card[data-card-id="${cardId}"]`);
+      await card.waitFor({ timeout: 20000 });
+      const gridBadge = card.locator(".catalog-quality-badge");
+      if (status === "GREEN") assert.equal(await gridBadge.count(), 0, "GREEN cards should have no extra English catalog alert");
+      else assert.equal((await gridBadge.textContent()).trim(), label, `${status} grid alert should use the English label`);
+      await card.click();
+      await page.locator('[data-testid="catalog-detail"]').waitFor({ state: "visible" });
+      const detailBadge = page.locator("#catalog-detail-badges .catalog-quality-badge");
+      if (status === "GREEN") assert.equal(await detailBadge.count(), 0, "GREEN details should have no extra English catalog alert");
+      else assert.equal((await detailBadge.textContent()).trim(), label, `${status} detail alert should use the English label`);
+      await page.locator("#catalog-dialog-close").click();
+    }
 
     // A delayed response from a closed Neutral card must not replace the next card's art.
     await page.locator('[data-testid="catalog-search"]').fill("EX1_015");

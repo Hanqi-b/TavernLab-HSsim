@@ -1,6 +1,23 @@
 from ..utils import *
 
 
+class _BlinkFoxEnemyClass(LazyValue):
+    """Resolve Blink Fox's opponent profession across neutral hero swaps."""
+
+    def evaluate(self, source):
+        opponent = source.controller.opponent
+        current_class = opponent.hero.card_class
+        if current_class == CardClass.NEUTRAL:
+            starting_hero = getattr(opponent, "starting_hero", None)
+            starting_class = getattr(starting_hero, "card_class", CardClass.INVALID)
+            if starting_class not in (CardClass.INVALID, CardClass.NEUTRAL):
+                return starting_class
+        return current_class
+
+
+BLINK_FOX_ENEMY_CLASS = _BlinkFoxEnemyClass()
+
+
 ##
 # Minions
 
@@ -41,7 +58,7 @@ class GIL_827:
     """Blink Fox"""
 
     # <b>Battlecry:</b> Add a random card to your hand <i>(from your opponent's class).</i>
-    play = Give(CONTROLLER, RandomCollectible(card_class=ENEMY_CLASS))
+    play = Give(CONTROLLER, RandomCollectible(card_class=BLINK_FOX_ENEMY_CLASS))
 
 
 class GIL_902:

@@ -8,6 +8,7 @@ browser card browser only needs the XML metadata, so this module uses
 
 from __future__ import annotations
 
+import csv
 import html
 import re
 from collections import Counter
@@ -33,6 +34,10 @@ _MAX_QUERY_LENGTH = 100
 _CARD_MARKUP_RE = re.compile(r"<[^>]*>")
 _CARD_VALUE_RE = re.compile(r"\$(\d+)")
 _CARD_TOKEN_RE = re.compile(r"\[x\]", re.IGNORECASE)
+_QUALITY_STATUSES = frozenset(("GREEN", "YELLOW", "RED"))
+_QUALITY_REPORT_RELATIVE_PATH = Path(
+    "reports", "card_quality_full_2026-09-27", "card_quality.csv"
+)
 
 # Hearthstone's enum module intentionally exposes stable IDs rather than UI
 # translations.  Keep this small display-only table here so the catalog API
@@ -91,6 +96,49 @@ _CLASS_LABELS = {
 
 def _default_source_path() -> Path:
     return DEFAULT_CARD_DEFS_PATH
+
+
+def _default_quality_report_path() -> Path:
+    return Path(__file__).resolve().parents[2] / _QUALITY_REPORT_RELATIVE_PATH
+
+
+def _read_quality_statuses(path: Path) -> dict[str, str]:
+    """Read validated per-card quality statuses from the fixed aggregate report."""
+
+    statuses: dict[str, str | None] = {}
+    try:
+        with path.open("r", encoding="utf-8-sig", newline="") as stream:
+            reader = csv.DictReader(stream)
+            if not reader.fieldnames or not {
+                "card_id",
+                "status",
+            }.issubset(reader.fieldnames):
+                return {}
+            for row in reader:
+                card_id = row.get("card_id")
+                status = row.get("status")
+                if not isinstance(card_id, str):
+                    continue
+                card_id = card_id.strip()
+                if not _CARD_ID_RE.fullmatch(card_id):
+                    continue
+                normalized_status = status if isinstance(status, str) else None
+                if normalized_status not in _QUALITY_STATUSES:
+                    normalized_status = None
+                previous = statuses.get(card_id)
+                if card_id in statuses and previous != normalized_status:
+                    # Conflicting duplicate rows are ambiguous; do not choose
+                    # an arbitrary classification.
+                    statuses[card_id] = None
+                elif card_id not in statuses:
+                    statuses[card_id] = normalized_status
+    except (OSError, UnicodeError, csv.Error):
+        return {}
+    return {
+        card_id: status
+        for card_id, status in statuses.items()
+        if status in _QUALITY_STATUSES
+    }
 
 
 def _enum_name(value: object) -> str | None:
@@ -189,6 +237,7 @@ class _CardRecord:
     collectible: bool
     catalog_set: str | None
     has_python_script: bool
+    quality_status: str | None
 
     @property
     def search_text(self) -> str:
@@ -213,6 +262,7 @@ class _CardRecord:
             "rarity": self.rarity,
             "collectible": self.collectible,
             "has_python_script": self.has_python_script,
+            "quality_status": self.quality_status,
         }
 
 
@@ -230,12 +280,30 @@ class CardCatalog:
     conversion finish, so readers never observe a partially loaded catalog.
     """
 
-    def __init__(self, source_path: Path | None = None):
+    def __init__(
+        self,
+        source_path: Path | None = None,
+        *,
+        quality_csv_path: Path | None = None,
+    ):
         self._uses_shared_default_data = source_path is None
         self.source_path = Path(source_path) if source_path is not None else _default_source_path()
         self._lock = RLock()
         self._indexes: dict[str, _CatalogIndex] = {}
         self._script_index = PythonScriptIndex(self.source_path.parent)
+        self._quality_csv_path = (
+            Path(quality_csv_path)
+            if quality_csv_path is not None
+            else _default_quality_report_path()
+        )
+        self._quality_statuses: dict[str, str] | None = None
+
+    def _get_quality_statuses(self) -> dict[str, str]:
+        current = self._quality_statuses
+        if current is None:
+            current = _read_quality_statuses(self._quality_csv_path)
+            self._quality_statuses = current
+        return current
 
     def _validate_locale(self, locale: str) -> str:
         if not isinstance(locale, str) or locale not in _VALID_LOCALES:
@@ -305,6 +373,7 @@ class CardCatalog:
                     source_path=self.source_path,
                     include_scholomance=False,
                 )
+            quality_statuses = self._get_quality_statuses()
             dbf_to_id = {
                 card.dbf_id: card_id
                 for card_id, card in loaded.items()
@@ -376,6 +445,7 @@ class CardCatalog:
                     collectible=bool(getattr(card, "collectible", False)),
                     catalog_set=catalog_set,
                     has_python_script=has_python_script,
+                    quality_status=quality_statuses.get(card_id),
                 )
                 records.append(record)
 

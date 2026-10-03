@@ -16,22 +16,26 @@ from tests.web_gui_support import (
 )
 
 
-def test_lobby_start_locale_nickname_and_terminal_return(lobby_server):
+@pytest.mark.parametrize("opponent, agent_name", [("radical", "RadicalAgent"), ("mcts", "MCTSAgent")])
+def test_lobby_start_locale_nickname_and_terminal_return(lobby_server, opponent, agent_name):
     app, base = lobby_server()
     status, lobby = request(base)
     assert status == 200
-    assert lobby == {"mode": "lobby", "opponent": "heuristic"}
+    assert lobby == {"mode": "lobby", "opponent": "radical"}
 
     status, started = request(
         base,
         "/api/start",
-        {"nickname": "  Alice  ", "locale": "enUS"},
+        {"nickname": "  Alice  ", "locale": "enUS", "opponent": opponent},
     )
     assert status == 200
     assert started["mode"] == "match"
     assert started["locale"] == "enUS"
     assert started["nickname"] == "Alice"
     assert started["observation"]["phase"] == "MULLIGAN"
+    assert app.active is not None
+    assert app.active.human.opponent.name == {"radical": "Radical", "mcts": "MCTS"}[opponent]
+    assert type(app.active.opponent_agent).__name__ == agent_name
 
     status, rejected = request(
         base,
@@ -104,14 +108,15 @@ def test_lobby_concede_finishes_match_and_rejects_retries(lobby_server):
     assert status == 409 and no_match["error"] == "no active match"
 
 
-def test_lobby_rejects_removed_random_policy(lobby_server):
-    with pytest.raises(ValueError, match="heuristic"):
-        WebGameManager(opponent="random")
+@pytest.mark.parametrize("opponent", ["heuristic", "random"])
+def test_lobby_rejects_disabled_policy(lobby_server, opponent):
+    with pytest.raises(ValueError, match="radical"):
+        WebGameManager(opponent=opponent)
     app, base = lobby_server()
     status, rejected = request(
         base,
         "/api/start",
-        {"nickname": "Alice", "opponent": "random", "locale": "zhCN"},
+        {"nickname": "Alice", "opponent": opponent, "locale": "zhCN"},
     )
     assert status == 400
     assert rejected["mode"] == "lobby"

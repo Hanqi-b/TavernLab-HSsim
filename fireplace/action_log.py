@@ -13,10 +13,11 @@ import os
 import subprocess
 import tempfile
 import uuid
+import copy
 from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any, Callable, Mapping
 
 
 SCHEMA_VERSION = 1
@@ -175,8 +176,13 @@ class ActionLog:
         game_id: str | uuid.UUID | None = None,
         source_revision: str | None = None,
         seed: Any = None,
+        on_save: Callable[[dict[str, Any]], Any] | None = None,
     ) -> None:
         self.output_path = Path(output_path) if output_path is not None else None
+        # ``on_save`` deliberately remains a public attribute.  Account
+        # backends construct the log before they have created the archive
+        # envelope, then attach the callback once the initial row exists.
+        self.on_save = on_save
         self._actions: list[dict[str, Any]] = []
         self._players = self._snapshot_players(game)
         self._first_player_seat: int | None = None
@@ -185,6 +191,8 @@ class ActionLog:
         self._started_at = _utc_now()
         self._finished_at: str | None = None
         self._replay: dict[str, Any] | None = None
+        self._checkpoint: dict[str, Any] | None = None
+        self._started = False
 
         if source_revision is None:
             repository_revision, source_dirty = _repository_metadata()
@@ -237,6 +245,44 @@ class ActionLog:
     def _save_if_configured(self) -> None:
         if self.output_path is not None:
             self.save()
+        callback = self.on_save
+        if callback is not None:
+            # ``to_dict`` already walks the complete value tree.  Keep an
+            # additional copy at this boundary so a callback that annotates
+            # or retains its argument can never mutate the live log.
+            callback(copy.deepcopy(self.to_dict()))
+
+    @staticmethod
+    def _checkpoint_for(game: Any, action_count: int) -> dict[str, Any]:
+        """Capture deterministic recovery state without retaining engine objects."""
+
+        from .replay_state import normalized_game_state, serialize_rng_state
+
+        random_object = getattr(game, "random", None)
+        getstate = getattr(random_object, "getstate", None)
+        if not callable(getstate):
+            raise ValueError("game has no usable RNG state")
+        return {
+            "action_count": action_count,
+            "state": normalized_game_state(game),
+            "rng_state": serialize_rng_state(getstate()),
+        }
+
+    def _capture_checkpoint(self, game: Any) -> None:
+        """Store the latest state/RNG position after one accepted boundary."""
+
+        random_object = getattr(game, "random", None)
+        if not callable(getattr(random_object, "getstate", None)):
+            # Lightweight test doubles and historical in-memory callers may
+            # not expose the engine RNG.  Their logs remain useful for
+            # recording decisions, but cannot claim to support recovery.
+            return
+        self._checkpoint = self._checkpoint_for(game, len(self._actions))
+        if self._replay is not None:
+            # Keep replay metadata self-contained for consumers that already
+            # treat ``replay`` as the deterministic verification namespace;
+            # the top-level copy remains convenient for archive projections.
+            self._replay["checkpoint"] = copy.deepcopy(self._checkpoint)
 
     def before_start(self, game: Any) -> None:
         """Capture the exact input and RNG position immediately before setup.
@@ -248,19 +294,29 @@ class ActionLog:
         from .game import Game
         from .replay_state import code_signature, serialize_rng_state
 
-        self._players = self._snapshot_players(game)
-        self._replay = {
-            "format_version": 1,
-            "game_class": "fireplace.game.Game" if type(game) is Game else None,
-            "code_signature": code_signature(),
-            "setup_rng_state": serialize_rng_state(game.random.getstate()),
-            "final_state": None,
-        }
+        # A hydrated log already contains the authoritative pre-start RNG
+        # position.  Re-recording it here would make a resumed session depend
+        # on whatever stream the caller happened to use while constructing its
+        # temporary Game.
+        if self._replay is None:
+            self._players = self._snapshot_players(game)
+            self._replay = {
+                "format_version": 1,
+                "game_class": "fireplace.game.Game" if type(game) is Game else None,
+                "code_signature": code_signature(),
+                "setup_rng_state": serialize_rng_state(game.random.getstate()),
+                "final_state": None,
+            }
         self._save_if_configured()
 
     def started(self, game: Any) -> None:
         """Record setup-derived values after ``game.start()`` has completed."""
 
+        # GameSession invokes ``started`` in its constructor for an already
+        # started engine.  A recovered log must retain the original resolved
+        # hero/deck (for example, a random setup hero), so only fill those
+        # fields on the first call or when a legacy/header-only log lacks them.
+        first_start = not self._started
         first_player = getattr(game, "player1", None)
         if first_player is None:
             players = list(getattr(game, "players", ()))
@@ -268,7 +324,7 @@ class ActionLog:
                 (player for player in players if getattr(player, "first_player", False)),
                 getattr(game, "current_player", None),
             )
-        if first_player is not None:
+        if first_start and first_player is not None:
             try:
                 self._first_player_seat = self._seat(game, first_player)
             except ValueError:
@@ -288,8 +344,13 @@ class ActionLog:
                     }
                 )
             entry = self._players[seat]
-            entry["resolved_hero_id"] = _hero_id(player)
-            entry["resolved_deck_card_ids"] = _deck_values(player)
+            if first_start or "resolved_hero_id" not in entry:
+                entry["resolved_hero_id"] = _hero_id(player)
+            if first_start or "resolved_deck_card_ids" not in entry:
+                entry["resolved_deck_card_ids"] = _deck_values(player)
+
+        self._started = True
+        self._capture_checkpoint(game)
 
         self._save_if_configured()
 
@@ -317,6 +378,7 @@ class ActionLog:
             "action": _json_safe(action_data),
         }
         self._actions.append(entry)
+        self._capture_checkpoint(game)
         self._save_if_configured()
 
     def finish(self, game: Any, status: str = "complete") -> None:
@@ -339,7 +401,51 @@ class ActionLog:
             from .replay_state import normalized_game_state
 
             self._replay["final_state"] = normalized_game_state(game)
+        self._capture_checkpoint(game)
         self._save_if_configured()
+
+    @classmethod
+    def from_dict(
+        cls,
+        value: Mapping[str, Any],
+        on_save: Callable[[dict[str, Any]], Any] | None = None,
+    ) -> "ActionLog":
+        """Hydrate a detached log header and accepted action prefix.
+
+        No engine object is reconstructed here.  ``restore_action_log`` owns
+        replay validation and only attaches a callback after that validation
+        succeeds; keeping this constructor side-effect free makes a corrupt
+        archive safe to inspect.
+        """
+
+        if not isinstance(value, Mapping):
+            raise ValueError("Action log must be a mapping")
+        result = cls.__new__(cls)
+        result.output_path = None
+        result.on_save = on_save
+        result._actions = copy.deepcopy(list(value.get("actions", [])))
+        result._players = copy.deepcopy(list(value.get("players", [])))
+        result._first_player_seat = copy.deepcopy(value.get("first_player_seat"))
+        result._result = copy.deepcopy(value.get("result"))
+        result._status = str(value.get("status", "in_progress"))
+        result._started_at = copy.deepcopy(value.get("started_at"))
+        result._finished_at = copy.deepcopy(value.get("finished_at"))
+        result._replay = copy.deepcopy(value.get("replay"))
+        checkpoint = value.get("checkpoint")
+        if checkpoint is None and isinstance(result._replay, Mapping):
+            checkpoint = result._replay.get("checkpoint")
+        result._checkpoint = copy.deepcopy(checkpoint)
+        result._game_id = str(value.get("game_id"))
+        result._mode = copy.deepcopy(value.get("mode", "unspecified"))
+        result._source_revision = copy.deepcopy(value.get("source_revision"))
+        result._source_dirty = copy.deepcopy(value.get("source_dirty"))
+        result._seed = copy.deepcopy(value.get("seed")) if "seed" in value else None
+        result._started = any(
+            isinstance(player, Mapping)
+            and ("resolved_hero_id" in player or "resolved_deck_card_ids" in player)
+            for player in result._players
+        )
+        return result
 
     def to_dict(self) -> dict[str, Any]:
         """Return a detached JSON-compatible representation of this log."""
@@ -358,6 +464,8 @@ class ActionLog:
             "actions": self._actions,
             "result": self._result,
         }
+        if self._checkpoint is not None:
+            result["checkpoint"] = self._checkpoint
         if self._replay is not None:
             result["replay"] = self._replay
         if self._seed is not None:

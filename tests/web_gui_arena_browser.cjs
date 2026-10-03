@@ -28,7 +28,7 @@ function fixtureCard(index) {
     health: 2 + (index % 6),
     card_set: index % 2 ? "TGT" : "BASIC",
     class: index % 3 ? "NEUTRAL" : "MAGE",
-    has_python_script: index % 2 === 0,
+    quality_status: ["GREEN", "YELLOW", "RED"][index % 3],
   };
 }
 
@@ -38,6 +38,7 @@ function initialState() {
     revision: 0,
     nickname: "",
     locale: "zhCN",
+    retired: false,
     wins: 0,
     losses: 0,
     selected_sets: [],
@@ -63,6 +64,18 @@ function initialState() {
     card_offer: [],
     deck: [],
   };
+}
+
+function readyState() {
+  const state = initialState();
+  state.mode = "ready";
+  state.revision = 30;
+  state.run_id = "fixture-ready-run";
+  state.nickname = "Arena tester";
+  state.selected_sets = ["LARGE_A", "LARGE_B", "LARGE_C", "LARGE_D", "SMALL_A", "SMALL_B", "SMALL_C", "SMALL_D"];
+  state.hero = heroes()[0];
+  state.deck = Array.from({ length: 30 }, (_value, index) => fixtureCard(index));
+  return state;
 }
 
 function heroes() {
@@ -93,9 +106,11 @@ function readBody(request) {
   });
 }
 
-function startFixture() {
-  const state = initialState();
+function startFixture(seedState = null) {
+  const state = seedState || initialState();
   let artRequests = 0;
+  let battleRequest = null;
+  let startRequest = null;
   const server = http.createServer(async (request, response) => {
     const url = new URL(request.url, "http://127.0.0.1");
     if (url.pathname === "/api/account/session" && request.method === "GET") {
@@ -120,6 +135,13 @@ function startFixture() {
     }
     if (url.pathname === "/api/arena/start" && request.method === "POST") {
       const body = await readBody(request);
+      startRequest = body;
+      if (body.format_id === "wild_2016_09_02") {
+        state.format_id = body.format_id;
+        state.max_wins = 12;
+        state.max_losses = 3;
+        state.offer_policy_accuracy = "reconstructed";
+      }
       state.mode = "hero";
       state.revision += 1;
       state.run_id = "fixture-run";
@@ -151,8 +173,15 @@ function startFixture() {
       return json(response, 200, state);
     }
     if (url.pathname === "/api/arena/battle" && request.method === "POST") {
-      await readBody(request);
+      battleRequest = await readBody(request);
       state.mode = "match";
+      state.revision += 1;
+      return json(response, 200, state);
+    }
+    if (url.pathname === "/api/arena/retire" && request.method === "POST") {
+      await readBody(request);
+      state.mode = "complete";
+      state.retired = true;
       state.revision += 1;
       return json(response, 200, state);
     }
@@ -180,7 +209,14 @@ function startFixture() {
   });
   return new Promise((resolve) => server.listen(0, "127.0.0.1", () => {
     const { port } = server.address();
-    resolve({ server, base: `http://127.0.0.1:${port}/`, get artRequests() { return artRequests; } });
+    resolve({
+      server,
+      base: `http://127.0.0.1:${port}/`,
+      get artRequests() { return artRequests; },
+      get battleRequest() { return battleRequest; },
+      get startRequest() { return startRequest; },
+      get state() { return state; },
+    });
   }));
 }
 
@@ -192,6 +228,9 @@ async function main() {
   const artifactDir = "/tmp/fireplace-web-gui-artifacts";
   fs.mkdirSync(artifactDir, { recursive: true });
   page.on("pageerror", (error) => errors.push(error.message));
+  await page.addInitScript(() => {
+    localStorage.setItem("fireplace.opponent", "radical");
+  });
   try {
     await page.goto(fixture.base);
     await page.locator('[data-testid="arena-stage"]').waitFor({ state: "visible" });
@@ -245,6 +284,10 @@ async function main() {
     await page.locator('[data-testid="arena-card-offer"]').waitFor();
     await page.waitForFunction(() => [...document.querySelectorAll('[data-testid="arena-card-offer"] img[data-arena-image]')].every((image) => image.dataset.imageState === "loaded"));
     await page.waitForFunction(() => !document.getElementById("arena-status").textContent.trim());
+    assert.equal(await page.locator('[data-testid="arena-card-offer"] .arena-script-badge').count(), 0, "arena cards must not show Python script labels");
+    assert.equal(await page.locator('[data-card-id="AT_001"] .arena-quality-badge').count(), 0, "GREEN arena cards should have no extra alert");
+    assert.equal((await page.locator('[data-card-id="AT_002"] .arena-quality-badge').textContent()).trim(), "效果待验证");
+    assert.equal((await page.locator('[data-card-id="AT_003"] .arena-quality-badge').textContent()).trim(), "效果存在问题");
     assert.equal(await page.locator('[data-testid="arena-mana-curve"] .arena-mana-column').count(), 8);
     await page.screenshot({ path: path.join(artifactDir, "arena-draft-desktop.png"), fullPage: true });
 
@@ -266,17 +309,65 @@ async function main() {
     }
     assert.equal(await page.locator('[data-testid="arena-battle"]').count(), 1);
     assert.equal(await page.locator('[data-testid="arena-deck"] .arena-deck-row').count(), 30);
+    assert.equal(await page.locator('[data-testid="arena-opponent-select"]').count(), 0);
+    const fixedOpponent = page.locator('[data-testid="arena-fixed-opponent"]');
+    assert.equal(await fixedOpponent.count(), 1);
+    assert.match(await fixedOpponent.textContent(), /MCTS/);
+    assert.equal(await page.evaluate(() => localStorage.getItem("fireplace.opponent")), "radical");
     assert.deepEqual(await page.locator('[data-testid="arena-mana-curve"] .arena-mana-column').evaluateAll((nodes) => nodes.map((node) => Number(node.dataset.count))), [4, 4, 4, 4, 4, 4, 3, 3]);
     await page.screenshot({ path: path.join(artifactDir, "arena-ready-desktop.png"), fullPage: true });
     await page.setViewportSize({ width: 375, height: 812 });
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), true, "ready curve must fit a narrow viewport");
     await page.setViewportSize({ width: 1440, height: 900 });
+
+    let cancelDialogMessage = "";
+    page.once("dialog", async (dialog) => {
+      cancelDialogMessage = dialog.message();
+      await dialog.dismiss();
+    });
+    await page.locator('[data-testid="arena-retire"]').click();
+    assert.match(cancelDialogMessage, /本轮竞技场/);
+    assert.equal(await page.locator('[data-testid="arena-battle"]').count(), 1, "cancel keeps the ready run");
+
     await page.locator('[data-testid="arena-battle"]').click();
     await page.locator('[data-testid="arena-match-page"]').waitFor();
     assert.match(page.url(), /[?&]arena=1/);
+    assert.equal(fixture.battleRequest.opponent, undefined);
+    assert.equal(await page.evaluate(() => localStorage.getItem("fireplace.opponent")), "radical");
 
     await page.setViewportSize({ width: 375, height: 812 });
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), true);
+
+    const retireFixture = await startFixture(readyState());
+    const retirePage = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+    const retireErrors = [];
+    retirePage.on("pageerror", (error) => retireErrors.push(error.message));
+    await retirePage.addInitScript(() => {
+      localStorage.setItem("fireplace.opponent", "radical");
+    });
+    try {
+      await retirePage.goto(retireFixture.base);
+      await retirePage.locator('[data-testid="arena-retire"]').waitFor();
+      let acceptDialogMessage = "";
+      retirePage.once("dialog", async (dialog) => {
+        acceptDialogMessage = dialog.message();
+        await dialog.accept();
+      });
+      await retirePage.locator('[data-testid="arena-retire"]').click();
+      await retirePage.locator('#arena-complete-title').waitFor();
+      assert.match(acceptDialogMessage, /本轮竞技场/);
+      assert.equal(retireFixture.state.mode, "complete");
+      assert.equal(retireFixture.state.retired, true);
+      assert.match(await retirePage.locator('#arena-complete-title').textContent(), /已结束/);
+      await retirePage.locator('[data-testid="arena-reset"]').click();
+      await retirePage.locator('[data-testid="arena-start"]').waitFor();
+      assert.equal(retireFixture.state.mode, "setup", "terminal page can return to packs");
+      assert.deepEqual(retireErrors, []);
+    } finally {
+      await retirePage.close();
+      retireFixture.server.close();
+    }
+
     assert.deepEqual(errors, []);
     console.log("arena browser acceptance passed");
   } finally {
@@ -285,7 +376,11 @@ async function main() {
   }
 }
 
-main().catch((error) => {
-  console.error(error.stack || error);
-  process.exitCode = 1;
-});
+module.exports = { initialState, startFixture };
+
+if (require.main === module) {
+  main().catch((error) => {
+    console.error(error.stack || error);
+    process.exitCode = 1;
+  });
+}

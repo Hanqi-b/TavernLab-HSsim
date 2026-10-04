@@ -12,6 +12,7 @@ from __future__ import annotations
 import copy
 import threading
 import uuid
+from collections import deque
 from collections.abc import Mapping
 from concurrent.futures import TimeoutError as FutureTimeout
 from typing import Any
@@ -47,6 +48,14 @@ from .archive_runtime import (
 from .contracts import ASSET_PENDING, WebActionError, WebLifecycleError
 from .effect_timeline import EffectTimeline
 from .ai_decisions import capture_decision, restore_decisions, trim_decisions
+from .async_opponent import (
+    AsyncDecision,
+    AsyncOpponentScheduler,
+    codex_config_from_agent,
+    codex_defaults,
+    validate_codex_model,
+    validate_codex_state,
+)
 from .public_events import (
     decorate_visible_cards,
     localize_events,
@@ -57,11 +66,15 @@ from .public_events import (
 
 _ASSET_KINDS = frozenset({"render", "art", "tile"})
 _LOCALES = frozenset({"zhCN", "enUS"})
-_OPPONENTS = frozenset({"radical", "mcts"})
+_OPPONENTS = frozenset({"radical", "mcts", "codex"})
 _OPPONENT_NAMES = {
     "radical": "Radical",
     "mcts": "MCTS",
+    "codex": "Codex",
 }
+_BATTLE_MODES = frozenset({"human", "codex_mcts", "codex_codex"})
+_AUTOMATION_BATTLE_MODE = "codex_mcts"
+_CODEX_DUEL_BATTLE_MODE = "codex_codex"
 _ASSET_PENDING = ASSET_PENDING
 _MCTS_LEGACY_POLICY = "legacy_v1"
 _MCTS_TACTICAL_POLICY = "tactical_v2"
@@ -110,7 +123,17 @@ def _validate_locale(value: object) -> str:
 
 def _validate_opponent(value: object) -> str:
     if not isinstance(value, str) or value not in _OPPONENTS:
-        raise ValueError("opponent must be one of 'radical' or 'mcts'")
+        raise ValueError("opponent must be one of 'radical', 'mcts', or 'codex'")
+    return value
+
+
+def _validate_battle_mode(value: object) -> str:
+    if value is None:
+        return "human"
+    if not isinstance(value, str) or value not in _BATTLE_MODES:
+        raise ValueError(
+            "battle_mode must be 'human', 'codex_mcts', or 'codex_codex'"
+        )
     return value
 
 
@@ -120,6 +143,8 @@ def _create_opponent_agent(
     *,
     policy_version: str | None = None,
     search_config: Mapping[str, Any] | None = None,
+    model: str | None = None,
+    timeout: float | None = None,
 ) -> object:
     """Create one validated browser opponent through the shared factory."""
 
@@ -130,6 +155,10 @@ def _create_opponent_agent(
         options["policy_version"] = policy_version
     if search_config is not None:
         options["search_config"] = copy.deepcopy(dict(search_config))
+    if model is not None or kind == "codex":
+        options["model"] = model
+    if timeout is not None or kind == "codex":
+        options["timeout"] = timeout
     return create_agent(kind, seed=seed, **options)
 
 
@@ -209,6 +238,53 @@ def _resolve_mcts_archive_options(
     return policy_version, search_config
 
 
+def _resolve_codex_archive_options(
+    metadata: Mapping[str, Any],
+    agent_state: object,
+    *,
+    model_keys: tuple[str, ...] = ("codex_model", "codex_self_model"),
+    timeout_keys: tuple[str, ...] = ("codex_timeout",),
+) -> tuple[str | None, float]:
+    """Resolve one seat's pinned Codex configuration from an archive.
+
+    Human-vs-Codex archives historically used ``codex_model`` while the
+    automated seat zero contract uses ``codex_self_model``.  Duel archives
+    contain both keys with different values, so aliases are supplied by the
+    caller per seat instead of treating the two fields as one identity.
+    """
+
+    state = validate_codex_state(agent_state)
+    metadata_models = [metadata[key] for key in model_keys if key in metadata]
+    if metadata_models:
+        model_values = [validate_codex_model(value) for value in metadata_models]
+        if any(value != model_values[0] for value in model_values[1:]):
+            raise ValueError("archived Codex models conflict")
+        model = model_values[0]
+    else:
+        model = state["model"]
+    # Metadata is public match identity, while agent_state is the authoritative
+    # private constructor contract.  If both are present they must agree.
+    if model != state["model"]:
+        raise ValueError("archived Codex models conflict")
+
+    metadata_timeouts = [metadata[key] for key in timeout_keys if key in metadata]
+    if metadata_timeouts:
+        if any(value is None for value in metadata_timeouts):
+            raise ValueError("archived Codex timeout is invalid")
+        try:
+            timeout_values = [codex_defaults(None, value)[1] for value in metadata_timeouts]
+        except ValueError as exc:
+            raise ValueError("archived Codex timeout is invalid") from exc
+        if any(value != timeout_values[0] for value in timeout_values[1:]):
+            raise ValueError("archived Codex timeouts conflict")
+        timeout = timeout_values[0]
+    else:
+        timeout = state["timeout"]
+    if timeout != state["timeout"]:
+        raise ValueError("archived Codex timeouts conflict")
+    return state["model"], state["timeout"]
+
+
 def _validate_nickname(value: object) -> str:
     if not isinstance(value, str):
         raise ValueError("nickname must be a string")
@@ -249,6 +325,20 @@ class WebGame:
         self.session = session
         self.human = human
         self.opponent_agent = opponent_agent
+        self._async_opponent = bool(
+            getattr(opponent_agent, "async_decisions", False)
+        )
+        self._async_scheduler: AsyncOpponentScheduler | None = None
+        self._llm_state = "idle"
+        self._llm_error: str | None = None
+        self._closed = False
+        self._retrying = False
+        self._retry_token = 0
+        self._archive_ready = False
+        self._presentation_steps: deque[dict[str, Any]] = deque(maxlen=32)
+        self._codex_config: dict[str, Any] | None = None
+        if self._async_opponent:
+            self._codex_config = codex_config_from_agent(opponent_agent)
         self._lock = threading.RLock()
         self._revision = int(initial_revision)
         self._session_id = str(uuid.uuid4())
@@ -325,6 +415,7 @@ class WebGame:
         with self._lock:
             self._archive_game_id = canonical_game_id(game_id)
             self._archive_revision = int(revision)
+            self._archive_ready = True
 
     def mark_archive_failed(self, error: object) -> None:
         with self._lock:
@@ -339,7 +430,18 @@ class WebGame:
     def close(self, *, wait: bool = True) -> None:
         """Release optional asset workers when the local server closes."""
 
+        scheduler = None
+        with self._lock:
+            if self._closed:
+                return
+            self._closed = True
+            scheduler = self._async_scheduler
+            self._async_scheduler = None
+            if scheduler is not None:
+                scheduler.invalidate()
         try:
+            if scheduler is not None:
+                scheduler.close(wait=wait)
             self._effect_timeline.unregister()
             if self._owns_assets:
                 self.assets.close(wait=wait)
@@ -362,6 +464,11 @@ class WebGame:
             if not self._started:
                 self.session.start()
                 self._started = True
+                # Direct WebGame callers have no archive envelope.  Archived
+                # construction calls bind_archive before start(), so an
+                # asynchronous decision can never race initial persistence.
+                if self._archive_game_id is None:
+                    self._archive_ready = True
                 self._advance_ai_locked()
             return self._snapshot_locked()
 
@@ -478,7 +585,7 @@ class WebGame:
         )
 
         _decision, actions = self._decision_actions_locked()
-        return {
+        payload = {
             "mode": "match",
             "session_id": self._session_id,
             "revision": self._revision,
@@ -489,6 +596,16 @@ class WebGame:
             "outcome": _outcome(self.session.game, self.human),
             "events": self._public_events_locked(),
         }
+        if self._async_opponent:
+            payload["llm"] = {
+                "state": self._llm_state,
+                "model": (self._codex_config or {}).get("model"),
+                "error": self._llm_error,
+            }
+            payload["presentation_steps"] = copy.deepcopy(
+                list(self._presentation_steps)
+            )
+        return payload
 
     def _public_event_locked(
         self, player: object, action: Action, observation: Mapping[str, Any]
@@ -578,10 +695,216 @@ class WebGame:
             "match lifecycle is unavailable for this server", 409, self.snapshot()
         )
 
+    def _ensure_async_scheduler_locked(self) -> AsyncOpponentScheduler:
+        if not self._async_opponent:
+            raise RuntimeError("opponent is not asynchronous")
+        if not self._archive_ready:
+            raise RuntimeError("opponent scheduler is not ready")
+        scheduler = self._async_scheduler
+        if scheduler is None:
+            scheduler_ref: dict[str, AsyncOpponentScheduler] = {}
+            scheduler = AsyncOpponentScheduler(
+                self.opponent_agent,
+                on_result=lambda decision, result: self._on_async_result(
+                    scheduler_ref["scheduler"], decision, result
+                ),
+                on_error=lambda decision, error: self._on_async_error(
+                    scheduler_ref["scheduler"], decision, error
+                ),
+            )
+            scheduler_ref["scheduler"] = scheduler
+            self._async_scheduler = scheduler
+        return scheduler
+
+    @staticmethod
+    def _sanitize_codex_error(error: BaseException) -> str:
+        """Map adapter failures to stable browser-safe diagnostics."""
+
+        name = type(error).__name__.lower()
+        if isinstance(error, TimeoutError) or "timeout" in name:
+            return "Codex opponent timed out"
+        if "invalid" in name or "action" in name:
+            return "Codex opponent returned an invalid action"
+        if "api" in name or "codex" in name or "request" in name:
+            return "Codex opponent request failed"
+        return "Codex opponent failed to choose an action"
+
+    def _set_llm_error_locked(self, error: BaseException | str) -> None:
+        if isinstance(error, BaseException):
+            message = self._sanitize_codex_error(error)
+        else:
+            # Internal archive/lifecycle errors are already deliberately
+            # phrased for clients; never pass an arbitrary external stderr
+            # string through this path.
+            message = str(error)
+        self._llm_state = "error"
+        self._llm_error = message
+
+    def _record_presentation_step_locked(self, step: Mapping[str, Any]) -> None:
+        if self._async_opponent:
+            self._presentation_steps.append(copy.deepcopy(dict(step)))
+
+    def _invalidate_async_locked(self) -> None:
+        if not self._async_opponent:
+            return
+        scheduler = self._async_scheduler
+        if scheduler is not None:
+            scheduler.invalidate()
+        if self._llm_state == "thinking":
+            self._llm_state = "idle"
+            self._llm_error = None
+
+    def _schedule_async_ai_locked(self) -> None:
+        if not self._async_opponent or self._closed or _game_ended(self.session.game):
+            return
+        if self._llm_state == "error":
+            return
+        player = decision_player(self.session.game)
+        if player is None or player is self.human:
+            self._llm_state = "idle"
+            self._llm_error = None
+            return
+        actions = list(self.session.legal_actions(player))
+        if not actions:
+            self._set_llm_error_locked("Codex opponent has no legal action")
+            return
+        scheduler = self._ensure_async_scheduler_locked()
+        if scheduler.pending is not None:
+            return
+        observation = self.session.observation(player)
+        decision = scheduler.schedule(
+            session_id=self._session_id,
+            revision=self._revision,
+            player=player,
+            observation=observation,
+            actions=actions,
+        )
+        if decision is not None:
+            self._llm_state = "thinking"
+            self._llm_error = None
+
+    def _on_async_error(
+        self,
+        scheduler: AsyncOpponentScheduler,
+        decision: AsyncDecision,
+        error: BaseException,
+    ) -> None:
+        with self._lock:
+            if self._closed or scheduler is not self._async_scheduler:
+                return
+            if not scheduler.is_current(decision):
+                return
+            if decision.session_id != self._session_id:
+                return
+            if decision.revision != self._revision:
+                return
+            if decision.player is not decision_player(self.session.game):
+                return
+            self._set_llm_error_locked(error)
+
+    def _on_async_result(
+        self,
+        scheduler: AsyncOpponentScheduler,
+        decision: AsyncDecision,
+        raw_action: object,
+    ) -> None:
+        with self._lock:
+            if self._closed or scheduler is not self._async_scheduler:
+                return
+            if not scheduler.is_current(decision):
+                return
+            if decision.session_id != self._session_id:
+                return
+            if decision.revision != self._revision:
+                return
+            player = decision_player(self.session.game)
+            if player is not decision.player or player is self.human:
+                return
+            actions = list(self.session.legal_actions(player))
+            if isinstance(raw_action, Mapping):
+                try:
+                    action = Action.from_dict(raw_action)
+                except (TypeError, ValueError):
+                    self._set_llm_error_locked("Codex opponent returned an invalid action")
+                    return
+            else:
+                action = raw_action
+            if not isinstance(action, Action) or action not in actions:
+                self._set_llm_error_locked("Codex opponent returned an invalid action")
+                return
+            try:
+                self._accept_ai_action_locked(player, action, None)
+            except ArchivePersistenceError as exc:
+                self._set_llm_error_locked("match archive is unavailable")
+                self.mark_archive_failed(exc)
+            except Exception as exc:
+                # Keep foreign process details out of browser payloads while
+                # leaving local engine failures visible as a stable diagnostic.
+                self._set_llm_error_locked(exc)
+
+    def _accept_ai_action_locked(
+        self,
+        player: object,
+        action: Action,
+        presentation_steps: list[dict[str, Any]] | None,
+    ) -> bool:
+        """Validate/project/execute one already selected opponent action."""
+
+        # A failed checkpoint quarantines the match.  Check before building
+        # the public event or touching engine state so retry/late callbacks
+        # cannot advance an archive past its last durable revision.
+        self._ensure_archive_healthy_locked()
+
+        event = self._public_event_locked(
+            player, action, self.session.observation(self.human)
+        )
+        decision_count = len(self._ai_decisions)
+        action_count = None
+        if getattr(self.opponent_agent, "policy_version", None) == "tactical_v2":
+            action_count = len(action_log_dict(self.session.action_log).get("actions", []))
+            self._ai_decisions.append(capture_decision(
+                self.opponent_agent, action, action_seq=action_count + 1,
+                turn=int(self.session.game.turn),
+                seat=list(self.session.game.players).index(player),
+            ))
+        self._pending_event = copy.deepcopy(event)
+        try:
+            terminal, action_error, effects, effects_truncated = self._execute_with_effects_locked(
+                player, action, event, self.session.observation(self.human)
+            )
+        except Exception:
+            self._pending_event = None
+            if action_count is not None and len(action_log_dict(self.session.action_log).get("actions", [])) == action_count:
+                del self._ai_decisions[decision_count:]
+            raise
+        if action_error is not None:
+            self._pending_event = None
+            del self._ai_decisions[decision_count:]
+            raise RuntimeError("Opponent action was rejected") from action_error
+        self._append_event_locked(event)
+        self._ai_decisions_dropped += trim_decisions(self._ai_decisions)
+        self._revision += 1
+        step = self._presentation_step_locked(event, effects, effects_truncated)
+        self._record_presentation_step_locked(step)
+        if presentation_steps is not None:
+            presentation_steps.append(step)
+        if terminal:
+            self._llm_state = "idle"
+            self._llm_error = None
+            return True
+        self._llm_state = "idle"
+        self._llm_error = None
+        self._schedule_async_ai_locked()
+        return False
+
     def _advance_ai_locked(
         self, presentation_steps: list[dict[str, Any]] | None = None
     ) -> None:
         """Run the supplied agent until human input or terminal state."""
+
+        if self._async_opponent:
+            self._schedule_async_ai_locked()
+            return
 
         while not _game_ended(self.session.game):
             player = decision_player(self.session.game)
@@ -603,46 +926,12 @@ class WebGame:
                     raise RuntimeError("Opponent returned an invalid action") from exc
             if not isinstance(action, Action) or action not in actions:
                 raise RuntimeError("Opponent returned an unavailable action")
-            event = self._public_event_locked(
-                player, action, self.session.observation(self.human)
-            )
-            # Stage diagnostics before execute: ActionLog saves the accepted
-            # action inside that call. The private metadata checkpoint then
-            # contains the decision and action atomically, including lethal.
-            decision_count = len(self._ai_decisions)
-            action_count = None
-            if getattr(self.opponent_agent, "policy_version", None) == "tactical_v2":
-                action_count = len(action_log_dict(self.session.action_log).get("actions", []))
-                self._ai_decisions.append(capture_decision(
-                    self.opponent_agent, action, action_seq=action_count + 1,
-                    turn=int(self.session.game.turn),
-                    seat=list(self.session.game.players).index(player),
-                ))
-            self._pending_event = copy.deepcopy(event)
             try:
-                terminal, action_error, effects, effects_truncated = self._execute_with_effects_locked(
-                    player, action, event, self.session.observation(self.human)
+                terminal = self._accept_ai_action_locked(
+                    player, action, presentation_steps
                 )
-            except Exception:
-                self._pending_event = None
-                if action_count is not None and len(action_log_dict(self.session.action_log).get("actions", [])) == action_count:
-                    del self._ai_decisions[decision_count:]
-                raise
-            if action_error is not None:
-                self._pending_event = None
-                del self._ai_decisions[decision_count:]
-                raise RuntimeError(
-                    "Opponent action was rejected: %s" % action_error
-                ) from action_error
-            self._append_event_locked(event)
-            self._ai_decisions_dropped += trim_decisions(self._ai_decisions)
-            self._revision += 1
-            if presentation_steps is not None:
-                presentation_steps.append(
-                    self._presentation_step_locked(
-                        event, effects, effects_truncated
-                    )
-                )
+            except RuntimeError as exc:
+                raise RuntimeError(str(exc)) from exc
             if terminal:
                 return
 
@@ -715,9 +1004,11 @@ class WebGame:
 
             self._append_event_locked(event)
             self._revision += 1
-            presentation_steps = [
-                self._presentation_step_locked(event, effects, effects_truncated)
-            ]
+            human_step = self._presentation_step_locked(
+                event, effects, effects_truncated
+            )
+            self._record_presentation_step_locked(human_step)
+            presentation_steps = [human_step]
             if terminal:
                 response = self._snapshot_locked()
                 response["presentation_steps"] = presentation_steps
@@ -731,6 +1022,102 @@ class WebGame:
             response = self._snapshot_locked()
             response["presentation_steps"] = presentation_steps
             return response
+
+    def retry_opponent(self, payload: object) -> dict[str, Any]:
+        """Start a fresh Codex request after a paused adapter failure."""
+
+        retry_token = None
+        old_scheduler = None
+        with self._lock:
+            current = self._snapshot_locked()
+            try:
+                self._ensure_archive_healthy_locked()
+            except ArchivePersistenceError as exc:
+                current["error"] = str(exc)
+                raise WebActionError(str(exc), 503, current) from exc
+            if not self._async_opponent:
+                current["error"] = "opponent retry is available only for Codex matches"
+                raise WebActionError(current["error"], 409, current)
+            if not isinstance(payload, Mapping):
+                raise WebActionError("request body must be a JSON object", 400, current)
+            if payload.get("session_id") != self._session_id:
+                current["error"] = "stale session"
+                raise WebActionError(current["error"], 409, current)
+            revision = payload.get("revision")
+            if type(revision) is not int:
+                current["error"] = "revision must be an integer"
+                raise WebActionError(current["error"], 400, current)
+            if revision != self._revision:
+                current["error"] = "stale revision"
+                raise WebActionError(current["error"], 409, current)
+            if self._retrying:
+                current["error"] = "opponent retry is already in progress"
+                raise WebActionError(current["error"], 409, current)
+            if self._llm_state != "error":
+                current["error"] = "opponent retry is unavailable"
+                raise WebActionError(current["error"], 409, current)
+            if _game_ended(self.session.game):
+                current["error"] = "match is over"
+                raise WebActionError(current["error"], 409, current)
+            config = copy.deepcopy(self._codex_config or {})
+            self._retrying = True
+            self._retry_token += 1
+            retry_token = self._retry_token
+            # Reserve this retry while the replacement is constructed outside
+            # the match lock.  A second same-revision request must not create
+            # another adapter and later overwrite the first scheduler.
+            self._llm_state = "thinking"
+            self._llm_error = None
+            old_scheduler = self._async_scheduler
+            self._async_scheduler = None
+            if old_scheduler is not None:
+                old_scheduler.invalidate()
+
+        if old_scheduler is not None:
+            old_scheduler.close(wait=False)
+        try:
+            agent = _create_opponent_agent(
+                "codex",
+                seed=None,
+                model=config.get("model"),
+                timeout=config.get("timeout"),
+            )
+            agent_config = codex_config_from_agent(agent)
+        except Exception as exc:
+            with self._lock:
+                if self._closed or retry_token != self._retry_token:
+                    raise WebActionError("match is closed", 409, self._snapshot_locked()) from exc
+                self._retrying = False
+                self._set_llm_error_locked(exc)
+                failed = self._snapshot_locked()
+                failed["error"] = self._llm_error
+                raise WebActionError(self._llm_error or "Codex retry failed", 503, failed) from exc
+
+        with self._lock:
+            if (
+                self._closed
+                or retry_token != self._retry_token
+                or not self._retrying
+                or self._session_id != payload.get("session_id")
+                or self._revision != revision
+            ):
+                # The fresh adapter has not been exposed to a game state; let
+                # its asynchronous cleanup happen without blocking this lock.
+                if retry_token == self._retry_token:
+                    self._retrying = False
+                close = getattr(agent, "close", None)
+                if callable(close):
+                    threading.Thread(target=close, daemon=True).start()
+                current = self._snapshot_locked()
+                current["error"] = "stale session"
+                raise WebActionError(current["error"], 409, current)
+            self.opponent_agent = agent
+            self._codex_config = agent_config
+            self._retrying = False
+            self._llm_state = "idle"
+            self._llm_error = None
+            self._schedule_async_ai_locked()
+            return self._snapshot_locked()
 
     def concede(self, payload: object) -> dict[str, Any]:
         """Concede the active match through the human player's engine API.
@@ -767,6 +1154,11 @@ class WebGame:
                 current["error"] = "match is over"
                 raise WebActionError(current["error"], 409, current)
 
+            # A human may surrender while the asynchronous opponent is still
+            # thinking.  Invalidate the captured revision before touching the
+            # engine so a late response cannot execute after this terminal
+            # action has been accepted.
+            self._invalidate_async_locked()
             concede_action = Action(type=CONCEDE)
             event = self._public_event_locked(
                 self.human, concede_action, current["observation"]
@@ -814,6 +1206,8 @@ class WebGame:
 
             self._append_event_locked(event)
             self._revision += 1
+            self._llm_state = "idle"
+            self._llm_error = None
             return self._snapshot_locked()
 
     def asset(self, kind: str, card_id: str) -> tuple[bytes, str, bool] | object | None:
@@ -859,6 +1253,8 @@ class WebGameManager:
         *,
         seed: int | None = None,
         opponent: str = "radical",
+        codex_model: str | None = None,
+        codex_timeout: float | None = None,
         asset_resolver: object | None = None,
         arena_store: object | None = None,
         deck_store: object | None = None,
@@ -869,6 +1265,12 @@ class WebGameManager:
             raise ValueError("seed must be an integer or None")
         self._base_seed = seed
         self._opponent_default = _validate_opponent(opponent)
+        if codex_model is not None:
+            codex_model = validate_codex_model(codex_model)
+        if codex_timeout is not None:
+            codex_timeout = codex_defaults(None, codex_timeout)[1]
+        self._codex_model_default = codex_model
+        self._codex_timeout_default = codex_timeout
         self._asset_resolver = asset_resolver
         self._arena_store = arena_store
         self._deck_store = deck_store
@@ -899,10 +1301,13 @@ class WebGameManager:
         return self._opponent_default
 
     def _lobby_snapshot_locked(self) -> dict[str, Any]:
-        return {
+        payload = {
             "mode": "lobby",
             "opponent": self._opponent_default,
         }
+        if self._opponent_default == "codex":
+            payload["codex_model"] = self._codex_model_default
+        return payload
 
     def snapshot(self) -> dict[str, Any]:
         with self._lock:
@@ -994,9 +1399,11 @@ class WebGameManager:
         opponent: str,
         seed: object,
         agent_state: Mapping[str, Any] | None = None,
+        battle_mode: str = "human",
         run: object | None = None,
         match_id: str | None = None,
     ) -> dict[str, Any]:
+        battle_mode = _validate_battle_mode(battle_mode)
         metadata: dict[str, Any] = {
             "mode": mode,
             "locale": locale,
@@ -1004,17 +1411,55 @@ class WebGameManager:
             "seed": seed,
             "human_seat": 0,
         }
-        if opponent == "mcts":
-            if not isinstance(agent_state, Mapping):
+        if battle_mode != "human":
+            metadata["battle_mode"] = battle_mode
+        if battle_mode in {_AUTOMATION_BATTLE_MODE, _CODEX_DUEL_BATTLE_MODE}:
+            from .automated_game import validate_automated_agent_state
+
+            automated = validate_automated_agent_state(
+                agent_state, expected_battle_mode=battle_mode
+            )
+            self_state = automated["controllers"][0]
+            metadata["codex_self_model"] = self_state["model"]
+            metadata["codex_self_timeout"] = self_state["timeout"]
+            if battle_mode == _AUTOMATION_BATTLE_MODE:
+                state_for_mcts = automated["controllers"][1]
+                opponent = "mcts"
+                metadata["codex_timeout"] = self_state["timeout"]
+            else:
+                opponent_state = automated["controllers"][1]
+                metadata["codex_model"] = opponent_state["model"]
+                metadata["codex_timeout"] = opponent_state["timeout"]
+                opponent = "codex"
+            if opponent == "mcts":
+                if not isinstance(state_for_mcts, Mapping):
+                    raise ValueError("MCTS archive is missing opponent state")
+                policy_version = state_for_mcts.get("policy_version")
+                search_config = state_for_mcts.get("search_config")
+                if not isinstance(policy_version, str) or not policy_version:
+                    raise ValueError("MCTS archive has an invalid policy version")
+                if not isinstance(search_config, Mapping):
+                    raise ValueError("MCTS archive has an invalid search configuration")
+                metadata["mcts_policy_version"] = policy_version
+                metadata["mcts_search_config"] = copy.deepcopy(dict(search_config))
+        elif opponent == "mcts":
+            state_for_mcts = agent_state
+            if not isinstance(state_for_mcts, Mapping):
                 raise ValueError("MCTS archive is missing opponent state")
-            policy_version = agent_state.get("policy_version")
-            search_config = agent_state.get("search_config")
+            policy_version = state_for_mcts.get("policy_version")
+            search_config = state_for_mcts.get("search_config")
             if not isinstance(policy_version, str) or not policy_version:
                 raise ValueError("MCTS archive has an invalid policy version")
             if not isinstance(search_config, Mapping):
                 raise ValueError("MCTS archive has an invalid search configuration")
             metadata["mcts_policy_version"] = policy_version
             metadata["mcts_search_config"] = copy.deepcopy(dict(search_config))
+        elif opponent == "codex":
+            if not isinstance(agent_state, Mapping):
+                raise ValueError("Codex archive is missing opponent state")
+            codex_state = validate_codex_state(agent_state)
+            metadata["codex_model"] = codex_state["model"]
+            metadata["codex_timeout"] = codex_state["timeout"]
         if run is not None:
             metadata["arena"] = {
                 "run_id": getattr(run, "run_id", None),
@@ -1041,6 +1486,7 @@ class WebGameManager:
         locale: str,
         seed: object,
         opponent_kind: str,
+        battle_mode: str = "human",
         run: object | None = None,
         match_id: str | None = None,
         initial_events: list[Mapping[str, Any]] | None = None,
@@ -1050,12 +1496,27 @@ class WebGameManager:
     ) -> WebGame:
         """Create a WebGame with its archive checkpoint wired before setup."""
 
+        battle_mode = _validate_battle_mode(battle_mode)
+        automated = battle_mode in {_AUTOMATION_BATTLE_MODE, _CODEX_DUEL_BATTLE_MODE}
+        if automated:
+            from .automated_game import (
+                AutomatedGame,
+                capture_automated_agent_state,
+            )
+
+            if not isinstance(opponent_agent, (tuple, list)):
+                raise ValueError("automated match requires two controllers")
+            active_class = AutomatedGame
+        else:
+            active_class = WebGame
+
         if self._archive_store is None:
             session = restored_session or GameSession(game, {})
-            return WebGame(
+            return active_class(
                 session,
                 human,
                 opponent_agent,
+                **({"battle_mode": battle_mode} if automated else {}),
                 asset_service=self._asset_service_locked(),
                 locale=locale,
                 initial_events=initial_events,
@@ -1065,13 +1526,18 @@ class WebGameManager:
         from ..action_log import ActionLog
 
         session_ref: dict[str, GameSession] = {}
-        initial_agent_state = capture_agent_state(opponent_agent)
+        initial_agent_state = (
+            capture_automated_agent_state(opponent_agent, battle_mode)
+            if automated
+            else capture_agent_state(opponent_agent)
+        )
         metadata = self._archive_metadata_locked(
             mode=mode,
             locale=locale,
             opponent=opponent_kind,
             seed=seed,
             agent_state=initial_agent_state if isinstance(initial_agent_state, Mapping) else None,
+            battle_mode=battle_mode,
             run=run,
             match_id=match_id,
         )
@@ -1118,13 +1584,14 @@ class WebGameManager:
             }
 
         session_ref["session"] = session
+        active = None
 
         def on_save(saved_log: object | None = None) -> None:
             current_log = saved_log if saved_log is not None else session_ref["session"].action_log
             active = context.get("active")
             try:
                 public = None
-                if active is not None and active._started:
+                if active is not None and (active._started or restored_session is not None):
                     with active.lock:
                         active._ensure_archive_healthy_locked()
                         public = public_payload(active._snapshot_locked())
@@ -1137,7 +1604,16 @@ class WebGameManager:
                     archive_id,
                     log=current_log,
                     metadata=metadata,
-                    agent_state=capture_agent_state(opponent_agent),
+                    agent_state=(
+                        capture_automated_agent_state(
+                            active.controllers if active is not None else opponent_agent,
+                            battle_mode,
+                        )
+                        if automated
+                        else capture_agent_state(
+                            active.opponent_agent if active is not None else opponent_agent
+                        )
+                    ),
                     public=public,
                     expected_revision=context["revision"],
                 )
@@ -1158,10 +1634,11 @@ class WebGameManager:
             # this callback, so its state is always captured by the first
             # checkpoint.
             attach_on_save(log, on_save)
-            active = WebGame(
+            active = active_class(
                 session,
                 human,
                 opponent_agent,
+                **({"battle_mode": battle_mode} if automated else {}),
                 asset_service=self._asset_service_locked(),
                 locale=locale,
                 initial_events=initial_events,
@@ -1176,6 +1653,11 @@ class WebGameManager:
         context["active"] = active
         active.bind_archive(archive_id, context["revision"])
         try:
+            if restored_session is not None:
+                # Recovery may repair an old signature or a pre-start/terminal
+                # checkpoint. Persist that validated prefix before a controller
+                # can continue, retaining the restored seat's public view.
+                on_save(log)
             # Start only after the callback can see the live WebGame.  This
             # makes setup and the initial AI prefix durable with its public
             # event projection, while the callback skips the INVALID setup
@@ -1398,32 +1880,129 @@ class WebGameManager:
             if mode not in {"normal", "arena"}:
                 raise WebLifecycleError("unsupported archived match mode", 409, current)
             opponent_kind = metadata.get("opponent", "radical" if mode == "normal" else "mcts")
+            battle_mode = metadata.get("battle_mode", "human")
             restored: GameSession | None = None
             building_active = False
             try:
+                battle_mode = _validate_battle_mode(battle_mode)
                 opponent_kind = _validate_opponent(opponent_kind)
+                if battle_mode == _AUTOMATION_BATTLE_MODE and opponent_kind != "mcts":
+                    raise ValueError("archived automated match must use MCTS seat one")
+                if battle_mode == _CODEX_DUEL_BATTLE_MODE and opponent_kind != "codex":
+                    raise ValueError("archived Codex duel must use Codex seat one")
                 locale = _validate_locale(metadata.get("locale", "zhCN"))
                 policy_version = None
                 search_config = None
-                if opponent_kind == "mcts":
+                codex_model = None
+                codex_timeout = None
+                codex_self_model = None
+                codex_self_timeout = None
+                automated_state = None
+                if battle_mode in {_AUTOMATION_BATTLE_MODE, _CODEX_DUEL_BATTLE_MODE}:
+                    from .automated_game import validate_automated_agent_state
+
+                    automated_state = validate_automated_agent_state(
+                        envelope.get("agent_state"), expected_battle_mode=battle_mode
+                    )
+                    codex_self_state = automated_state["controllers"][0]
+                    if battle_mode == _AUTOMATION_BATTLE_MODE:
+                        mcts_state = automated_state["controllers"][1]
+                        policy_version, search_config = _resolve_mcts_archive_options(
+                            metadata, mcts_state
+                        )
+                        codex_self_model, codex_self_timeout = _resolve_codex_archive_options(
+                            metadata,
+                            codex_self_state,
+                            model_keys=("codex_self_model", "codex_model"),
+                            timeout_keys=("codex_self_timeout", "codex_timeout"),
+                        )
+                        codex_model, codex_timeout = codex_self_model, codex_self_timeout
+                    else:
+                        codex_self_model, codex_self_timeout = _resolve_codex_archive_options(
+                            metadata,
+                            codex_self_state,
+                            model_keys=("codex_self_model",),
+                            timeout_keys=("codex_self_timeout",),
+                        )
+                        codex_model, codex_timeout = _resolve_codex_archive_options(
+                            metadata,
+                            automated_state["controllers"][1],
+                            model_keys=("codex_model",),
+                            timeout_keys=("codex_timeout",),
+                        )
+                elif opponent_kind == "mcts":
                     policy_version, search_config = _resolve_mcts_archive_options(
+                        metadata, envelope.get("agent_state")
+                    )
+                elif opponent_kind == "codex":
+                    codex_model, codex_timeout = _resolve_codex_archive_options(
                         metadata, envelope.get("agent_state")
                     )
                 # Constructing the policy is deliberately before replay.  The
                 # constructor validates the archived version and every closed
                 # search-config key/value while the archive is still untouched.
-                opponent_agent = _create_opponent_agent(
-                    opponent_kind,
-                    seed=metadata.get("seed"),
-                    **(
-                        {
-                            "policy_version": policy_version,
-                            "search_config": search_config,
-                        }
-                        if opponent_kind == "mcts"
-                        else {}
-                    ),
-                )
+                try:
+                    if battle_mode in {_AUTOMATION_BATTLE_MODE, _CODEX_DUEL_BATTLE_MODE}:
+                        codex_agent = _create_opponent_agent(
+                            "codex",
+                            seed=metadata.get("seed"),
+                            model=codex_self_model,
+                            timeout=codex_self_timeout,
+                        )
+                        try:
+                            if battle_mode == _AUTOMATION_BATTLE_MODE:
+                                seat1_agent = _create_opponent_agent(
+                                    "mcts",
+                                    seed=metadata.get("seed"),
+                                    policy_version=policy_version,
+                                    search_config=search_config,
+                                )
+                            else:
+                                seat1_agent = _create_opponent_agent(
+                                    "codex",
+                                    seed=metadata.get("seed"),
+                                    model=codex_model,
+                                    timeout=codex_timeout,
+                                )
+                        except Exception:
+                            close = getattr(codex_agent, "close", None)
+                            if callable(close):
+                                close()
+                            raise
+                        opponent_agent = (codex_agent, seat1_agent)
+                    else:
+                        opponent_agent = _create_opponent_agent(
+                            opponent_kind,
+                            seed=metadata.get("seed"),
+                            **(
+                                {
+                                    "policy_version": policy_version,
+                                    "search_config": search_config,
+                                }
+                                if opponent_kind == "mcts"
+                                else {
+                                    "model": codex_model,
+                                    "timeout": codex_timeout,
+                                }
+                                if opponent_kind == "codex"
+                                else {}
+                            ),
+                        )
+                except ValueError as exc:
+                    raise WebLifecycleError(str(exc), 409, current) from exc
+                except Exception as exc:
+                    if opponent_kind == "codex" or battle_mode in {
+                        _AUTOMATION_BATTLE_MODE,
+                        _CODEX_DUEL_BATTLE_MODE,
+                    }:
+                        raise WebLifecycleError(
+                            "archived Codex opponent cannot be resumed"
+                            if battle_mode == "human"
+                            else "archived automated opponent cannot be resumed",
+                            409,
+                            current,
+                        ) from exc
+                    raise
                 arena_metadata = metadata.get("arena")
                 if mode == "arena":
                     if not isinstance(arena_metadata, Mapping):
@@ -1450,7 +2029,16 @@ class WebGameManager:
                 if len(players) < 2:
                     raise ValueError("archived game has no two players")
                 human = players[0]
-                restore_agent_state(opponent_agent, envelope.get("agent_state"))
+                if battle_mode in {_AUTOMATION_BATTLE_MODE, _CODEX_DUEL_BATTLE_MODE}:
+                    from .automated_game import restore_automated_agent_state
+
+                    restore_automated_agent_state(
+                        opponent_agent,
+                        envelope.get("agent_state"),
+                        expected_battle_mode=battle_mode,
+                    )
+                else:
+                    restore_agent_state(opponent_agent, envelope.get("agent_state"))
                 public = envelope_public(envelope)
                 old_snapshot = public.get("snapshot")
                 events = public.get("events", [])
@@ -1464,6 +2052,7 @@ class WebGameManager:
                     locale=locale,
                     seed=metadata.get("seed"),
                     opponent_kind=opponent_kind,
+                    battle_mode=battle_mode,
                     run=None,
                     match_id=(metadata.get("arena") or {}).get("match_id")
                     if isinstance(metadata.get("arena"), Mapping)
@@ -1477,6 +2066,13 @@ class WebGameManager:
                 raise WebLifecycleError(str(exc), 503, current) from exc
             except (OSError, ValueError, TypeError) as exc:
                 raise WebLifecycleError("archived match cannot be resumed: %s" % exc, 409, current) from exc
+            except Exception as exc:
+                message = (
+                    "archived Codex opponent cannot be resumed"
+                    if opponent_kind == "codex"
+                    else "archived match cannot be resumed"
+                )
+                raise WebLifecycleError(message, 409, current) from exc
             finally:
                 # _build_archived_active_locked owns cleanup once construction
                 # begins.  Before that point restore_agent_state, Arena
@@ -1901,12 +2497,59 @@ class WebGameManager:
                 raise WebLifecycleError("request body must be a JSON object", 400, current)
             try:
                 nickname = _validate_nickname(payload.get("nickname"))
+                battle_mode = _validate_battle_mode(payload.get("battle_mode", "human"))
                 opponent_kind = _validate_opponent(
                     payload.get("opponent", self._opponent_default)
                 )
                 locale = _validate_locale(payload.get("locale"))
+                if battle_mode in {_AUTOMATION_BATTLE_MODE, _CODEX_DUEL_BATTLE_MODE}:
+                    codex_self_model = validate_codex_model(
+                        payload.get("codex_self_model", self._codex_model_default)
+                    )
+                    codex_model = (
+                        validate_codex_model(
+                            payload.get("codex_model", self._codex_model_default)
+                        )
+                        if battle_mode == _CODEX_DUEL_BATTLE_MODE
+                        else None
+                    )
+                else:
+                    codex_self_model = None
+                    codex_model = validate_codex_model(
+                        payload.get("codex_model", self._codex_model_default)
+                    )
             except ValueError as exc:
                 raise WebLifecycleError(str(exc), 400, current) from exc
+            if battle_mode == _AUTOMATION_BATTLE_MODE:
+                if "opponent" in payload and payload.get("opponent") not in (None, "mcts"):
+                    raise WebLifecycleError(
+                        "codex_mcts battle mode requires the MCTS opponent", 400, current
+                    )
+                opponent_kind = "mcts"
+            elif battle_mode == _CODEX_DUEL_BATTLE_MODE:
+                if "opponent" in payload and payload.get("opponent") not in (None, "codex"):
+                    raise WebLifecycleError(
+                        "codex_codex battle mode requires the Codex opponent", 400, current
+                    )
+                opponent_kind = "codex"
+            if "codex_model" in payload and opponent_kind != "codex":
+                if battle_mode not in {_AUTOMATION_BATTLE_MODE, _CODEX_DUEL_BATTLE_MODE}:
+                    raise WebLifecycleError(
+                        "codex_model is only valid for a Codex opponent", 400, current
+                    )
+                if battle_mode == _AUTOMATION_BATTLE_MODE:
+                    raise WebLifecycleError(
+                        "codex_model is reserved for a Codex opponent seat", 400, current
+                    )
+            if "codex_self_model" in payload and battle_mode not in {
+                _AUTOMATION_BATTLE_MODE,
+                _CODEX_DUEL_BATTLE_MODE,
+            }:
+                raise WebLifecycleError(
+                    "codex_self_model is only valid for an automated Codex match",
+                    400,
+                    current,
+                )
 
             # Imports stay local so direct single-match users do not pay for
             # the lobby factory until they actually request a new match.
@@ -1936,7 +2579,77 @@ class WebGameManager:
                     hero_id=saved["hero_id"],
                     card_ids=saved["card_ids"],
                 )
-            opponent_agent = _create_opponent_agent(opponent_kind, seed=match_seed)
+            codex_timeout = None
+            codex_self_timeout = None
+            if battle_mode in {_AUTOMATION_BATTLE_MODE, _CODEX_DUEL_BATTLE_MODE}:
+                try:
+                    codex_self_model, codex_self_timeout = codex_defaults(
+                        codex_self_model, self._codex_timeout_default
+                    )
+                    if battle_mode == _AUTOMATION_BATTLE_MODE:
+                        codex_model, codex_timeout = codex_self_model, codex_self_timeout
+                    else:
+                        codex_model, codex_timeout = codex_defaults(
+                            codex_model, self._codex_timeout_default
+                        )
+                except ValueError as exc:
+                    raise WebLifecycleError(str(exc), 400, current) from exc
+            elif opponent_kind == "codex":
+                try:
+                    codex_model, codex_timeout = codex_defaults(
+                        codex_model, self._codex_timeout_default
+                    )
+                except ValueError as exc:
+                    raise WebLifecycleError(str(exc), 400, current) from exc
+            try:
+                if battle_mode in {_AUTOMATION_BATTLE_MODE, _CODEX_DUEL_BATTLE_MODE}:
+                    codex_agent = _create_opponent_agent(
+                        "codex",
+                        seed=match_seed,
+                        model=codex_self_model,
+                        timeout=codex_self_timeout,
+                    )
+                    try:
+                        if battle_mode == _AUTOMATION_BATTLE_MODE:
+                            seat1_agent = _create_opponent_agent("mcts", seed=match_seed)
+                        else:
+                            seat1_agent = _create_opponent_agent(
+                                "codex",
+                                seed=match_seed,
+                                model=codex_model,
+                                timeout=codex_timeout,
+                            )
+                    except Exception:
+                        close = getattr(codex_agent, "close", None)
+                        if callable(close):
+                            close()
+                        raise
+                    opponent_agent = (codex_agent, seat1_agent)
+                else:
+                    opponent_agent = _create_opponent_agent(
+                        opponent_kind,
+                        seed=match_seed,
+                        model=codex_model if opponent_kind == "codex" else None,
+                        timeout=codex_timeout if opponent_kind == "codex" else None,
+                    )
+            except ValueError as exc:
+                raise WebLifecycleError(str(exc), 400, current) from exc
+            except Exception as exc:
+                if opponent_kind == "codex" or battle_mode in {
+                    _AUTOMATION_BATTLE_MODE,
+                    _CODEX_DUEL_BATTLE_MODE,
+                }:
+                    raise WebLifecycleError(
+                        "Codex opponent could not be started"
+                        if battle_mode not in {
+                            _AUTOMATION_BATTLE_MODE,
+                            _CODEX_DUEL_BATTLE_MODE,
+                        }
+                        else "automated Codex opponent could not be started",
+                        503,
+                        current,
+                    ) from exc
+                raise
             try:
                 active = self._build_archived_active_locked(
                     game=game,
@@ -1946,6 +2659,7 @@ class WebGameManager:
                     locale=locale,
                     seed=match_seed,
                     opponent_kind=opponent_kind,
+                    battle_mode=battle_mode,
                 )
             except ArchivePersistenceError as exc:
                 raise WebLifecycleError(str(exc), 503, current) from exc
@@ -2029,6 +2743,98 @@ class WebGameManager:
             state = active.concede(payload)
             self._settle_arena_result_locked(state)
             return state
+
+    def retry_opponent(self, payload: object) -> dict[str, Any]:
+        with self._lock:
+            active = self._active
+            if active is None:
+                raise WebActionError("no active match", 409, self._lobby_snapshot_locked())
+            return active.retry_opponent(payload)
+
+    def automation(self, payload: object) -> dict[str, Any]:
+        """Control a Codex-vs-MCTS match or detach it as abandoned."""
+
+        with self._lock:
+            active = self._active
+            if active is None:
+                raise WebActionError("no active match", 409, self._lobby_snapshot_locked())
+            if not isinstance(payload, Mapping):
+                current = active.snapshot()
+                raise WebActionError("request body must be a JSON object", 400, current)
+            if getattr(active, "battle_mode", "human") not in {
+                _AUTOMATION_BATTLE_MODE,
+                _CODEX_DUEL_BATTLE_MODE,
+            }:
+                current = active.snapshot()
+                current["error"] = "automation is available only for Codex-vs-MCTS matches"
+                raise WebActionError(current["error"], 409, current)
+            if payload.get("command") != "stop":
+                return active.automation(payload)
+
+            # Validate the request and invalidate a pending worker while the
+            # match lock is held.  The archive CAS happens under that same
+            # lock, so a worker callback cannot save a newer prefix between
+            # the snapshot and abandonment.
+            with active.lock:
+                current = active._snapshot_locked()
+                if payload.get("session_id") != current.get("session_id"):
+                    current["error"] = "stale session"
+                    raise WebActionError(current["error"], 409, current)
+                revision = payload.get("revision")
+                if type(revision) is not int:
+                    current["error"] = "revision must be an integer"
+                    raise WebActionError(current["error"], 400, current)
+                if revision != current.get("revision"):
+                    current["error"] = "stale revision"
+                    raise WebActionError(current["error"], 409, current)
+                try:
+                    active._ensure_archive_healthy_locked()
+                except ArchivePersistenceError as exc:
+                    current["error"] = str(exc)
+                    raise WebActionError(current["error"], 503, current) from exc
+                invalidate = getattr(active, "_invalidate_automation_locked", None)
+                if callable(invalidate):
+                    active._automation_paused = True
+                    invalidate(retire=False)
+                archive_id = active._archive_game_id
+                archive_revision = active._archive_revision
+                if self._archive_store is not None and archive_id is not None:
+                    try:
+                        envelope = store_get(self._archive_store, archive_id)
+                        if envelope is None:
+                            raise WebActionError(
+                                "match archive was not found", 503, current
+                            )
+                        status = envelope_status(envelope)
+                        if status == "complete":
+                            raise WebActionError("match archive is already complete", 409, current)
+                        if status == "in_progress" and checkpoint_is_terminal(
+                            envelope_log(envelope)
+                        ):
+                            raise WebActionError(
+                                "terminal checkpoint must be resumed before stopping",
+                                409,
+                                current,
+                            )
+                        store_mark_abandoned(
+                            self._archive_store,
+                            archive_id,
+                            expected_revision=archive_revision,
+                        )
+                    except WebActionError:
+                        raise
+                    except OSError as exc:
+                        raise WebActionError(
+                            "match archive is unavailable", 503, current
+                        ) from exc
+                    except ValueError as exc:
+                        raise WebActionError(str(exc), 409, current) from exc
+                self._active = None
+                self._active_arena_match_id = None
+                self._arena_result_recorded = False
+                lobby = self._lobby_snapshot_locked()
+            active.close(wait=False)
+            return lobby
 
     def asset(self, kind: str, card_id: str) -> tuple[bytes, str, bool] | object | None:
         with self._lock:

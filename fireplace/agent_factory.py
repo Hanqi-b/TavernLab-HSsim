@@ -9,7 +9,8 @@ from .mcts_agent import MCTSAgent
 from .radical_agent import RadicalAgent
 
 
-SUPPORTED_AGENT_IDS = ("heuristic", "radical", "mcts")
+SUPPORTED_AGENT_IDS = ("heuristic", "radical", "mcts", "codex")
+_UNSET = object()
 
 
 def create_agent(
@@ -18,6 +19,8 @@ def create_agent(
     *,
     policy_version: str | None = None,
     search_config: Mapping[str, object] | None = None,
+    model: str | None | object = _UNSET,
+    timeout: float | None | object = _UNSET,
 ):
     """Create a policy by stable public identifier.
 
@@ -30,16 +33,45 @@ def create_agent(
         raise ValueError(
             "kind must be one of %s" % ", ".join(repr(value) for value in SUPPORTED_AGENT_IDS)
         )
+    model_supplied = model is not _UNSET
+    timeout_supplied = timeout is not _UNSET
     if kind == "heuristic":
         if policy_version is not None or search_config is not None:
             raise ValueError("policy_version and search_config are only valid for mcts")
+        if (model_supplied and model is not None) or (
+            timeout_supplied and timeout is not None
+        ):
+            raise ValueError("model and timeout are only valid for codex")
         return HeuristicAgent()
     if kind == "radical":
         if policy_version is not None or search_config is not None:
             raise ValueError("policy_version and search_config are only valid for mcts")
+        if (model_supplied and model is not None) or (
+            timeout_supplied and timeout is not None
+        ):
+            raise ValueError("model and timeout are only valid for codex")
         return RadicalAgent(seed=seed)
+    if kind == "codex":
+        if policy_version is not None or search_config is not None:
+            raise ValueError("policy_version and search_config are only valid for mcts")
+        from .codex_agent import CodexAgent
+
+        if model_supplied and model is not None:
+            if not isinstance(model, str) or len(model.strip()) > 128:
+                raise ValueError("model must be at most 128 characters")
+            model = model.strip() or None
+        kwargs = {}
+        if model_supplied:
+            kwargs["model"] = model
+        if timeout_supplied:
+            kwargs["timeout"] = timeout
+        return CodexAgent(**kwargs)
     if search_config is not None and not isinstance(search_config, Mapping):
         raise ValueError("search_config must be a mapping")
+    if (model_supplied and model is not None) or (
+        timeout_supplied and timeout is not None
+    ):
+        raise ValueError("model and timeout are only valid for codex")
 
     # New matches use the tactical policy.  Resume callers pass the archived
     # version explicitly; leaving the factory's public default independent of

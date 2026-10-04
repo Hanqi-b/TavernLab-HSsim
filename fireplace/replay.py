@@ -2,23 +2,24 @@
 
 from __future__ import annotations
 
+import copy
 import json
 from pathlib import Path
 from typing import Any, Mapping
 
 from . import cards
 from .action_log import ActionLog, _INITIAL_PLAYER_FIELDS
-from .agent_api import Action
+from .agent_api import Action, CONCEDE
 from .controller import ActionError, GameSession, decision_player, phase_for
 from .exceptions import GameOver
 from .game import Game
 from .player import Player
 from .replay_state import (
-    code_signature,
     normalized_game_state,
     restore_rng_state,
     serialize_rng_state,
 )
+from .replay_compatibility import current_signature, signature_is_compatible
 
 
 class ReplayError(ValueError):
@@ -98,9 +99,28 @@ def _apply_actions(
             or entry["seq"] != index
         ):
             raise ReplayError("Invalid action sequence at entry %d" % index)
-        player = decision_player(game)
-        if player is None:
+        try:
+            action = Action.from_dict(entry.get("action"))
+        except (ValueError, TypeError) as exc:
+            raise ReplayError("Action %d diverged: %s" % (index, exc)) from exc
+        if game.ended:
             raise ReplayError("Action %d occurs after game over" % index)
+        recorded_seat = entry.get("player")
+        if action.type == CONCEDE:
+            # CONCEDE is an explicit participant control rather than a legal
+            # decision.  Its recorded seat is therefore the source of truth,
+            # but only after strict validation against this two-player game.
+            if (
+                type(recorded_seat) is not int
+                or recorded_seat < 0
+                or recorded_seat >= len(game.players)
+            ):
+                raise ReplayError("Action %d has an invalid concession player" % index)
+            player = game.players[recorded_seat]
+        else:
+            player = decision_player(game)
+            if player is None:
+                raise ReplayError("Action %d occurs after game over" % index)
         seat = game.players.index(player)
         phase = phase_for(game, player)
         if (
@@ -110,7 +130,6 @@ def _apply_actions(
         ):
             raise ReplayError("Action %d context diverged (turn/player/phase)" % index)
         try:
-            action = Action.from_dict(entry.get("action"))
             session.execute(player, action)
         except GameOver:
             if index != len(actions):
@@ -188,8 +207,9 @@ def replay_action_log(value: Mapping[str, Any] | str | Path) -> Game:
     """Recreate a complete standard game and verify its normalized final state.
 
     Logs made by attaching to an already-started game cannot be replayed:
-    they have no pre-setup RNG state.  Source and dependency versions must
-    match the logging process exactly.
+    they have no pre-setup RNG state.  Source and dependency metadata must
+    match the logging process exactly, except for the audited predecessor
+    source digest accepted by the compatibility policy.
     """
 
     log = _load_log(value)
@@ -202,7 +222,7 @@ def replay_action_log(value: Mapping[str, Any] | str | Path) -> Game:
         raise ReplayError("Action log has no supported replay metadata")
     if replay.get("game_class") != "fireplace.game.Game":
         raise ReplayError("Replay supports standard fireplace.game.Game only")
-    if replay.get("code_signature") != code_signature():
+    if not signature_is_compatible(replay.get("code_signature")):
         raise ReplayError("Game code or dependency version differs from the log")
     if not isinstance(replay.get("setup_rng_state"), list):
         raise ReplayError("Action log has no pre-start RNG state")
@@ -271,7 +291,12 @@ def _restore_players(log: Mapping[str, Any]) -> list[Player]:
 
 def _validate_recovery_header(
     log: dict[str, Any],
-) -> tuple[dict[str, Any], list[dict[str, Any]], list[Player]]:
+) -> tuple[
+    dict[str, Any],
+    list[dict[str, Any]],
+    list[Player],
+    dict[str, Any],
+]:
     """Validate common replay metadata for an in-progress recovery."""
 
     if type(log.get("schema_version")) is not int or log["schema_version"] != 1:
@@ -283,7 +308,8 @@ def _validate_recovery_header(
         raise ReplayError("Action log has no supported replay metadata")
     if replay.get("game_class") != "fireplace.game.Game":
         raise ReplayError("Replay supports standard fireplace.game.Game only")
-    if replay.get("code_signature") != code_signature():
+    runtime_signature = current_signature()
+    if not signature_is_compatible(replay.get("code_signature"), runtime_signature):
         raise ReplayError("Game code or dependency version differs from the log")
     if not isinstance(replay.get("setup_rng_state"), list):
         raise ReplayError("Action log has no pre-start RNG state")
@@ -293,7 +319,7 @@ def _validate_recovery_header(
     # Keep validation and construction in one place while returning the
     # original dictionaries used for resolved setup comparison.
     players = _restore_players(log)
-    return replay, player_data, players
+    return replay, player_data, players, runtime_signature
 
 
 def restore_action_log(
@@ -308,7 +334,7 @@ def restore_action_log(
     """
 
     log = _load_log(value)
-    replay, player_data, players = _validate_recovery_header(log)
+    replay, player_data, players, runtime_signature = _validate_recovery_header(log)
     actions = log.get("actions")
     if not isinstance(actions, list):
         raise ReplayError("Action log actions must be a list")
@@ -343,16 +369,21 @@ def restore_action_log(
     # the terminal record/finish crash window safely.
     replay_log = ActionLog(game)
     session = GameSession(game, {}, action_log=replay_log)
-    hydrated = ActionLog.from_dict(log)
-    repaired = pre_start
+    repaired = pre_start or replay.get("code_signature") != runtime_signature
     try:
         session.start()
-        if pre_start:
-            hydrated.started(game)
-        else:
+        if not pre_start:
             _validate_setup(session, log, player_data)
             _apply_actions(session, log, actions)
             _validate_checkpoint(log, game, len(actions))
+        hydrated_value = copy.deepcopy(log)
+        if repaired and isinstance(hydrated_value.get("replay"), dict):
+            hydrated_value["replay"]["code_signature"] = copy.deepcopy(
+                runtime_signature
+            )
+        hydrated = ActionLog.from_dict(hydrated_value)
+        if pre_start:
+            hydrated.started(game)
         if game.ended:
             # ``status=in_progress`` with a terminal checkpoint means the
             # action record was durable while finish() was interrupted.

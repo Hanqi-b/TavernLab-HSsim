@@ -82,14 +82,14 @@ python -m pip wheel --no-deps --wheel-dir /tmp/tavernlab-wheels .
 Useful focused checks include:
 
 ```bash
-PYTHONPATH=tests:. PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -q tests/test_controller.py tests/test_replay.py
+PYTHONPATH=tests:. PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -q tests/test_controller.py tests/test_replay.py tests/test_search_simulation.py tests/test_powered_up_rng.py tests/test_action_log_restore.py tests/test_replay_compatibility.py
 python tests/full_game.py
 ```
 
 常用的针对性检查包括：
 
 ```bash
-PYTHONPATH=tests:. PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -q tests/test_controller.py tests/test_replay.py
+PYTHONPATH=tests:. PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -q tests/test_controller.py tests/test_replay.py tests/test_search_simulation.py tests/test_powered_up_rng.py tests/test_action_log_restore.py tests/test_replay_compatibility.py
 python tests/full_game.py
 ```
 
@@ -105,12 +105,55 @@ python -m fireplace.web_gui --seed 7 --port 8765
 python -m fireplace.web_gui --seed 7 --port 8765
 ```
 
-The server is local-only by design. Stop it with `Ctrl+C`. Do not commit
-account data, generated logs, or local cache files. Commit screenshots only when
-they are intentional documentation assets.
+The server binds to loopback by default. Human rooms can be shared between two
+computers only with an explicit exact host allowlist, for example:
 
-服务器按设计只监听本机回环地址，用 `Ctrl+C` 停止。请不要提交账号数据、
-生成的对局日志或本地缓存文件；截图只有在明确作为文档资源时才提交。
+```bash
+python -m fireplace.web_gui --host 0.0.0.0 --allow-host 192.168.1.20 --advertised-host 192.168.1.20 --port 8765
+```
+
+Use one `--allow-host` for each hostname or address that browsers will use. Add
+`--tls-cert /path/server.crt --tls-key /path/server.key` for HTTPS. See
+[battle modes and Codex](docs/codex-battles.md) for the room and LAN flow. Stop
+the server with `Ctrl+C`. Do not commit account data, generated logs, or local
+cache files. Commit screenshots only when they are intentional documentation
+assets.
+
+服务器默认监听本机回环地址。两台电脑共享人类房间时，必须显式提供精确的
+主机白名单，例如：
+
+```bash
+python -m fireplace.web_gui --host 0.0.0.0 --allow-host 192.168.1.20 --advertised-host 192.168.1.20 --port 8765
+```
+
+浏览器使用的每个主机名或地址都要单独提供一个 `--allow-host`；使用
+`--tls-cert /path/server.crt --tls-key /path/server.key` 可启用 HTTPS。房间和
+局域网流程见[对战模式与 Codex 说明](docs/codex-battles.md)。用 `Ctrl+C` 停止
+服务。请不要提交账号数据、生成的对局日志或本地缓存文件；截图只有在明确作为
+文档资源时才提交。
+
+For optional browser acceptance checks, use a Node.js version supported by the
+installed `playwright` module, make that module resolvable by Node, and use
+Chrome at `/opt/google/chrome/chrome` (or set `CHROME_PATH`). The checked-in
+smoke command is:
+
+```bash
+FIREPLACE_GUI_PYTHON="$PWD/venv/bin/python" node tests/web_gui_browser_smoke.cjs
+```
+
+The smoke test file documents the bundled `NODE_PATH` example and the
+`npm install playwright` fallback when Playwright is not otherwise available.
+
+如需运行可选的浏览器验收检查，请准备受已安装 `playwright` 模块支持的
+Node.js 版本，让 Node 可以解析该模块，并准备位于 `/opt/google/chrome/chrome`
+的 Chrome（或设置 `CHROME_PATH`）。仓库内的冒烟检查命令是：
+
+```bash
+FIREPLACE_GUI_PYTHON="$PWD/venv/bin/python" node tests/web_gui_browser_smoke.cjs
+```
+
+冒烟检查文件中记录了随附运行时的 `NODE_PATH` 示例，以及系统没有现成
+Playwright 时的 `npm install playwright` 备用方式。
 
 ## Making changes / 编写代码
 
@@ -124,6 +167,18 @@ they are intentional documentation assets.
 - Preserve hidden-information boundaries in observations and browser/API
   responses. Opponent hands, pending choices, and private card data must not
   be exposed to the other player.
+- Keep read-only observations, card previews, legal-action projections, and
+  search simulations from mutating the live game state or its RNG. Changes in
+  these areas should run `tests/test_search_simulation.py` and
+  `tests/test_powered_up_rng.py`.
+- Keep replay compatibility narrow. `fireplace/replay_compatibility.py` lists
+  the two audited predecessor-to-current source SHA256 pairs; all other source,
+  runtime, dependency, or card-data mismatches remain rejected. Restore must
+  validate every action and the complete state/RNG checkpoint before persisting
+  a migrated signature. Run `tests/test_action_log_restore.py`,
+  `tests/test_replay_compatibility.py`, and
+  `tests/test_match_archive_integration.py` when changing archive or replay
+  behavior.
 - Keep the `fireplace` package name and compatibility entry points unless a
   change explicitly includes a migration plan.
 
@@ -138,6 +193,14 @@ they are intentional documentation assets.
   文件或无关版本的卡牌数据。
 - 保持 observation 和浏览器/API 返回值的隐藏信息边界；不能把对手手牌、
   待处理选择或私有卡牌数据泄露给另一位玩家。
+- 只读 observation、卡牌预览、合法动作投影和搜索模拟不能修改真实对局状态
+  或 RNG。改动这些部分时应运行 `tests/test_search_simulation.py` 和
+  `tests/test_powered_up_rng.py`。
+- 保持回放兼容范围足够窄。`fireplace/replay_compatibility.py` 列出了两条经过
+  审计的“前一版本源码到当前源码” SHA256 路径；其他源码、运行时、依赖或卡牌
+  数据不匹配仍应拒绝。恢复必须先验证每个动作及完整状态/RNG 检查点，再持久化
+  迁移后的签名。修改存档或回放行为时请运行 `tests/test_action_log_restore.py`、
+  `tests/test_replay_compatibility.py` 和 `tests/test_match_archive_integration.py`。
 - 除非变更同时包含迁移方案，否则保留 `fireplace` 包名和兼容入口。
 
 ## Commits and pull requests / 提交与合并请求

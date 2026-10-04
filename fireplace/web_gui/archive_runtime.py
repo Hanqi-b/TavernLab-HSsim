@@ -136,6 +136,18 @@ def capture_agent_state(agent: object) -> object | None:
     elif isinstance(agent, RadicalAgent):
         kind = "radical"
     else:
+        try:
+            from ..codex_agent import CodexAgent
+        except ImportError:  # pragma: no cover - adapter is optional at import time
+            CodexAgent = ()
+        if isinstance(agent, CodexAgent):
+            from .async_opponent import codex_config_from_agent
+
+            config = codex_config_from_agent(agent)
+            # Keep this deliberately flat and secret-free.  The Codex adapter
+            # owns any process/session state; archives only need enough
+            # validated configuration to reconstruct a fresh session.
+            return {"kind": "codex", **config}
         # HeuristicAgent has no mutable RNG/search state.  Keep a known kind
         # marker so restore cannot deserialize arbitrary Python objects.
         from ..heuristic_agent import HeuristicAgent
@@ -183,9 +195,29 @@ def restore_agent_state(agent: object, state: object) -> None:
 
     if not isinstance(state, Mapping) or not isinstance(state.get("kind"), str):
         raise ValueError("invalid archived opponent state")
-    expected = "mcts" if isinstance(agent, MCTSAgent) else "radical" if isinstance(agent, RadicalAgent) else "heuristic"
+    try:
+        from ..codex_agent import CodexAgent
+    except ImportError:  # pragma: no cover - adapter is optional at import time
+        CodexAgent = ()
+    expected = (
+        "mcts"
+        if isinstance(agent, MCTSAgent)
+        else "radical"
+        if isinstance(agent, RadicalAgent)
+        else "codex"
+        if isinstance(agent, CodexAgent)
+        else "heuristic"
+    )
     if state["kind"] != expected:
         raise ValueError("archived opponent kind does not match the match")
+    if expected == "codex":
+        from .async_opponent import codex_config_from_agent, validate_codex_state
+
+        archived = validate_codex_state(state)
+        actual = codex_config_from_agent(agent)
+        if archived["model"] != actual["model"] or archived["timeout"] != actual["timeout"]:
+            raise ValueError("archived Codex configuration does not match the match")
+        return
     if expected == "heuristic":
         return
     seed = state.get("seed")

@@ -12,6 +12,7 @@ from fireplace.controller import ActionError, GameSession, decision_player
 from fireplace.exceptions import GameOver
 from fireplace.game import Game
 from fireplace.player import Player
+from fireplace.replay import replay_action_log
 
 
 cards.db.initialize()
@@ -52,23 +53,32 @@ def test_mulligan_and_stale_rejection():
         current.execute(p, Action(type="MULLIGAN"))
 
 
-def test_concede_is_explicit_but_not_an_ai_legal_action():
+def test_concede_is_explicit_but_allows_participant_off_turn_and_replays():
     current = session()
     current.start()
+    for _ in range(2):
+        current.execute(decision_player(current.game), Action(type="MULLIGAN"))
     player = decision_player(current.game)
     other = next(candidate for candidate in current.game.players if candidate is not player)
     concede = Action(type="CONCEDE")
 
     assert concede not in current.legal_actions(player)
-    with pytest.raises(ActionError, match="current decision"):
-        current.execute(other, concede)
-    assert not current.game.ended
+    with pytest.raises(ActionError, match="non-participant"):
+        current.execute(object(), concede)
 
     with pytest.raises(GameOver):
-        current.execute(player, concede)
+        current.execute(other, concede)
     assert current.game.ended
-    assert current.action_log.to_dict()["actions"][-1]["action"] == concede.to_dict()
-    assert current.action_log.to_dict()["status"] == "complete"
+    log = current.action_log.to_dict()
+    assert log["actions"][-1]["action"] == concede.to_dict()
+    assert log["actions"][-1]["player"] == current.game.players.index(other)
+    assert log["actions"][-1]["phase"] is None
+    assert log["status"] == "complete"
+    restored = replay_action_log(log)
+    assert restored.ended
+
+    with pytest.raises(ActionError, match="after game over"):
+        current.execute(player, concede)
 
 
 def test_agent_cannot_invent_concede_outside_legal_actions():

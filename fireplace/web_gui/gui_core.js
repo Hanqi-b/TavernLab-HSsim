@@ -4,17 +4,29 @@ const ELEMENT_IDS = [
   "app-shell", "lobby-screen", "lobby-form", "lobby-title", "lobby-subtitle",
   "nickname-input", "nickname-label", "nickname-hint", "language-label",
   "locale-zhCN", "locale-enUS", "opponent-label", "opponent-select", "opponent-hint",
+  "codex-model-field", "codex-model-label", "codex-model-input", "codex-model-hint",
   "start-match-button", "lobby-status", "lobby-footer", "lobby-login-actions",
   "lobby-account-toolbar", "lobby-account-label", "lobby-account-import", "lobby-account-logout",
   "enter-lobby-button", "lobby-setup", "lobby-mode-navigation", "battle-entry",
   "battle-entry-title", "battle-entry-description", "arena-entry", "arena-entry-title",
   "arena-entry-description", "collection-entry", "collection-entry-title",
   "collection-entry-description", "history-entry", "history-entry-title", "history-entry-description",
-  "deck-choice-field", "deck-label", "deck-select", "deck-hint",
+  "deck-choice-field", "deck-label", "deck-select", "deck-hint", "battle-mode-field", "battle-mode-label",
+  "battle-mode-select", "battle-mode-hint", "opponent-choice-field",
+  "codex-self-model-field", "codex-self-model-label", "codex-self-model-input", "codex-self-model-hint",
+  "codex-opponent-model-field", "codex-opponent-model-label", "codex-opponent-model-input", "codex-opponent-model-hint",
+  "room-controls", "room-controls-title", "room-controls-description", "room-controls-status", "room-setup-actions",
+  "room-create-button", "room-code-input", "room-code-label", "room-code-hint", "room-join-button",
+  "room-waiting-panel", "room-waiting-title", "room-waiting-message", "room-invite-row", "room-invite-code",
+  "room-invite-label", "room-invite-hint", "room-copy-button", "room-participants-label", "room-participants",
+  "room-cancel-button", "room-match-status", "room-match-label", "room-match-seat", "room-match-opponent", "room-match-state",
   "game", "table", "page-title", "brand-caption",
   "match-account-toolbar", "match-account-label", "match-account-import", "match-account-logout",
   "opponent-title", "self-title", "phase-value", "turn-value", "active-seat-value",
-  "revision-value", "notice", "opponent-hand-count", "opponent-deck-count", "opponent-mana-value", "opponent-hand",
+  "revision-value", "notice", "llm-status", "llm-status-label", "llm-status-model", "llm-status-message", "llm-retry",
+  "automation-status", "automation-mode-label", "automation-state-label", "automation-current-seat",
+  "automation-controllers", "automation-pause", "automation-resume", "automation-step", "automation-stop",
+  "opponent-hand-count", "opponent-deck-count", "opponent-mana-value", "opponent-hand",
   "opponent-hero-status", "opponent-hero-row", "opponent-extras", "opponent-board-count",
   "opponent-board", "self-hero-row", "self-hero-status", "self-extras", "self-board-count",
   "self-board", "hand-title", "decision-title", "log-title", "hero-power-row", "mana-value",
@@ -36,8 +48,8 @@ export function collectElements(document) {
 export function createLobby({
   document, window, elements, locale, dom, state, decisions, modal,
   onLoadState, onPollState, onStartMatch, onReturnHome,
-  onInitAttackLine, onRenderSnapshot, onRenderEmptyState, onResetAssets,
-  onConcede, getBusy,
+  onInitAttackLine, onRenderSnapshot, onRenderEmptyState, onResetAssets, onInitRooms, onRoomModeChange,
+  onConcede, onAutomation, getBusy,
 }) {
   let currentMode = "lobby";
   let lobbyStage = "login";
@@ -50,7 +62,12 @@ export function createLobby({
   let surrenderReturnFocus = null;
   const preferredDeckId = requestedDeckId();
   const opponentStorageKey = "fireplace.opponent";
-  const opponentIds = new Set(["radical", "mcts"]);
+  const opponentIds = new Set(["radical", "mcts", "codex"]);
+  const codexModelStorageKey = "fireplace.codexModel";
+  const battleModeStorageKey = "fireplace.battleMode";
+  const battleModes = new Set(["human", "codex_mcts", "codex_codex", "human_human"]);
+  const codexSelfModelStorageKey = "fireplace.codexSelfModel";
+  const codexOpponentModelStorageKey = "fireplace.codexOpponentModel";
 
   async function init() {
     if (!(await ensureAccount())) return;
@@ -69,6 +86,16 @@ export function createLobby({
     });
     elements["game-over-return"].addEventListener("click", onReturnHome);
     elements["terminal-return"].addEventListener("click", onReturnHome);
+    [
+      ["automation-pause", "pause"],
+      ["automation-resume", "resume"],
+      ["automation-step", "step"],
+      ["automation-stop", "stop"],
+    ].forEach(([id, command]) => {
+      if (elements[id]) elements[id].addEventListener("click", () => {
+        if (typeof onAutomation === "function") void onAutomation(command);
+      });
+    });
     elements["card-modal"].addEventListener("click", (event) => {
       if (event.target && event.target.getAttribute("data-modal-close") === "true") {
         modal.closeCardModal();
@@ -109,11 +136,14 @@ export function createLobby({
     setLobbyFormValues();
     bindModeNavigation();
     bindDeckSelection();
+    bindBattleModeSelection();
     bindOpponentSelection();
     renderDeckOptions();
+    syncBattleModeSelection();
     syncOpponentSelection();
     loadDeckOptions();
-    onLoadState(false);
+    const roomReady = typeof onInitRooms === "function" ? onInitRooms() : null;
+    Promise.resolve(roomReady).finally(() => onLoadState(false));
     pollTimer = window.setInterval(onPollState, 2500);
   }
 
@@ -278,6 +308,19 @@ export function createLobby({
     return opponentIds.has(candidate) ? candidate : "radical";
   }
 
+  function validBattleMode(value) {
+    const candidate = String(value || "").trim();
+    return battleModes.has(candidate) ? candidate : "human";
+  }
+
+  function battleModePreference() {
+    const select = elements["battle-mode-select"];
+    if (select && select.value && select.dataset.userSelected === "true") {
+      return validBattleMode(select.value);
+    }
+    return validBattleMode(locale.readStored(battleModeStorageKey, "human"));
+  }
+
   function opponentSelectionPreference() {
     const select = elements["opponent-select"];
     if (select && select.value && select.dataset.userSelected === "true") {
@@ -286,17 +329,76 @@ export function createLobby({
     return validOpponent(locale.readStored(opponentStorageKey, "radical"));
   }
 
+  function syncBattleModeSelection() {
+    const select = elements["battle-mode-select"];
+    const selected = battleModePreference();
+    if (select) {
+      select.value = selected;
+      ["human", "codex_mcts", "codex_codex", "human_human"].forEach((kind) => {
+        const option = select.querySelector(`option[value="${kind}"]`);
+        if (option) dom.setText(option, locale.tr(`lobby.${kind}Battle`));
+      });
+      select.setAttribute("aria-label", locale.tr("lobby.battleMode"));
+    }
+    dom.setText(elements["battle-mode-label"], locale.tr("lobby.battleMode"));
+    dom.setText(elements["battle-mode-hint"], locale.tr(`lobby.${selected}BattleDescription`));
+    dom.setHidden(elements["opponent-choice-field"], selected !== "human");
+    dom.setHidden(elements["start-match-button"], selected === "human_human");
+    const selfModelField = elements["codex-self-model-field"];
+    const selfModelInput = elements["codex-self-model-input"];
+    dom.setHidden(selfModelField, selected === "human");
+    if (selfModelInput) {
+      const selfModelCopy = selected === "codex_codex" ? "codexDuelSelfModel" : "codexSelfModel";
+      dom.setText(elements["codex-self-model-label"], locale.tr(`lobby.${selfModelCopy}Label`));
+      dom.setText(elements["codex-self-model-hint"], locale.tr(`lobby.${selfModelCopy}Hint`));
+      selfModelInput.placeholder = locale.tr("lobby.codexSelfModelPlaceholder");
+      selfModelInput.setAttribute("aria-label", locale.tr(`lobby.${selfModelCopy}Label`));
+      if (selfModelInput.dataset.userSelected !== "true") {
+        selfModelInput.value = locale.readStored(codexSelfModelStorageKey, "");
+      }
+    }
+    const opponentModelField = elements["codex-opponent-model-field"];
+    const opponentModelInput = elements["codex-opponent-model-input"];
+    dom.setHidden(opponentModelField, selected !== "codex_codex");
+    if (opponentModelInput) {
+      dom.setText(elements["codex-opponent-model-label"], locale.tr("lobby.codexOpponentModelLabel"));
+      dom.setText(elements["codex-opponent-model-hint"], locale.tr("lobby.codexOpponentModelHint"));
+      opponentModelInput.placeholder = locale.tr("lobby.codexOpponentModelPlaceholder");
+      opponentModelInput.setAttribute("aria-label", locale.tr("lobby.codexOpponentModelLabel"));
+      if (opponentModelInput.dataset.userSelected !== "true") {
+        opponentModelInput.value = locale.readStored(codexOpponentModelStorageKey, "");
+      }
+    }
+    if (typeof onRoomModeChange === "function") onRoomModeChange(selected);
+  }
+
   function syncOpponentSelection() {
     const select = elements["opponent-select"];
     if (!select) return;
     const selected = opponentSelectionPreference();
     select.value = selected;
-    ["radical", "mcts"].forEach((kind) => {
+    ["radical", "mcts", "codex"].forEach((kind) => {
       const option = select.querySelector(`option[value="${kind}"]`);
       if (option) dom.setText(option, locale.tr(`lobby.${kind}`));
     });
     dom.setText(elements["opponent-hint"], locale.tr(`lobby.${selected}Description`));
     select.setAttribute("aria-label", locale.tr("lobby.opponent"));
+    const modelField = elements["codex-model-field"];
+    const modelInput = elements["codex-model-input"];
+    if (modelField) {
+      const visible = battleModePreference() === "human" && selected === "codex";
+      dom.setHidden(modelField, !visible);
+      modelField.setAttribute("aria-hidden", visible ? "false" : "true");
+    }
+    if (modelInput) {
+      dom.setText(elements["codex-model-label"], locale.tr("lobby.codexModelLabel"));
+      dom.setText(elements["codex-model-hint"], locale.tr("lobby.codexModelHint"));
+      modelInput.placeholder = locale.tr("lobby.codexModelPlaceholder");
+      modelInput.setAttribute("aria-label", locale.tr("lobby.codexModelLabel"));
+      if (modelInput.dataset.userSelected !== "true") {
+        modelInput.value = locale.readStored(codexModelStorageKey, "");
+      }
+    }
   }
 
   function bindOpponentSelection() {
@@ -309,6 +411,41 @@ export function createLobby({
       locale.writeStored(opponentStorageKey, selected);
       syncOpponentSelection();
     });
+    const modelInput = elements["codex-model-input"];
+    if (modelInput) {
+      modelInput.addEventListener("input", () => {
+        modelInput.dataset.userSelected = "true";
+        locale.writeStored(codexModelStorageKey, modelInput.value);
+      });
+    }
+  }
+
+  function bindBattleModeSelection() {
+    const select = elements["battle-mode-select"];
+    if (select) {
+      select.addEventListener("change", () => {
+        const selected = validBattleMode(select.value);
+        select.value = selected;
+        select.dataset.userSelected = "true";
+        locale.writeStored(battleModeStorageKey, selected);
+        syncBattleModeSelection();
+        syncOpponentSelection();
+      });
+    }
+    const modelInput = elements["codex-self-model-input"];
+    if (modelInput) {
+      modelInput.addEventListener("input", () => {
+        modelInput.dataset.userSelected = "true";
+        locale.writeStored(codexSelfModelStorageKey, modelInput.value);
+      });
+    }
+    const opponentModelInput = elements["codex-opponent-model-input"];
+    if (opponentModelInput) {
+      opponentModelInput.addEventListener("input", () => {
+        opponentModelInput.dataset.userSelected = "true";
+        locale.writeStored(codexOpponentModelStorageKey, opponentModelInput.value);
+      });
+    }
   }
 
   function deckSelectionPreference() {
@@ -462,6 +599,8 @@ export function createLobby({
     }
     dom.setText(elements["deck-label"], locale.tr("lobby.deckLabel"));
     if (elements["deck-select"]) elements["deck-select"].setAttribute("aria-label", locale.tr("lobby.deckLabel"));
+    if (elements["battle-mode-select"]) elements["battle-mode-select"].setAttribute("aria-label", locale.tr("lobby.battleMode"));
+    syncBattleModeSelection();
     syncOpponentSelection();
     setSelectorText(".opponent-panel .board-heading h3", locale.tr("opponentBoard"));
     setSelectorText(".self-panel .board-heading h3", locale.tr("yourBoard"));
@@ -491,6 +630,8 @@ export function createLobby({
     });
     const belowTools = document.querySelector(".below-board-tools");
     if (belowTools) belowTools.setAttribute("aria-label", locale.tr("backupActions"));
+    const automationControls = document.querySelector(".automation-controls");
+    if (automationControls) automationControls.setAttribute("aria-label", locale.tr("automation.controls"));
   }
 
   function updateLocaleControls() {
@@ -508,6 +649,7 @@ export function createLobby({
     if (!input) return;
     input.value = locale.readStored(nicknameStorageKey(), "") || (account ? account.username : "");
     syncOpponentSelection();
+    syncBattleModeSelection();
     setLobbyStage(input.value.trim() || preferredDeckId ? "setup" : "login");
     updateLocaleControls();
   }
@@ -517,6 +659,17 @@ export function createLobby({
     dom.setHidden(elements["lobby-login-actions"], lobbyStage !== "login");
     dom.setHidden(elements["lobby-setup"], lobbyStage !== "setup");
     dom.setText(elements["enter-lobby-button"], locale.tr("lobby.enter"));
+  }
+
+  function setBattleMode(value) {
+    const selected = validBattleMode(value);
+    const select = elements["battle-mode-select"];
+    if (select) {
+      select.value = selected;
+      select.dataset.userSelected = "true";
+    }
+    syncBattleModeSelection();
+    syncOpponentSelection();
   }
 
   function setLobbyStatus(message, kind) {
@@ -538,6 +691,13 @@ export function createLobby({
     }
   }
 
+  function isAutomationSnapshot(snapshot = state.current.snapshot) {
+    return Boolean(snapshot && (
+      (snapshot.automation && snapshot.automation.enabled === true) ||
+      snapshot.battle_mode === "codex_mcts" || snapshot.battle_mode === "codex_codex"
+    ));
+  }
+
   function clearMatchState() {
     closeSurrenderMenu({ restoreFocus: false });
     state.resetMatch();
@@ -554,13 +714,19 @@ export function createLobby({
       ["nickname-hint", "lobby.nicknameHint"], ["language-label", "lobby.language"], ["opponent-label", "lobby.opponent"],
       ["start-match-button", "lobby.start"], ["lobby-footer", "lobby.footer"],
       ["history-entry-title", "lobby.history"], ["history-entry-description", "lobby.historyDescription"],
-      ["deck-label", "lobby.deckLabel"],
+      ["deck-label", "lobby.deckLabel"], ["battle-mode-label", "lobby.battleMode"],
+      ["codex-model-label", "lobby.codexModelLabel"], ["codex-self-model-label", "lobby.codexSelfModelLabel"],
+      ["codex-opponent-model-label", "lobby.codexOpponentModelLabel"],
       ["surrender-title", "surrender.title"], ["surrender-description", "surrender.description"],
       ["surrender-continue", "surrender.continue"], ["surrender-confirm", "surrender.confirm"],
     ];
     copy.forEach(([id, key]) => dom.setText(elements[id], locale.tr(key)));
     elements["nickname-input"].placeholder = locale.tr("lobby.nicknamePlaceholder");
+    if (elements["codex-model-input"]) {
+      elements["codex-model-input"].placeholder = locale.tr("lobby.codexModelPlaceholder");
+    }
     renderDeckOptions(deckSelectionPreference());
+    syncBattleModeSelection();
     syncOpponentSelection();
     updateLocaleControls();
     setLobbyStage(lobbyStage);
@@ -577,6 +743,7 @@ export function createLobby({
     const snapshot = state.current.snapshot;
     const phase = snapshot && snapshot.observation ? String(snapshot.observation.phase || "") : "";
     return currentMode === "match" && Boolean(snapshot) && !snapshot.outcome && phase !== "GAME_OVER" &&
+      !isAutomationSnapshot(snapshot) &&
       !(typeof getBusy === "function" && getBusy());
   }
 
@@ -657,6 +824,10 @@ export function createLobby({
       locale.writeStored(opponentStorageKey, value);
       return value;
     },
+    account() { return account; },
+    deckId() { return deckSelectionPreference(); },
+    battleMode() { return battleModePreference(); },
+    setBattleMode,
     get mode() { return currentMode; },
     get lobbyStage() { return lobbyStage; },
     stop() { if (pollTimer !== null) window.clearInterval(pollTimer); },

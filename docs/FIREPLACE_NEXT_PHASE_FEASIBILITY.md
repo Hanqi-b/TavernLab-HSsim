@@ -1,5 +1,7 @@
 # Fireplace 下一阶段架构调查与可执行性评估
 
+> 历史架构评估：本文描述下列基线提交的状态，保留当时的结论与测试数量。后续已实现动作控制器、终端入口、搜索 Agent、浏览器 GUI 和存档回放；当前功能与使用方式见 [README](../README.md)、[搜索 Agent](search-agents.md)、[对局存档](game-archives.md)和[对战模式](codex-battles.md)。
+
 调查基线：仓库 `master`，commit `47a2572a000db66645bb74a425a090d51f1004fa`；Python 3.10.12；`fireplace==0.1.0`、`hearthstone==9.21.1`、`hearthstone-data==251952.1`。本报告仅调查和规划，没有修改生产代码。
 
 ## 1. Executive Summary

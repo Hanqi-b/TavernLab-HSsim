@@ -152,11 +152,14 @@ def execute_action(game, player, action, index):
         raise ActionError("Expected an Action value")
     if action.type == CONCEDE:
         # Concession is an explicit browser control, so it intentionally does
-        # not appear in legal_actions.  It is still restricted to the player
-        # whose decision currently blocks the game, matching every other
-        # checked session action.
-        if decision_player(game) is not player:
-            raise ActionError("Concession is unavailable outside the current decision")
+        # not appear in legal_actions.  A participant may surrender while the
+        # other participant's decision is pending (including while an
+        # asynchronous opponent is thinking), but an arbitrary object must
+        # never be able to terminate the game through this boundary.
+        if game.ended:
+            raise ActionError("Concession is unavailable after game over")
+        if not any(candidate is player for candidate in game.players):
+            raise ActionError("Concession is unavailable to a non-participant")
         player.concede()
         return None
     if action not in legal_actions(game, player):

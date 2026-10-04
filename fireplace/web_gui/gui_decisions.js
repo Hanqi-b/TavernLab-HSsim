@@ -191,6 +191,25 @@ export function createDecisions(deps) {
       dom.setText(elements["action-instructions"], locale.tr("gameOverInstruction"));
       return;
     }
+    const automation = snapshot && (
+      (data.isObject(snapshot.automation) && snapshot.automation.enabled === true) ||
+      snapshot.battle_mode === "codex_mcts" || snapshot.battle_mode === "codex_codex"
+    );
+    if (automation) {
+      const paused = snapshot.automation.paused === true;
+      dom.setText(elements["action-instructions"], paused
+        ? locale.tr("automation.paused") : locale.tr("waitingOpponent"));
+      dom.setHidden(elements["action-instructions"], false);
+      return;
+    }
+    if (!actionIndex.actions.length) {
+      // The asynchronous opponent owns the current decision.  Keep all
+      // human controls hidden while showing a persistent contextual wait
+      // message, regardless of whether the engine phase is Mulligan or Main.
+      dom.setText(elements["action-instructions"], locale.tr("waitingOpponent"));
+      dom.setHidden(elements["action-instructions"], false);
+      return;
+    }
     if (phase === "MULLIGAN") {
       dom.setText(elements["action-instructions"], locale.tr("mulliganInstruction"));
       renderPendingChoice(snapshot.observation.pending_choice);
@@ -210,6 +229,10 @@ export function createDecisions(deps) {
       return;
     }
 
+    // During a remote opponent turn the server intentionally exposes no
+    // human actions. Keep the contextual wait copy visible instead of
+    // rendering an empty decision area that could suggest an interaction is
+    // available.
     // Directly actionable cards and the lower backup controls make the
     // permanent help banner redundant on the battlefield.  Selection hints
     // below remain visible when the player actually needs a choice.
@@ -388,7 +411,11 @@ export function createDecisions(deps) {
       return null;
     }
     var wrapper = cards.createEntityCard(card, "card option-card", onSelect);
-    wrapper.appendChild(cards.createCardArt(card, "render"));
+    // Choice cards can still carry live hand values (for example a Discover
+    // option whose printed render is stale). Keep the accessible label in
+    // sync with the same current stats shown on a hand card.
+    wrapper.setAttribute("aria-label", cards.handCardLabel(card, false, false));
+    wrapper.appendChild(cards.createCardArt(card, "render", { liveStats: true }));
     var copy = document.createElement("div");
     copy.className = "card-content";
     copy.appendChild(cards.cardTitle(card));
@@ -461,6 +488,16 @@ export function createDecisions(deps) {
     var snapshot = state.current.snapshot;
     var actionIndex = state.current.actionIndex;
     dom.clear(elements["action-menu"]);
+    if (snapshot && (
+      (data.isObject(snapshot.automation) && snapshot.automation.enabled === true) ||
+      snapshot.battle_mode === "codex_mcts" || snapshot.battle_mode === "codex_codex"
+    )) {
+      var spectator = document.createElement("p");
+      spectator.className = "muted";
+      spectator.textContent = locale.tr("waitingOpponent");
+      elements["action-menu"].appendChild(spectator);
+      return;
+    }
     var types = model.actionTypes(actionIndex);
     if (!types.length) {
       var empty = document.createElement("p");

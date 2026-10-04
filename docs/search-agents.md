@@ -1,5 +1,10 @@
 # Radical and MCTS agents
 
+This page documents the local Radical and MCTS search policies. The normal
+battle lobby also offers Codex as a separate controller; its setup, spectator
+modes, and recovery behavior are described in [Human and Codex battles](codex-battles.md).
+Arena continues to use tactical MCTS.
+
 These Python agents adapt the algorithm structure investigated in
 [xjw580/Hearthstone-Script](https://github.com/xjw580/Hearthstone-Script),
 parent revision `9d8c7ad94bd52ce9d4812e40f7b45b052ae3f047` (v4.16.4-GA).
@@ -175,6 +180,13 @@ need live game, player, card, observer, or RNG objects.
 and installs a separate entity index, so speculative decisions neither create
 real action-log entries nor send effects to the browser timeline. Search RNG
 is independent of the live game's future stream.
+The same boundary applies to public observation and UI projection: reading a
+preview must not mutate the live game state or its RNG. If a selector is needed
+for an estimate, evaluate it on detached state or with a fixed seed. In
+particular, an old log whose live RNG was already advanced while reading a
+`powered_up` indicator remains divergent and is rejected by exact archive
+replay; the compatibility and checkpoint rules are in
+[game-archives.md](game-archives.md).
 Speculative engine messages are also suppressed in the search's execution
 context, while real actions retain their normal logs.
 

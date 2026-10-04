@@ -17,6 +17,10 @@ This project is an open-source local Hearthstone simulator and AI experimentatio
 
 The project is primarily intended for local simulation, historical Hearthstone environments, and AI/agent experimentation. It does not connect to Battle.net and is not intended to replace the current official Hearthstone client.
 
+本文的“当前功能”指当前仓库源码，不等同于已发布的 v0.1.0-alpha 完整源码 ZIP。该 ZIP 是对应发布版本的历史资产；Codex 对战、Codex/MCTS 观战、人类房间和可选局域网访问等较新的功能，应按包含这些功能的当前源码或对应分支运行。
+
+“Current” below refers to the current repository source, not to the published v0.1.0-alpha full-source ZIP. That ZIP is a historical asset for its release version; newer features such as Codex battles, Codex/MCTS spectators, human rooms, and opt-in LAN access require source from a revision that contains them.
+
 ## 截图 / Screenshots
 
 以下中英文截图来自本项目实际运行的本机界面，使用临时演示账号。界面内仍有部分 Fireplace 名称，Python 包名继续使用 <code>fireplace</code>。
@@ -54,13 +58,13 @@ Card catalog:
 | 功能 | 状态 | 当前范围 |
 | --- | --- | --- |
 | 核心模拟与动作 API | 可用，持续完善 | 基于 Fireplace 的规则与实体；部分卡牌效果尚未完整实现。 |
-| 浏览器对战 | 可用 | 本机单人可选择激进策略或 MCTS，竞技场固定使用 MCTS，可用随机牌组或完整的自建卡组。 |
+| 浏览器对战 | 可用 | 普通对战可选择激进策略、MCTS 或 Codex；还可选择 Codex vs MCTS、Codex vs Codex 观战。人类对战通过双席房间进行；随机牌组或完整的自建卡组可用。详见[对战模式与 Codex 说明](docs/codex-battles.md)。 |
 | 竞技场 | 可用 | 自选版保留原有规则（7 胜/3 负）；2016 历史版固定卡池，AI 按 Lightforge 评分完成 30 轮三选一（12 胜/3 负）。详见[模式与限制](docs/arena-formats.md)。 |
 | 卡牌目录与收藏 | 可用 | 浏览、搜索、筛选历史卡牌资料，并创建和保存卡组；不是官方账号的卡牌库存。 |
 | 本地账号 | 可用 | 用户名和密码登录；卡组、竞技场进度和活动对局按账号隔离。 |
-| Agent/AI | 可用，实验性 | 普通对战可选择激进策略或 MCTS，竞技场固定使用 MCTS；原有 AI 的对局入口已关闭，算法仍保留供内部回退和研究。 |
-| 对局存档与回放 | 可用 | GUI 普通对战和竞技场自动按账号保存；可查看记录、继续未完成对局、下载已结束对局日志。恢复和完整日志回放要求匹配的规则代码及卡牌数据版本。 |
-| 局域网/在线 PvP | 未实现 | 当前服务器只监听本机回环地址。 |
+| Agent/AI | 可用，实验性 | 普通对战可选择激进策略、MCTS 或 Codex，竞技场固定使用 MCTS；另有 Codex vs MCTS 和 Codex vs Codex 观战。 |
+| 对局存档与回放 | 可用 | 普通对战和竞技场按账号保存，可查看记录、继续未完成对局和下载已结束日志；人类房间使用服务器范围的共享房间存储并支持重连。恢复会验证规则代码、卡牌数据、运行时版本、动作及恢复检查点中的状态与 RNG；完整日志回放会验证结果、最终状态，并在日志包含时验证 RNG 检查点。个人 GUI 存档只在完整校验通过后迁移已审计的源代码兼容路径。详见[对局存档说明](docs/game-archives.md)。 |
+| 局域网/在线 PvP | 局域网可选 | 默认只监听本机回环地址；显式绑定非回环地址时必须提供精确的 `--allow-host` 主机白名单，可配合 TLS。项目不提供 Battle.net 或在线匹配。 |
 
 ### 版本与卡牌支持范围
 
@@ -77,7 +81,7 @@ Card catalog:
 
 TavernLab-HSsim 是**免费、开源、非官方**的本地研究项目，源码按 [AGPL-3.0-or-later](LICENSE) 发布。项目继承并注明了上游 Fireplace；它与 Blizzard Entertainment 或 Battle.net 没有隶属关系，也未获其赞助或认可。《炉石传说》名称、图像及相关素材的权利归各自权利人所有。
 
-项目不提供 Battle.net 登录、官方客户端兼容、局域网服务或在线匹配。当前的账号隔离只适用于这台本机服务器；卡牌资料范围和效果实现情况也不应被理解为现行官方《炉石传说》的完整复刻。
+项目不提供 Battle.net 登录、官方客户端兼容或在线匹配。服务器默认只接受本机回环访问；人类房间可通过显式主机白名单提供局域网访问，并可使用 TLS。当前的账号隔离只适用于这台本机服务器；卡牌资料范围和效果实现情况也不应被理解为现行官方《炉石传说》的完整复刻。
 
 ### 安装与启动
 
@@ -97,7 +101,9 @@ python -m fireplace.web_gui
 
 下载 [v0.1.0-alpha 完整源码 ZIP](https://github.com/Hanqi-b/TavernLab-HSsim/releases/download/v0.1.0-alpha/TavernLab-HSsim-v0.1.0-alpha-full-source.zip) 时无需 Git LFS；此文件包含完整的 <code>CardDefs.xml</code>。GitHub 自动生成的 Source code ZIP/TAR 可能只有 LFS 指针，请使用上述完整包或通过 Git LFS 克隆。
 
-大厅和竞技场的“对局存档”入口可以查看自动保存的对局。服务重启后，从这里继续未完成对局；已结束对局可下载 JSON 日志。存档位于账号目录的 <code>matches/</code> 中，详见[对局存档说明](docs/game-archives.md)。
+Codex 对战、双控制器观战、人类房间和局域网访问的启动与使用方式见[对战模式与 Codex 说明](docs/codex-battles.md)。
+
+大厅和竞技场的“对局存档”入口可以查看按账号自动保存的对局。服务重启后，从这里继续未完成对局；已结束对局可下载 JSON 日志。人类房间由服务器范围的共享房间存储恢复，详见[对局存档说明](docs/game-archives.md)。
 
 终端对战及回放：
 
@@ -121,13 +127,13 @@ python examples/replay_log.py games/match.json
 | Feature | Status | Current scope |
 | --- | --- | --- |
 | Simulation core and Action API | Available, evolving | Built on Fireplace rules and entities; some card effects remain incomplete. |
-| Browser battles | Available | Choose Radical or MCTS with random or completed custom decks; Arena always uses MCTS. |
+| Browser battles | Available | Normal battles offer Radical, MCTS, or Codex; the lobby also offers Codex vs MCTS and Codex vs Codex spectator modes. Human versus human uses two-seat rooms. Random and completed custom decks are supported. See [battle modes and Codex](docs/codex-battles.md). |
 | Arena | Available | Custom keeps the existing rules (7 wins/3 losses). The 2016 format uses a fixed pool and 30 Lightforge-scored AI picks (12 wins/3 losses). See [formats and limitations](docs/arena-formats.md). |
 | Card catalog and Collection | Available | Browse, search, and filter historical card data; build and save decks. This is not an official account card inventory. |
 | Local accounts | Available | Username/password sign-in; decks, Arena progress, and active matches are separated by account. |
-| Agents/AI | Available, experimental | Regular battles offer Radical or MCTS; Arena always uses MCTS. The heuristic entry is disabled, with its implementation retained for internal fallbacks and research. |
-| Game archives and replay | Available | GUI battles and Arena games save automatically per account. View records, resume unfinished games, and download finished logs. Recovery and replay require matching rules and card-data versions. |
-| LAN/online PvP | Not implemented | The server binds to the local loopback address only. |
+| Agents/AI | Available, experimental | Regular battles offer Radical, MCTS, or Codex; Arena always uses MCTS. Codex vs MCTS and Codex vs Codex spectator modes are also available. |
+| Game archives and replay | Available | Normal battles and Arena games save per account; view history, resume unfinished games, and download finished logs. Human rooms use server-wide shared room storage and support reconnecting. GUI restore validates rules code, card data, runtime versions, every action, and the recovery checkpoint’s state and RNG; full log replay validates the result and final state, plus an RNG checkpoint when one is present. Personal GUI archive restore migrates an audited source-compatibility path only after full validation. See [game archives](docs/game-archives.md). |
+| LAN/online PvP | Opt-in LAN only | The default server binds to loopback. A non-loopback deployment requires an exact `--allow-host` allowlist and may use TLS; Battle.net and online matchmaking are not provided. |
 
 ### Version and card scope
 
@@ -144,7 +150,7 @@ The old Fireplace README's completion percentages are preserved in a [historical
 
 TavernLab-HSsim is a **free, open-source, unofficial** local research project distributed under [AGPL-3.0-or-later](LICENSE). It builds on and credits upstream Fireplace. It is not affiliated with, sponsored by, or endorsed by Blizzard Entertainment or Battle.net. Hearthstone names, images, and related assets remain the property of their respective rights holders.
 
-The project does not offer Battle.net login, official-client compatibility, LAN hosting, or online matchmaking. Account separation currently applies only to the local server. Its card data and effect coverage should not be read as a complete recreation of the current official Hearthstone game.
+The project does not offer Battle.net login, official-client compatibility, or online matchmaking. The server accepts loopback access by default; human rooms can be shared on a LAN only with an explicit host allowlist and optional TLS. Account separation currently applies only to the local server. Its card data and effect coverage should not be read as a complete recreation of the current official Hearthstone game.
 
 ### Install and run
 
@@ -164,7 +170,9 @@ Open [http://127.0.0.1:8765/](http://127.0.0.1:8765/) on the same computer. Regi
 
 The [v0.1.0-alpha full-source ZIP](https://github.com/Hanqi-b/TavernLab-HSsim/releases/download/v0.1.0-alpha/TavernLab-HSsim-v0.1.0-alpha-full-source.zip) includes the complete <code>CardDefs.xml</code> and does not require Git LFS. GitHub's automatically generated Source code ZIP/TAR may contain only the LFS pointer; use the full-source asset or clone with Git LFS.
 
-Open “Game archives” from the lobby or Arena to view saved games, continue an unfinished game after restarting the server, or download a finished JSON log. Files are stored in each account's <code>matches/</code> directory.
+See [battle modes and Codex](docs/codex-battles.md) for Codex battles, two-controller spectators, human rooms, and opt-in LAN access.
+
+Open “Game archives” from the lobby or Arena to view per-account saved games, continue an unfinished game after restarting the server, or download a finished JSON log. Human rooms are restored from server-wide shared room storage; see [game archives](docs/game-archives.md).
 
 Terminal play and replay:
 
@@ -176,5 +184,6 @@ python examples/replay_log.py games/match.json
 ~~~
 
 The two experimental search policies use copied, information-limited game
-states and bounded searches. See [Search agents](docs/search-agents.md) for
-their algorithms, configuration, and simulation limits.
+states and bounded searches. Public observations, card previews, and search
+reads must preserve the live game's state and RNG. See [Search agents](docs/search-agents.md)
+for the search algorithms, configuration, and simulation limits.

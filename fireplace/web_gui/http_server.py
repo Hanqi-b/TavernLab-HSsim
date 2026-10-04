@@ -5,6 +5,7 @@ from __future__ import annotations
 import ipaddress
 import json
 import sqlite3
+import ssl
 from http.cookies import SimpleCookie
 from concurrent.futures import TimeoutError as FutureTimeout
 from http import HTTPStatus
@@ -60,6 +61,7 @@ _STATIC_MIME_TYPES = {
     "style-hand.css": "text/css; charset=utf-8",
     "style-presentation.css": "text/css; charset=utf-8",
     "gui_presentation.js": "text/javascript; charset=utf-8",
+    "gui_rooms.js": "text/javascript; charset=utf-8",
     "gui_effects.js": "text/javascript; charset=utf-8",
     "gui_hand_drag.js": "text/javascript; charset=utf-8",
     "style-decision.css": "text/css; charset=utf-8",
@@ -93,14 +95,117 @@ class WebGameHTTPServer(ThreadingHTTPServer):
         *,
         catalog: CardCatalog | None = None,
         catalog_assets: AssetService | None = None,
+        allowed_hosts: object | None = None,
+        advertised_host: str | None = None,
+        tls_cert: str | Path | None = None,
+        tls_key: str | Path | None = None,
     ):
-        if server_address[0] not in {"127.0.0.1", "localhost"}:
-            raise ValueError("web GUI must bind to loopback")
+        bind_host = str(server_address[0]).strip().lower()
+        try:
+            bind_ip = ipaddress.ip_address(bind_host)
+            loopback_bind = bind_ip.is_loopback
+        except ValueError:
+            loopback_bind = bind_host == "localhost"
+
+        if isinstance(allowed_hosts, (str, bytes)):
+            raise ValueError("allowed_hosts must be a sequence of host names")
+        if allowed_hosts is None:
+            host_values = []
+        else:
+            try:
+                host_values = list(allowed_hosts)
+            except TypeError as exc:
+                raise ValueError("allowed_hosts must be a sequence of host names") from exc
+        normalized_hosts: list[tuple[str, int | None]] = []
+        for value in host_values:
+            normalized_hosts.append(self._parse_allowed_host(value))
+        if not loopback_bind and not normalized_hosts:
+            raise ValueError(
+                "web GUI must bind to loopback unless allowed_hosts is explicit"
+            )
+        if advertised_host is not None:
+            advertised = self._parse_allowed_host(advertised_host)
+            if normalized_hosts and advertised not in normalized_hosts:
+                raise ValueError("advertised_host must be present in allowed_hosts")
+            if not normalized_hosts and loopback_bind:
+                normalized_hosts.append(advertised)
+        elif normalized_hosts:
+            advertised = normalized_hosts[0]
+        else:
+            advertised = ("127.0.0.1", None)
+        if (tls_cert is None) != (tls_key is None):
+            raise ValueError("tls_cert and tls_key must be provided together")
+
         self.web_game = web_game
         self.account_games = web_game if hasattr(web_game, "for_account") and hasattr(web_game, "accounts") else None
         self.catalog = catalog if catalog is not None else getattr(web_game, "catalog", None) or CardCatalog()
         self.catalog_assets = catalog_assets if catalog_assets is not None else AssetService()
+        self.bind_host = bind_host
+        self.remote_access = not loopback_bind
+        self.scheme = "https" if tls_cert is not None else "http"
+        self.advertised_host = advertised[0]
+        self._allowed_host_headers: set[str] = set()
         super().__init__(server_address, _RequestHandler)
+        server_port = int(self.server_port)
+        host_specs = normalized_hosts or [("127.0.0.1", None), ("localhost", None)]
+        for host, explicit_port in host_specs:
+            self._allowed_host_headers.add(self._format_host_header(host, explicit_port or server_port))
+            if explicit_port is None and server_port in {80, 443}:
+                self._allowed_host_headers.add(self._format_host_header(host, None))
+        if tls_cert is not None:
+            context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+            context.load_cert_chain(str(tls_cert), str(tls_key))
+            # Complete TLS handshakes in the per-request worker.  A client
+            # that opens a TCP connection and sends no ClientHello must not
+            # stall the listening loop for every other browser.
+            self.socket = context.wrap_socket(
+                self.socket, server_side=True, do_handshake_on_connect=False
+            )
+
+    def get_request(self):
+        request, client_address = super().get_request()
+        if self.scheme == "https":
+            # The lazy handshake runs when BaseHTTPRequestHandler first reads
+            # the request in its worker.  Bound the idle connection so daemon
+            # threads cannot accumulate indefinitely.
+            request.settimeout(10.0)
+        return request, client_address
+
+    @staticmethod
+    def _parse_allowed_host(value: object) -> tuple[str, int | None]:
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError("allowed host must be a non-empty host name")
+        raw = value.strip().lower()
+        if raw == "*" or "/" in raw or "\\" in raw or "@" in raw:
+            raise ValueError("wildcard or URL hosts are not allowed")
+        explicit_port: int | None = None
+        if raw.startswith("["):
+            closing = raw.find("]")
+            if closing <= 1:
+                raise ValueError("allowed host is invalid")
+            host = raw[1:closing]
+            suffix = raw[closing + 1:]
+            if suffix:
+                if not suffix.startswith(":") or not suffix[1:].isdigit():
+                    raise ValueError("allowed host port is invalid")
+                explicit_port = int(suffix[1:])
+        elif raw.count(":") == 1 and raw.rsplit(":", 1)[1].isdigit():
+            host, port_text = raw.rsplit(":", 1)
+            explicit_port = int(port_text)
+        else:
+            host = raw
+        if not host or len(host) > 253 or any(ch.isspace() for ch in host):
+            raise ValueError("allowed host is invalid")
+        if explicit_port is not None and not 1 <= explicit_port <= 65535:
+            raise ValueError("allowed host port is invalid")
+        if host == "*":
+            raise ValueError("wildcard hosts are not allowed")
+        return host, explicit_port
+
+    @staticmethod
+    def _format_host_header(host: str, port: int | None) -> str:
+        rendered = "[%s]" % host if ":" in host and not host.startswith("[") else host
+        return rendered if port is None else "%s:%d" % (rendered, port)
 
     def server_close(self) -> None:
         try:
@@ -207,7 +312,12 @@ class _RequestHandler(BaseHTTPRequestHandler):
             return False
         try:
             account_id = self._account_payload(account)["id"]
-            self._request_game = self.account_games.acquire(account_id)
+            backend_factory = getattr(self.account_games, "backend_for", None)
+            self._request_game = (
+                backend_factory(account_id)
+                if callable(backend_factory)
+                else self.account_games.acquire(account_id)
+            )
             self._leased_account_id = account_id
         except (OSError, sqlite3.Error):
             self._send_json(int(HTTPStatus.SERVICE_UNAVAILABLE), {"error": "account storage is unavailable"})
@@ -260,7 +370,7 @@ class _RequestHandler(BaseHTTPRequestHandler):
                 if token:
                     store.logout(token)
                 self._send_json(int(HTTPStatus.OK), {"authenticated": False}, headers={
-                    "Set-Cookie": f"{_SESSION_COOKIE}=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0",
+                    "Set-Cookie": self._session_cookie("", max_age=0),
                 })
                 return
             elif path == "/api/account/import-legacy":
@@ -298,8 +408,15 @@ class _RequestHandler(BaseHTTPRequestHandler):
             "account": self._account_payload(account),
             "legacy_available": self.account_games.legacy_available(self._account_payload(account)["id"]),
         }, headers={
-            "Set-Cookie": f"{_SESSION_COOKIE}={token}; HttpOnly; SameSite=Lax; Path=/; Max-Age={_SESSION_AGE}",
+            "Set-Cookie": self._session_cookie(token, max_age=_SESSION_AGE),
         })
+
+    def _session_cookie(self, value: str, *, max_age: int) -> str:
+        secure = "; Secure" if getattr(self.server, "scheme", "http") == "https" else ""
+        return (
+            f"{_SESSION_COOKIE}={value}; HttpOnly; SameSite=Lax; Path=/;"
+            f" Max-Age={int(max_age)}{secure}"
+        )
 
     def _not_found(self) -> None:
         self._send_json(int(HTTPStatus.NOT_FOUND), {"error": "not found"})
@@ -332,13 +449,10 @@ class _RequestHandler(BaseHTTPRequestHandler):
         return locale
 
     def _local_host(self) -> str | None:
-        """Reject DNS rebinding names before serving private game state."""
+        """Return the exact configured Host header, if it is trusted."""
 
-        host = self.headers.get("Host", "").lower()
-        port = self.server.server_port
-        allowed = {f"127.0.0.1:{port}", f"localhost:{port}"}
-        if port == 80:
-            allowed.update({"127.0.0.1", "localhost"})
+        host = self.headers.get("Host", "").strip().lower()
+        allowed = getattr(self.server, "_allowed_host_headers", set())
         return host if host in allowed else None
 
     def _reject_untrusted_request(self) -> bool:
@@ -346,9 +460,12 @@ class _RequestHandler(BaseHTTPRequestHandler):
             local_peer = ipaddress.ip_address(self.client_address[0]).is_loopback
         except ValueError:
             local_peer = False
-        if local_peer and self._local_host() is not None:
+        if self._local_host() is not None and (
+            getattr(self.server, "remote_access", False) or local_peer
+        ):
             return False
-        self._send_json(int(HTTPStatus.FORBIDDEN), {"error": "local host required"})
+        message = "local host required" if not getattr(self.server, "remote_access", False) else "untrusted host"
+        self._send_json(int(HTTPStatus.FORBIDDEN), {"error": message})
         return True
 
     def do_GET(self) -> None:  # noqa: N802 - stdlib handler API
@@ -372,6 +489,7 @@ class _RequestHandler(BaseHTTPRequestHandler):
                 "/api/state",
                 "/api/decks",
                 "/api/arena/state",
+                "/api/rooms/current",
                 "/api/matches",
                 "/api/matches/detail",
                 "/api/matches/download",
@@ -443,6 +561,13 @@ class _RequestHandler(BaseHTTPRequestHandler):
             return
         if path == "/api/state":
             self._send_json(int(HTTPStatus.OK), self.web_game.snapshot())
+            return
+        if path == "/api/rooms/current":
+            handler = getattr(self.web_game, "room_current", None)
+            if handler is None:
+                self._not_found()
+                return
+            self._send_json(int(HTTPStatus.OK), handler())
             return
         if path == "/api/decks":
             handler = getattr(self.web_game, "decks_state", None)
@@ -594,7 +719,7 @@ class _RequestHandler(BaseHTTPRequestHandler):
     def _check_origin(self) -> bool:
         origin = self.headers.get("Origin")
         local_host = self._local_host()
-        expected = "http://" + str(local_host)
+        expected = "%s://%s" % (getattr(self.server, "scheme", "http"), str(local_host))
         if (self.account_games is not None and origin != expected) or (
             self.account_games is None and origin is not None and origin != expected
         ):
@@ -662,12 +787,19 @@ class _RequestHandler(BaseHTTPRequestHandler):
         match_routes = {
             "/api/matches/resume": "resume_match",
             "/api/matches/abandon": "abandon_match",
+            "/api/opponent/retry": "retry_opponent",
+            "/api/automation": "automation",
         }
+        room_routes = {
+            "/api/rooms/create": "room_create",
+            "/api/rooms/join": "room_join",
+            "/api/rooms/leave": "room_leave",
+        } if self.account_games is not None else {}
         deck_routes = {
             "/api/decks/save": "decks_save",
             "/api/decks/delete": "decks_delete",
         }
-        if path not in {"/api/action", "/api/concede", "/api/start", "/api/return"} | set(arena_routes) | set(deck_routes) | set(match_routes) | account_routes:
+        if path not in {"/api/action", "/api/concede", "/api/start", "/api/return"} | set(arena_routes) | set(deck_routes) | set(match_routes) | set(room_routes) | account_routes:
             self._not_found()
             return
         if not self._check_origin():
@@ -681,6 +813,9 @@ class _RequestHandler(BaseHTTPRequestHandler):
             self._not_found()
             return
         if path in match_routes and not hasattr(self.web_game, match_routes[path]):
+            self._not_found()
+            return
+        if path in room_routes and not hasattr(self.web_game, room_routes[path]):
             self._not_found()
             return
         if path == "/api/concede" and not hasattr(self.web_game, "concede"):
@@ -705,6 +840,8 @@ class _RequestHandler(BaseHTTPRequestHandler):
                 response = getattr(self.web_game, deck_routes[path])(payload)
             elif path in match_routes:
                 response = getattr(self.web_game, match_routes[path])(payload)
+            elif path in room_routes:
+                response = getattr(self.web_game, room_routes[path])(payload)
             else:
                 response = self.web_game.return_to_lobby(payload)
         except (WebActionError, WebLifecycleError) as exc:
@@ -725,19 +862,37 @@ def make_server(
     *,
     seed: int | None = None,
     opponent: str = "radical",
+    codex_model: str | None = None,
+    codex_timeout: float | None = None,
     catalog: CardCatalog | None = None,
     catalog_assets: AssetService | None = None,
+    allowed_hosts: object | None = None,
+    advertised_host: str | None = None,
+    tls_cert: str | Path | None = None,
+    tls_key: str | Path | None = None,
+    room_registry: object | None = None,
 ) -> WebGameHTTPServer:
-    """Create a local threaded HTTP server for a game or a fresh lobby."""
+    """Create a threaded battle server with explicit opt-in LAN access."""
 
     if web_game is None:
         from .accounts import AccountStore
         from .account_game import AccountGameRegistry
 
-        web_game = AccountGameRegistry(accounts=AccountStore(), seed=seed)
+        web_game = AccountGameRegistry(
+            accounts=AccountStore(),
+            seed=seed,
+            opponent=opponent,
+            codex_model=codex_model,
+            codex_timeout=codex_timeout,
+            room_registry=room_registry,
+        )
     return WebGameHTTPServer(
         (host, int(port)), web_game,
         catalog=catalog, catalog_assets=catalog_assets,
+        allowed_hosts=allowed_hosts,
+        advertised_host=advertised_host,
+        tls_cert=tls_cert,
+        tls_key=tls_key,
     )
 
 
@@ -751,10 +906,30 @@ def serve(
     *,
     seed: int | None = None,
     opponent: str = "radical",
+    codex_model: str | None = None,
+    codex_timeout: float | None = None,
+    allowed_hosts: object | None = None,
+    advertised_host: str | None = None,
+    tls_cert: str | Path | None = None,
+    tls_key: str | Path | None = None,
+    room_registry: object | None = None,
 ) -> None:
     """Run a server until interrupted, closing its listening socket."""
 
-    server = make_server(web_game, host=host, port=port, seed=seed, opponent=opponent)
+    server = make_server(
+        web_game,
+        host=host,
+        port=port,
+        seed=seed,
+        opponent=opponent,
+        codex_model=codex_model,
+        codex_timeout=codex_timeout,
+        allowed_hosts=allowed_hosts,
+        advertised_host=advertised_host,
+        tls_cert=tls_cert,
+        tls_key=tls_key,
+        room_registry=room_registry,
+    )
     try:
         server.serve_forever()
     finally:

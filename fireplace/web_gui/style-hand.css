@@ -139,8 +139,9 @@ html[lang="en"] .hand:empty::before {
 .card-live-stat {
   position: absolute;
   display: grid;
-  width: clamp(22px, 2.15vw, 36px);
-  height: clamp(22px, 2.15vw, 36px);
+  width: max(22px, 26%);
+  height: auto;
+  aspect-ratio: 1;
   place-items: center;
   border: 2px solid rgb(255 232 170 / 72%);
   border-radius: 50%;

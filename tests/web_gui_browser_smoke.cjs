@@ -374,7 +374,9 @@ async function main() {
       request.method() === "POST" && new URL(request.url()).pathname === "/api/start", { timeout });
     await lobbyPage.locator("#start-match-button").click();
     await lobbyStartRequest;
-    assert.deepEqual(lobbyStartBody, { nickname: "Saved Deck Player", locale: "zhCN", deck_id: "deck-alpha" });
+    assert.deepEqual(lobbyStartBody, {
+      nickname: "Saved Deck Player", locale: "zhCN", opponent: "radical", deck_id: "deck-alpha",
+    });
     await lobbyPage.close();
 
     assert.equal(await page.locator('[data-testid="quick-action"]').count(), 0, "MAIN buttons should not appear during Mulligan");

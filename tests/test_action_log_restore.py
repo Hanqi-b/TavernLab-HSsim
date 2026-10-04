@@ -108,6 +108,32 @@ def test_restore_repairs_terminal_record_without_finish():
         session.close()
 
 
+def test_restore_and_replay_off_turn_concession():
+    game, source_session, _saved = _prefix_log()
+    other = next(candidate for candidate in game.players if candidate is not decision_player(game))
+    # Leave the terminal record durable while simulating a crash before the
+    # ActionLog finish write.  The concession itself is intentionally from
+    # the participant who is not the current decision player.
+    source_session.action_log.finish = lambda _game, status="complete": None
+    try:
+        with pytest.raises(GameOver):
+            source_session.execute(other, Action(type="CONCEDE"))
+        saved = source_session.action_log.to_dict()
+        assert saved["actions"][-1]["player"] == game.players.index(other)
+        assert saved["actions"][-1]["phase"] is None
+
+        restored = restore_action_log(saved)
+        try:
+            assert restored.game.ended
+            assert restored.action_log.to_dict()["status"] == "complete"
+            replayed = replay_action_log(restored.action_log.to_dict())
+            assert normalized_game_state(replayed) == normalized_game_state(game)
+        finally:
+            restored.close()
+    finally:
+        source_session.close()
+
+
 def test_pre_start_archive_restores_setup_and_complete_replay():
     players = (
         Player("Alpha", ["CS2_231"] * 30, CardClass.MAGE.default_hero),

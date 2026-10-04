@@ -177,6 +177,183 @@
   color: #c5e7ff;
 }
 
+.room-match-status {
+  position: absolute;
+  z-index: 35;
+  top: 2.5%;
+  left: 50%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 5px 11px;
+  width: min(560px, 42%);
+  transform: translateX(-50%);
+  border: 1px solid rgb(244 211 149 / 48%);
+  border-radius: 999px;
+  padding: 7px 13px;
+  background: rgb(19 25 39 / 92%);
+  box-shadow: 0 8px 20px rgb(0 0 0 / 34%);
+  color: #e8dfd0;
+  font-size: clamp(.67rem, .84vw, .78rem);
+  line-height: 1.35;
+  text-align: center;
+}
+
+.room-match-status strong {
+  color: var(--gold-light);
+}
+
+.room-match-status span + span {
+  border-left: 1px solid rgb(244 211 149 / 30%);
+  padding-left: 11px;
+}
+
+.llm-status {
+  position: absolute;
+  z-index: 35;
+  top: 10%;
+  right: 2.5%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: min(430px, 40%);
+  border: 1px solid rgb(128 202 255 / 60%);
+  border-radius: 11px;
+  padding: 9px 11px;
+  background: linear-gradient(145deg, rgb(25 44 62 / 96%), rgb(22 27 43 / 96%));
+  box-shadow: inset 0 1px rgb(201 235 255 / 18%), 0 9px 24px rgb(0 0 0 / 44%);
+  color: #c5e7ff;
+  font-size: clamp(.67rem, .87vw, .78rem);
+  line-height: 1.4;
+}
+
+.llm-status.thinking {
+  border-color: rgb(128 202 255 / 78%);
+}
+
+.llm-status.error {
+  border-color: rgb(226 107 87 / 86%);
+  background: linear-gradient(145deg, rgb(75 39 42 / 97%), rgb(37 27 39 / 97%));
+  color: #ffd0c6;
+}
+
+.llm-status-copy {
+  display: grid;
+  min-width: 0;
+  gap: 1px;
+}
+
+.llm-status-copy strong {
+  color: #e2f3ff;
+  font-weight: 850;
+}
+
+.llm-status.error .llm-status-copy strong {
+  color: #ffe0d7;
+}
+
+#llm-status-model {
+  color: #a9cce3;
+  font-size: .88em;
+}
+
+#llm-status-message {
+  overflow-wrap: anywhere;
+}
+
+.llm-status .secondary-button {
+  flex: 0 0 auto;
+  min-height: 34px;
+  padding: 6px 10px;
+  border-color: rgb(226 107 87 / 74%);
+  color: #ffe0d7;
+  font-size: .72rem;
+}
+
+.automation-status {
+  position: absolute;
+  z-index: 35;
+  top: 10%;
+  left: 2.5%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: min(520px, 48%);
+  border: 1px solid rgb(204 172 255 / 58%);
+  border-radius: 11px;
+  padding: 9px 11px;
+  background: linear-gradient(145deg, rgb(45 35 67 / 96%), rgb(27 29 49 / 96%));
+  box-shadow: inset 0 1px rgb(238 224 255 / 18%), 0 9px 24px rgb(0 0 0 / 44%);
+  color: #eadbff;
+  font-size: clamp(.67rem, .87vw, .78rem);
+  line-height: 1.4;
+}
+
+.automation-status.paused {
+  border-color: rgb(247 196 100 / 76%);
+  color: #ffe8ad;
+}
+
+.automation-status.pending {
+  border-color: rgb(128 202 255 / 72%);
+}
+
+.automation-status-copy {
+  display: grid;
+  min-width: 0;
+  gap: 1px;
+}
+
+.automation-status-copy strong {
+  color: #f1e6ff;
+  font-weight: 850;
+}
+
+#automation-current-seat {
+  color: #cdb9e7;
+}
+
+.automation-controllers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 3px;
+}
+
+.automation-controller {
+  border: 1px solid rgb(204 172 255 / 42%);
+  border-radius: 999px;
+  padding: 1px 7px;
+  color: #d8c5ef;
+  font-size: .86em;
+}
+
+.automation-controller.current {
+  border-color: rgb(247 196 100 / 76%);
+  color: #ffe8ad;
+}
+
+.automation-controls {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 5px;
+  margin-left: auto;
+}
+
+.automation-controls .secondary-button {
+  min-height: 34px;
+  padding: 6px 9px;
+  border-color: rgb(204 172 255 / 58%);
+  color: #eadbff;
+  font-size: .72rem;
+}
+
+.automation-controls .secondary-button:disabled {
+  opacity: .45;
+}
+
 /* Player containers are transparent layers; all visible cards are positioned
    inside the single tabletop instead of being split into dashboard panels. */
 .player-panel {

@@ -187,11 +187,7 @@ class KAR_094:
 class KAR_095:
     """Zoobot"""
 
-    powered_up = Find(
-        RANDOM(FRIENDLY_MINIONS + MURLOC)
-        | RANDOM(FRIENDLY_MINIONS + DRAGON)
-        | RANDOM(FRIENDLY_MINIONS + BEAST)
-    )
+    powered_up = Find(FRIENDLY_MINIONS + (MURLOC | DRAGON | BEAST))
     play = (
         Buff(RANDOM(FRIENDLY_MINIONS + MURLOC), "KAR_095e"),
         Buff(RANDOM(FRIENDLY_MINIONS + DRAGON), "KAR_095e"),
@@ -263,11 +259,7 @@ class KAR_205:
 class KAR_702:
     """Menagerie Magician"""
 
-    powered_up = Find(
-        RANDOM(FRIENDLY_MINIONS + MURLOC)
-        | RANDOM(FRIENDLY_MINIONS + DRAGON)
-        | RANDOM(FRIENDLY_MINIONS + BEAST)
-    )
+    powered_up = Find(FRIENDLY_MINIONS + (MURLOC | DRAGON | BEAST))
     play = (
         Buff(RANDOM(FRIENDLY_MINIONS + MURLOC), "KAR_702e"),
         Buff(RANDOM(FRIENDLY_MINIONS + DRAGON), "KAR_702e"),

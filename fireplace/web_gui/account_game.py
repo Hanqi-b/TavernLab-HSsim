@@ -40,10 +40,14 @@ class AccountGameRegistry:
         accounts: object,
         data_root: Path | None = None,
         seed: int | None = None,
+        opponent: str = "radical",
+        codex_model: str | None = None,
+        codex_timeout: float | None = None,
         catalog: CardCatalog | None = None,
         idle_seconds: float = 300,
         legacy_decks: Path | None = None,
         legacy_arena: Path | None = None,
+        room_registry: object | None = None,
     ) -> None:
         self.accounts = accounts
         configured_root = os.environ.get("TAVERNLAB_ACCOUNT_DATA_ROOT") or os.environ.get(
@@ -58,8 +62,25 @@ class AccountGameRegistry:
         self.legacy_decks = Path(legacy_decks) if legacy_decks is not None else legacy_deck_path()
         self.legacy_arena = Path(legacy_arena) if legacy_arena is not None else legacy_arena_path()
         self.seed = seed
+        self.opponent = opponent
+        self.codex_model = codex_model
+        self.codex_timeout = codex_timeout
         self.catalog = catalog if catalog is not None else CardCatalog()
         self.idle_seconds = float(idle_seconds)
+        if room_registry is None:
+            from .rooms import RoomRegistry
+
+            room_registry = RoomRegistry(
+                # RoomRegistry owns its ``rooms`` subdirectory.  Keep that
+                # process-wide store beside account folders rather than
+                # nesting ``rooms/rooms`` under the account root.
+                data_root=self.data_root,
+                seed=self.seed,
+            )
+            self._owns_rooms = True
+        else:
+            self._owns_rooms = False
+        self.rooms = room_registry
         self._games: dict[str, object] = {}
         self._leases: dict[str, int] = {}
         self._last_used: dict[str, float] = {}
@@ -88,6 +109,9 @@ class AccountGameRegistry:
                 archive_store = MatchArchiveStore(folder / "matches")
                 game = WebGameManager(
                     seed=self.seed,
+                    opponent=self.opponent,
+                    codex_model=self.codex_model,
+                    codex_timeout=self.codex_timeout,
                     arena_store=ArenaStore(folder / "arena-run.json"),
                     deck_store=DeckStore(folder / "decks.json"),
                     archive_store=archive_store,
@@ -105,6 +129,15 @@ class AccountGameRegistry:
             game = self.for_account(account_id)
             self._leases[account_id] = self._leases.get(account_id, 0) + 1
             return game
+
+    def backend_for(self, account_id: str):
+        """Return the facade used by authenticated HTTP requests."""
+
+        account_id = self._account_id(account_id)
+        manager = self.acquire(account_id)
+        from .account_room import AccountRoomBackend
+
+        return AccountRoomBackend(manager, account_id, self.rooms)
 
     def release(self, account_id: str) -> None:
         with self._lock:
@@ -316,6 +349,8 @@ class AccountGameRegistry:
             self._eviction_retry_at.clear()
         for game in games:
             game.close()
+        if self._owns_rooms:
+            self.rooms.close()
 
 
 __all__ = ["AccountGameRegistry", "LegacyImportError"]

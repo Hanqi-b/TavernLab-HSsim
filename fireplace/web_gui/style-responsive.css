@@ -87,6 +87,36 @@
     font-size: .62rem;
   }
 
+  .llm-status {
+    top: 10.5%;
+    right: 3%;
+    left: 3%;
+    width: auto;
+    max-width: none;
+    font-size: .62rem;
+  }
+
+  .automation-status {
+    top: 18%;
+    right: 3%;
+    left: 3%;
+    width: auto;
+    max-width: none;
+    align-items: flex-start;
+    font-size: .62rem;
+  }
+
+  .room-match-status {
+    top: 2.5%;
+    width: 78%;
+    border-radius: 11px;
+    font-size: .62rem;
+  }
+
+  .automation-controls {
+    margin-top: 1px;
+  }
+
   .opponent-panel .player-heading {
     top: 4.7%;
     right: 4%;
@@ -757,6 +787,15 @@
 
   .lobby-form {
     gap: 18px;
+  }
+
+  .room-code-entry {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .room-code-entry .secondary-button {
+    width: 100%;
   }
 
   .lobby-footer {

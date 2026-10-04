@@ -448,14 +448,21 @@ export function createPresentation({ document, window, elements, data, eventText
 
   function commitEffectObservation(applySnapshot, frame, observation, events, sessionId) {
     if (!observation) return;
-    applySnapshot.commit({
+    const snapshot = {
       session_id: sessionId || frame.session_id,
       revision: frame.revision,
       observation,
       legal_actions: [],
       outcome: null,
       events,
-    });
+    };
+    // Keep asynchronous opponent status visible while an action frame is
+    // being played. Older local-AI frames do not carry this field and the
+    // sync layer will retain the current value in that case.
+    if (frame.llm !== undefined) snapshot.llm = frame.llm;
+    if (frame.automation !== undefined) snapshot.automation = frame.automation;
+    if (frame.battle_mode !== undefined) snapshot.battle_mode = frame.battle_mode;
+    applySnapshot.commit(snapshot);
   }
 
   /** Reconcile one presentation frame, then the authoritative final snapshot. */

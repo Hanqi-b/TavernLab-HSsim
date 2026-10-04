@@ -184,9 +184,10 @@ def _active_modifiers(card, viewer):
 def _visible_card_with_options(card, viewer, include_cost=False):
     result = _card_identity(card, include_cost=include_cost)
     if include_cost:
-        # Only the viewer's hand uses this projection.  Compare the live card
-        # values with the printed data so the UI can color changed numbers
-        # without evaluating game rules or receiving Fireplace objects.
+        # The viewer's hand and pending-choice options use this projection.
+        # Compare live card values with printed data so the UI can color
+        # changed numbers without evaluating game rules or receiving
+        # Fireplace objects.
         data = _get(card, "data")
         result["printed_cost"] = _optional_int(_get(data, "cost"))
         result["powered_up"] = _bool(_get(card, "powered_up"))
@@ -499,7 +500,7 @@ def _pending_choice(viewer):
         return None
     result = {
         "options": [
-            _card_identity(card, include_cost=True)
+            _visible_card_with_options(card, viewer, include_cost=True)
             for card in _cards(_get(choice, "cards"))
         ]
     }

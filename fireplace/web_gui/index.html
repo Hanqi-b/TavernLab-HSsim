@@ -90,16 +90,78 @@
                 </select>
                 <p class="field-hint" id="deck-hint">没有完整自建牌组时，也可以使用随机牌组。</p>
               </fieldset>
-              <fieldset class="lobby-fieldset deck-choice-field">
+              <fieldset class="lobby-fieldset deck-choice-field" id="battle-mode-field">
+                <legend id="battle-mode-label">对战模式</legend>
+                  <select id="battle-mode-select" name="battle_mode" data-testid="battle-mode-select" aria-describedby="battle-mode-hint">
+                    <option value="human" data-testid="battle-mode-human">真人对战 AI</option>
+                    <option value="codex_mcts" data-testid="battle-mode-codex-mcts">Codex vs MCTS（观战）</option>
+                    <option value="codex_codex" data-testid="battle-mode-codex-codex">Codex vs Codex（观战）</option>
+                    <option value="human_human" data-testid="battle-mode-human-human">真人 vs 真人（房间）</option>
+                  </select>
+                <p class="field-hint" id="battle-mode-hint">你可以操作一方，并选择对手策略。</p>
+              </fieldset>
+              <fieldset class="lobby-fieldset deck-choice-field" id="opponent-choice-field">
                 <legend id="opponent-label">对手 AI</legend>
                 <div class="opponent-choice" id="opponent-choice">
                   <select id="opponent-select" name="opponent" data-testid="opponent-select" aria-labelledby="opponent-label" aria-describedby="opponent-hint">
                     <option value="radical" data-testid="opponent-radical">激进策略</option>
                     <option value="mcts" data-testid="opponent-mcts">MCTS策略</option>
+                    <option value="codex" data-testid="opponent-codex">Codex</option>
                   </select>
                   <p class="field-hint" id="opponent-hint">按牌组权重安排出牌，并计算有利的攻击组合。</p>
+                  <div class="codex-model-field" id="codex-model-field" hidden>
+                    <label for="codex-model-input" id="codex-model-label">Codex 模型（可选）</label>
+                    <input id="codex-model-input" name="codex_model" type="text" maxlength="120" autocomplete="off" spellcheck="false" placeholder="留空使用当前 Codex 默认模型" aria-describedby="codex-model-hint">
+                    <p class="field-hint" id="codex-model-hint">使用当前已登录的本机 Codex，无需填写 API key。</p>
+                  </div>
                 </div>
               </fieldset>
+              <div class="codex-model-field" id="codex-self-model-field" hidden>
+                <label for="codex-self-model-input" id="codex-self-model-label">Codex 模型（可选）</label>
+                <input id="codex-self-model-input" name="codex_self_model" type="text" maxlength="120" autocomplete="off" spellcheck="false" placeholder="留空使用当前 Codex 默认模型" aria-describedby="codex-self-model-hint">
+                <p class="field-hint" id="codex-self-model-hint">使用当前已登录的本机 Codex，无需填写 API key。</p>
+              </div>
+              <div class="codex-model-field" id="codex-opponent-model-field" hidden>
+                <label for="codex-opponent-model-input" id="codex-opponent-model-label">对手 Codex 模型（可选）</label>
+                <input id="codex-opponent-model-input" name="codex_model" type="text" maxlength="120" autocomplete="off" spellcheck="false" placeholder="留空使用当前 Codex 默认模型" aria-describedby="codex-opponent-model-hint">
+                <p class="field-hint" id="codex-opponent-model-hint">第二席使用当前已登录的本机 Codex，无需填写 API key。</p>
+              </div>
+              <section class="room-panel" id="room-controls" data-testid="room-controls" aria-labelledby="room-controls-title" hidden>
+                <div class="room-panel-heading">
+                  <div>
+                    <p class="eyebrow">PRIVATE ROOM</p>
+                    <h3 id="room-controls-title">真人房间</h3>
+                  </div>
+                  <span class="room-status-pill" id="room-controls-status" role="status" aria-live="polite"></span>
+                </div>
+                <p class="field-hint" id="room-controls-description">创建房间后，把邀请码发给另一位玩家。</p>
+                <div class="room-actions" id="room-setup-actions">
+                  <button class="secondary-button" id="room-create-button" type="button" data-testid="room-create">创建房间</button>
+                  <div class="room-join-controls">
+                    <label for="room-code-input" id="room-code-label">邀请码</label>
+                    <div class="room-code-entry">
+                      <input id="room-code-input" type="text" maxlength="32" autocomplete="off" spellcheck="false" inputmode="text" aria-describedby="room-code-hint" data-testid="room-code-input">
+                      <button class="secondary-button" id="room-join-button" type="button" data-testid="room-join">加入房间</button>
+                    </div>
+                    <p class="field-hint" id="room-code-hint">输入朋友分享的邀请码。</p>
+                  </div>
+                </div>
+                <section class="room-waiting-panel" id="room-waiting-panel" data-testid="room-waiting" aria-live="polite" hidden>
+                  <h4 id="room-waiting-title">等待对手加入</h4>
+                  <p id="room-waiting-message"></p>
+                  <div class="room-invite-row" id="room-invite-row" hidden>
+                    <label for="room-invite-code" id="room-invite-label">邀请码</label>
+                    <div class="room-code-entry">
+                      <input id="room-invite-code" type="text" readonly aria-describedby="room-invite-hint" data-testid="room-invite-code">
+                      <button class="secondary-button" id="room-copy-button" type="button" data-testid="room-copy">复制邀请码</button>
+                    </div>
+                    <p class="field-hint" id="room-invite-hint">如果浏览器不允许复制，也可以手动选择并复制。</p>
+                  </div>
+                  <p class="room-participants-label" id="room-participants-label">参与者</p>
+                  <ul class="room-participants" id="room-participants" data-testid="room-participants"></ul>
+                  <button class="secondary-button" id="room-cancel-button" type="button" data-testid="room-cancel">取消并离开房间</button>
+                </section>
+              </section>
               <button class="lobby-start primary-button" id="start-match-button" type="submit" data-testid="start-match">开始对战</button>
             </div>
             <p class="lobby-status" id="lobby-status" role="status" aria-live="polite"></p>
@@ -130,6 +192,37 @@
         </header>
 
         <div class="notice" id="notice" role="status" aria-live="polite" hidden></div>
+
+        <section class="room-match-status" id="room-match-status" data-testid="room-match-status" role="status" aria-live="polite" aria-atomic="true" hidden>
+          <strong id="room-match-label"></strong>
+          <span id="room-match-seat"></span>
+          <span id="room-match-opponent"></span>
+          <span id="room-match-state"></span>
+        </section>
+
+        <section class="llm-status" id="llm-status" data-testid="llm-status" role="status" aria-live="polite" aria-atomic="true" hidden>
+          <div class="llm-status-copy">
+            <strong id="llm-status-label"></strong>
+            <span id="llm-status-model"></span>
+            <span id="llm-status-message"></span>
+          </div>
+          <button class="secondary-button" id="llm-retry" type="button" data-testid="llm-retry" hidden></button>
+        </section>
+
+        <section class="automation-status" id="automation-status" data-testid="automation-status" role="status" aria-live="polite" aria-atomic="true" hidden>
+          <div class="automation-status-copy">
+            <strong id="automation-mode-label"></strong>
+            <span id="automation-state-label"></span>
+            <span id="automation-current-seat"></span>
+            <div class="automation-controllers" id="automation-controllers"></div>
+          </div>
+          <div class="automation-controls" aria-label="观战控制">
+            <button class="secondary-button" id="automation-pause" type="button" data-testid="automation-pause"></button>
+            <button class="secondary-button" id="automation-resume" type="button" data-testid="automation-resume" hidden></button>
+            <button class="secondary-button" id="automation-step" type="button" data-testid="automation-step"></button>
+            <button class="secondary-button" id="automation-stop" type="button" data-testid="automation-stop"></button>
+          </div>
+        </section>
 
         <article class="player-panel opponent-panel" id="opponent-panel" aria-labelledby="opponent-title">
           <div class="player-heading">

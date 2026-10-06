@@ -1,0 +1,21 @@
+tavernlab (0.1.0~alpha1-3) unstable; urgency=low
+
+  * Reuse the user's existing external Codex CLI login by default.
+  * Keep game connection settings separate from CLI authentication state.
+  * Retire the Radical lobby option and label automated modes as spectators.
+  * Default new Arena runs to the 2016 historical format.
+
+ -- Hanqi-b <hanqi-b@users.noreply.github.com>  Tue, 06 Oct 2026 00:00:00 +0000
+
+tavernlab (0.1.0~alpha1-2) unstable; urgency=low
+
+  * Add the optional external Codex connection UI and documented CLI flow.
+  * Keep Codex authentication isolated and avoid automatic Codex autoload.
+
+ -- Hanqi-b <hanqi-b@users.noreply.github.com>  Tue, 06 Oct 2026 00:00:00 +0000
+
+tavernlab (0.1.0~alpha1-1) unstable; urgency=low
+
+  * Package TavernLab-HSsim with a private Python 3.10 virtual environment.
+
+ -- Hanqi-b <hanqi-b@users.noreply.github.com>  Tue, 06 Oct 2026 00:00:00 +0000

@@ -1,0 +1,3 @@
+packaging/bin/tavernlab usr/bin
+packaging/bin/tavernlab-web usr/bin
+packaging/tavernlab.desktop usr/share/applications

@@ -58,11 +58,11 @@ Card catalog:
 | 功能 | 状态 | 当前范围 |
 | --- | --- | --- |
 | 核心模拟与动作 API | 可用，持续完善 | 基于 Fireplace 的规则与实体；部分卡牌效果尚未完整实现。 |
-| 浏览器对战 | 可用 | 普通对战可选择激进策略、MCTS 或 Codex；还可选择 Codex vs MCTS、Codex vs Codex 观战。人类对战通过双席房间进行；随机牌组或完整的自建卡组可用。详见[对战模式与 Codex 说明](docs/codex-battles.md)。 |
-| 竞技场 | 可用 | 自选版保留原有规则（7 胜/3 负）；2016 历史版固定卡池，AI 按 Lightforge 评分完成 30 轮三选一（12 胜/3 负）。详见[模式与限制](docs/arena-formats.md)。 |
+| 浏览器对战 | 可用 | 普通对战可选择 MCTS 或 Codex；还可选择 Codex vs MCTS、Codex vs Codex 观战。人类对战通过双席房间进行；随机牌组或完整的自建卡组可用。详见[对战模式与 Codex 说明](docs/codex-battles.md)。 |
+| 竞技场 | 可用 | 默认选择 2016 历史版；自选版保留原有规则（7 胜/3 负）。2016 历史版固定卡池，AI 按 Lightforge 评分完成 30 轮三选一（12 胜/3 负）。详见[模式与限制](docs/arena-formats.md)。 |
 | 卡牌目录与收藏 | 可用 | 浏览、搜索、筛选历史卡牌资料，并创建和保存卡组；不是官方账号的卡牌库存。 |
 | 本地账号 | 可用 | 用户名和密码登录；卡组、竞技场进度和活动对局按账号隔离。 |
-| Agent/AI | 可用，实验性 | 普通对战可选择激进策略、MCTS 或 Codex，竞技场固定使用 MCTS；另有 Codex vs MCTS 和 Codex vs Codex 观战。 |
+| Agent/AI | 可用，实验性 | 普通对战可选择 MCTS 或 Codex，竞技场固定使用 MCTS；另有 Codex vs MCTS 和 Codex vs Codex 观战。 |
 | 对局存档与回放 | 可用 | 普通对战和竞技场按账号保存，可查看记录、继续未完成对局和下载已结束日志；人类房间使用服务器范围的共享房间存储并支持重连。恢复会验证规则代码、卡牌数据、运行时版本、动作及恢复检查点中的状态与 RNG；完整日志回放会验证结果、最终状态，并在日志包含时验证 RNG 检查点。个人 GUI 存档只在完整校验通过后迁移已审计的源代码兼容路径。详见[对局存档说明](docs/game-archives.md)。 |
 | 局域网/在线 PvP | 局域网可选 | 默认只监听本机回环地址；显式绑定非回环地址时必须提供精确的 `--allow-host` 主机白名单，可配合 TLS。项目不提供 Battle.net 或在线匹配。 |
 
@@ -97,6 +97,9 @@ python -m pip install -e .
 python -m fireplace.web_gui
 ~~~
 
+Ubuntu 22.04（amd64）用户也可以使用包含 Python 依赖的 `.deb` 安装包，
+详见[构建与安装说明](packaging/README.md)。
+
 在本机打开 [http://127.0.0.1:8765/](http://127.0.0.1:8765/)，注册本地账号后进入对战、竞技场或收藏。按 <code>Ctrl+C</code> 停止服务。可用 <code>--port 8766</code> 更改端口，或用 <code>--seed 7</code> 固定随机种子；安装后也可运行 <code>tavernlab-web</code>，原 <code>fireplace-web</code> 命令继续可用。账号数据默认保存在 <code>~/.local/state/fireplace/</code>；新的 <code>TAVERNLAB_ACCOUNT_STATE</code>、<code>TAVERNLAB_ACCOUNT_DATA_ROOT</code>、<code>TAVERNLAB_DECK_STATE</code> 和 <code>TAVERNLAB_ARENA_STATE</code> 可分别覆盖存储位置，旧 <code>FIREPLACE_*</code> 环境变量仍然有效。
 
 下载 [v0.1.0-alpha 完整源码 ZIP](https://github.com/Hanqi-b/TavernLab-HSsim/releases/download/v0.1.0-alpha/TavernLab-HSsim-v0.1.0-alpha-full-source.zip) 时无需 Git LFS；此文件包含完整的 <code>CardDefs.xml</code>。GitHub 自动生成的 Source code ZIP/TAR 可能只有 LFS 指针，请使用上述完整包或通过 Git LFS 克隆。
@@ -116,7 +119,7 @@ python examples/replay_log.py games/match.json
 
 ### 搜索 AI
 
-激进策略采用费用背包选牌、人工出牌优先级和局部攻击搜索；MCTS 联合搜索出牌、目标、攻击和英雄技能的顺序。两者参考 `xjw580/Hearthstone-Script` 的算法结构，用 Python 接入 Tavern 的规则引擎，普通对战默认使用激进策略，竞技场固定使用 MCTS，原有 AI 的对局入口已关闭。用 `GameSession` 运行搜索 Agent；直接调用普通 `choose_action` 时没有模拟接口，会采用可用的基础策略。
+激进策略采用费用背包选牌、人工出牌优先级和局部攻击搜索；MCTS 联合搜索出牌、目标、攻击和英雄技能的顺序。两者参考 `xjw580/Hearthstone-Script` 的算法结构，用 Python 接入 Tavern 的规则引擎，浏览器普通对战默认使用 MCTS，竞技场固定使用 MCTS，激进策略与原有 AI 的浏览器入口已关闭。用 `GameSession` 运行搜索 Agent；直接调用普通 `choose_action` 时没有模拟接口，会采用可用的基础策略。
 
 搜索仅处理当前回合，使用独立局面和随机数。未知牌库、敌方手牌和未知奥秘使用占位状态；未知抽牌不能被当成真实卡牌打出。发现等待选择效果会结束模拟分支，由真实控制器处理选择后重新搜索。这些策略仍依赖现有卡牌脚本，不能据此推断对局胜率。见[算法与接口说明](docs/search-agents.md)。
 
@@ -127,11 +130,11 @@ python examples/replay_log.py games/match.json
 | Feature | Status | Current scope |
 | --- | --- | --- |
 | Simulation core and Action API | Available, evolving | Built on Fireplace rules and entities; some card effects remain incomplete. |
-| Browser battles | Available | Normal battles offer Radical, MCTS, or Codex; the lobby also offers Codex vs MCTS and Codex vs Codex spectator modes. Human versus human uses two-seat rooms. Random and completed custom decks are supported. See [battle modes and Codex](docs/codex-battles.md). |
-| Arena | Available | Custom keeps the existing rules (7 wins/3 losses). The 2016 format uses a fixed pool and 30 Lightforge-scored AI picks (12 wins/3 losses). See [formats and limitations](docs/arena-formats.md). |
+| Browser battles | Available | Normal battles offer MCTS or Codex; the lobby also offers Codex vs MCTS and Codex vs Codex spectator modes. Human versus human uses two-seat rooms. Random and completed custom decks are supported. See [battle modes and Codex](docs/codex-battles.md). |
+| Arena | Available | New runs default to the 2016 historical format. Custom keeps the existing rules (7 wins/3 losses). The 2016 format uses a fixed pool and 30 Lightforge-scored AI picks (12 wins/3 losses). See [formats and limitations](docs/arena-formats.md). |
 | Card catalog and Collection | Available | Browse, search, and filter historical card data; build and save decks. This is not an official account card inventory. |
 | Local accounts | Available | Username/password sign-in; decks, Arena progress, and active matches are separated by account. |
-| Agents/AI | Available, experimental | Regular battles offer Radical, MCTS, or Codex; Arena always uses MCTS. Codex vs MCTS and Codex vs Codex spectator modes are also available. |
+| Agents/AI | Available, experimental | Regular battles offer MCTS or Codex; Arena always uses MCTS. Codex vs MCTS and Codex vs Codex spectator modes are also available. |
 | Game archives and replay | Available | Normal battles and Arena games save per account; view history, resume unfinished games, and download finished logs. Human rooms use server-wide shared room storage and support reconnecting. GUI restore validates rules code, card data, runtime versions, every action, and the recovery checkpoint’s state and RNG; full log replay validates the result and final state, plus an RNG checkpoint when one is present. Personal GUI archive restore migrates an audited source-compatibility path only after full validation. See [game archives](docs/game-archives.md). |
 | LAN/online PvP | Opt-in LAN only | The default server binds to loopback. A non-loopback deployment requires an exact `--allow-host` allowlist and may use TLS; Battle.net and online matchmaking are not provided. |
 

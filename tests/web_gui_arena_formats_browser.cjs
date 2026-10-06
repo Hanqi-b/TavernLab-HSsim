@@ -5,10 +5,10 @@ const { initialState, startFixture } = require("./web_gui_arena_browser.cjs");
 
 async function main() {
   const state = initialState();
-  state.format_id = "custom_v1";
+  state.format_id = "wild_2016_09_02";
   state.formats = [
-    { id: "custom_v1", label: "自选版", max_wins: 7, max_losses: 3 },
     { id: "wild_2016_09_02", label: "2016 历史版", max_wins: 12, max_losses: 3 },
+    { id: "custom_v1", label: "自选版", max_wins: 7, max_losses: 3 },
   ];
   const fixture = await startFixture(state);
   const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || "/opt/google/chrome/chrome", headless: true });
@@ -19,7 +19,10 @@ async function main() {
     await page.goto(fixture.base);
     const select = page.locator('[data-testid="arena-format"]');
     await select.waitFor();
+    assert.equal(await select.inputValue(), "wild_2016_09_02");
     await page.locator('[data-testid="arena-nickname"]').fill("History tester");
+    assert.equal(await page.locator('[data-testid="arena-start"]').isDisabled(), false);
+    await select.selectOption("custom_v1");
     assert.equal(await page.locator('[data-testid="arena-start"]').isDisabled(), true);
     const large = page.locator('[data-action="toggle-pack"][data-pack-size="large"]');
     const small = page.locator('[data-action="toggle-pack"][data-pack-size="small"]');

@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=TavernLab-HSsim
+Comment=Local Hearthstone simulator and AI experimentation platform
+Exec=tavernlab
+Icon=tavernlab
+Terminal=false
+Categories=Game;Simulation;
+Actions=Stop;
+
+[Desktop Action Stop]
+Name=Stop TavernLab-HSsim
+Exec=tavernlab --stop

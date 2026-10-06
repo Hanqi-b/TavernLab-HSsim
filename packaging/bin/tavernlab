@@ -1,0 +1,4 @@
+#!/bin/sh
+set -eu
+
+exec /opt/venvs/tavernlab/bin/python -m fireplace.web_gui.desktop "$@"

@@ -1,0 +1,34 @@
+# Root metadata and runtime assets.
+LICENSE
+MANIFEST.in
+README.md
+logo.png
+setup.cfg
+setup.py
+
+# Python packages used by the installed application.
+card_assets
+fireplace
+kettle
+
+# Debian metadata and the packaging builder itself.
+debian/changelog
+debian/control
+debian/copyright
+debian/rules
+debian/source/format
+debian/tavernlab.docs
+debian/tavernlab.install
+debian/tavernlab.triggers
+debian/tavernlab.user.service
+packaging/Dockerfile
+packaging/README.md
+packaging/bin/tavernlab
+packaging/bin/tavernlab-web
+packaging/build-deb.sh
+packaging/requirements.lock
+packaging/source-manifest.txt
+packaging/tavernlab.desktop
+
+# The catalog module expects this report beside the installed site-packages.
+reports/card_quality_full_2026-09-27/card_quality.csv

@@ -8,7 +8,7 @@ from typing import Any, Callable
 
 from fireplace.arena.rules import CLASSIC_SET, LARGE_SETS, SMALL_SETS
 from fireplace.arena.run import ArenaRun
-from fireplace.arena.formats import CUSTOM_FORMAT_ID, get_format
+from fireplace.arena.formats import CUSTOM_FORMAT_ID, WILD_2016_09_02_FORMAT_ID, get_format
 from fireplace.arena.store import ArenaStore, ArenaStoreConflict
 
 from .catalog import CardCatalog
@@ -87,22 +87,24 @@ class ArenaService:
                 "count": entry.get("count", 0),
             }
 
+        format_id = run.format_id if run is not None else WILD_2016_09_02_FORMAT_ID
+        config = get_format(format_id)
         payload: dict[str, Any] = {
             "mode": run.stage if run is not None else "setup",
             "locale": locale,
             "retired": False,
-            "format_id": run.format_id if run is not None else CUSTOM_FORMAT_ID,
+            "format_id": format_id,
             "formats": [
-                {"id": "custom_v1", "label": "自选版" if locale == "zhCN" else "Custom", "max_wins": 7, "max_losses": 3},
                 {"id": "wild_2016_09_02", "label": "2016 历史版" if locale == "zhCN" else "2016 Wild", "max_wins": 12, "max_losses": 3},
+                {"id": "custom_v1", "label": "自选版" if locale == "zhCN" else "Custom", "max_wins": 7, "max_losses": 3},
             ],
-            "max_wins": get_format(run.format_id if run else CUSTOM_FORMAT_ID).max_wins,
-            "max_losses": get_format(run.format_id if run else CUSTOM_FORMAT_ID).max_losses,
-            "offer_policy_accuracy": "reconstructed" if run and run.format_id != CUSTOM_FORMAT_ID else "existing",
+            "max_wins": config.max_wins,
+            "max_losses": config.max_losses,
+            "offer_policy_accuracy": config.offer_policy_accuracy,
             "known_limitations": [
                 "Historical drafting uses current Fireplace card effects, Discover and random generation.",
                 "Offering probabilities and weights are reconstructed, not verified historical rates.",
-            ] if run and run.format_id != CUSTOM_FORMAT_ID else [],
+            ] if format_id != CUSTOM_FORMAT_ID else [],
             "pack_options": {
                 "basic": option("BASIC"),
                 "classic": option(CLASSIC_SET),
@@ -181,7 +183,7 @@ class ArenaService:
         if self.run is not None and self.run.stage != "complete":
             raise WebLifecycleError("finish the current Arena run first", 409, self.state())
         try:
-            format_id = data.get("format_id", CUSTOM_FORMAT_ID)
+            format_id = data.get("format_id", WILD_2016_09_02_FORMAT_ID)
             get_format(format_id)
             set_ids = data.get("set_ids", [] if format_id != CUSTOM_FORMAT_ID else None)
             if not isinstance(set_ids, list):

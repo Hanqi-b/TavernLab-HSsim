@@ -21,6 +21,7 @@ def create_agent(
     search_config: Mapping[str, object] | None = None,
     model: str | None | object = _UNSET,
     timeout: float | None | object = _UNSET,
+    transport: object | None = None,
 ):
     """Create a policy by stable public identifier.
 
@@ -35,6 +36,8 @@ def create_agent(
         )
     model_supplied = model is not _UNSET
     timeout_supplied = timeout is not _UNSET
+    if transport is not None and kind != "codex":
+        raise ValueError("transport is only valid for codex")
     if kind == "heuristic":
         if policy_version is not None or search_config is not None:
             raise ValueError("policy_version and search_config are only valid for mcts")
@@ -65,6 +68,8 @@ def create_agent(
             kwargs["model"] = model
         if timeout_supplied:
             kwargs["timeout"] = timeout
+        if transport is not None:
+            kwargs["transport"] = transport
         return CodexAgent(**kwargs)
     if search_config is not None and not isinstance(search_config, Mapping):
         raise ValueError("search_config must be a mapping")

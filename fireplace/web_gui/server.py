@@ -159,6 +159,12 @@ def _create_opponent_agent(
         options["model"] = model
     if timeout is not None or kind == "codex":
         options["timeout"] = timeout
+    if kind == "codex":
+        # Constructing the transport is lazy. Only this explicitly selected
+        # controller uses the user's Codex connection settings.
+        from .codex_connection import get_codex_connection
+
+        options["transport"] = get_codex_connection().create_transport()
     return create_agent(kind, seed=seed, **options)
 
 
@@ -720,6 +726,18 @@ class WebGame:
     def _sanitize_codex_error(error: BaseException) -> str:
         """Map adapter failures to stable browser-safe diagnostics."""
 
+        from ..codex_agent import CodexAgentError
+
+        if isinstance(error, CodexAgentError):
+            messages = {
+                "timeout": "Codex connection timed out; check login and proxy in Codex connection settings, then retry",
+                "unavailable": "Codex is unavailable; check the installed program and login in Codex connection settings",
+                "invalid_action": "Codex opponent returned an invalid action",
+            }
+            return messages.get(
+                error.reason,
+                "Codex request failed; use the connection test to check login, network and model access",
+            )
         name = type(error).__name__.lower()
         if isinstance(error, TimeoutError) or "timeout" in name:
             return "Codex opponent timed out"

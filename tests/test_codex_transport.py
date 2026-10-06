@@ -138,6 +138,25 @@ def test_jsonl_requests_and_notifications_use_one_child(monkeypatch, tmp_path):
     assert processes[0].stdin.closed
 
 
+def test_command_mcp_scan_uses_effective_child_codex_home(monkeypatch, tmp_path):
+    parent_home = tmp_path / "parent"
+    child_home = tmp_path / "child"
+    parent_home.mkdir()
+    child_home.mkdir()
+    (parent_home / "config.toml").write_text(
+        '[mcp_servers.parent-only]\ncommand = "parent"\n', encoding="utf-8"
+    )
+    (child_home / "config.toml").write_text(
+        '[mcp_servers.child-only]\ncommand = "child"\n', encoding="utf-8"
+    )
+    monkeypatch.setenv("CODEX_HOME", str(parent_home))
+    command = codex_transport_module._build_command(
+        "codex", (), env={"CODEX_HOME": str(child_home)}
+    )
+    assert "mcp_servers.child-only.enabled=false" in command
+    assert "mcp_servers.parent-only.enabled=false" not in command
+
+
 def test_server_requests_are_denied_without_exposing_diagnostics(tmp_path):
     process = _Process()
 

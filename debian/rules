@@ -1,0 +1,63 @@
+#!/usr/bin/make -f
+
+# dh-virtualenv installs the venv below this prefix.  The package name is
+# deliberately tavernlab, so the resulting runtime is /opt/venvs/tavernlab.
+export DH_VIRTUALENV_INSTALL_ROOT := /opt/venvs
+
+PACKAGE_PYTHON := /usr/bin/python3
+EXPECTED_PYTHON_MINOR := 3.10
+PACKAGE_VENV := debian/tavernlab/opt/venvs/tavernlab
+QUALITY_REPORT := reports/card_quality_full_2026-09-27/card_quality.csv
+
+PYTHON_MINOR := $(shell $(PACKAGE_PYTHON) -c 'import sys; print("%d.%d" % sys.version_info[:2])' 2>/dev/null)
+ifneq ($(PYTHON_MINOR),$(EXPECTED_PYTHON_MINOR))
+$(error TavernLab Debian builds require $(PACKAGE_PYTHON) Python $(EXPECTED_PYTHON_MINOR); found $(PYTHON_MINOR). Rebuild in Ubuntu 22.04)
+endif
+
+CARD_DATA_OK := $(shell \
+	for file in fireplace/cards/CardDefs.xml fireplace/cards/Scholomance.xml; do \
+		test -s "$$file" || exit 1; \
+		head -n 1 "$$file" | grep -q '^<?xml' || exit 1; \
+		! grep -q '^version https://git-lfs.github.com/spec/v1$$' "$$file" || exit 1; \
+	done; \
+	echo yes)
+ifneq ($(CARD_DATA_OK),yes)
+$(error CardDefs.xml and Scholomance.xml must be complete XML files, not Git LFS pointers)
+endif
+
+%:
+	dh $@ --with python-virtualenv
+
+# dh-virtualenv performs the package install inside the private venv.  A
+# system-side dh_auto_configure would invoke the removed distutils buildsystem
+# under compat 13, so leave that phase empty.
+override_dh_auto_configure:
+	:
+
+override_dh_virtualenv:
+	set -eu; \
+	DH_REQUIREMENTS_FILE=packaging/requirements.lock \
+	DH_VIRTUALENV_INSTALL_ROOT=/opt/venvs \
+	dh_virtualenv \
+		--python $(PACKAGE_PYTHON) \
+		--builtin-venv \
+		--upgrade-pip-to 24.0 \
+		--preinstall setuptools==70.3.0 \
+		--preinstall wheel==0.44.0 \
+		--requirements packaging/requirements.lock \
+		--extra-pip-arg=--no-cache-dir; \
+	purelib="$$($(PACKAGE_VENV)/bin/python -c 'import sysconfig; print(sysconfig.get_path("purelib"))')"; \
+	install -d "$$purelib/reports/card_quality_full_2026-09-27"; \
+	install -m 0644 "$(QUALITY_REPORT)" \
+		"$$purelib/reports/card_quality_full_2026-09-27/card_quality.csv"
+
+override_dh_install:
+	dh_install
+	install -d debian/tavernlab/usr/share/pixmaps
+	install -m 0644 logo.png \
+		debian/tavernlab/usr/share/pixmaps/tavernlab.png
+
+# A user service is shipped for explicit opt-in use.  Never enable it during
+# package installation or upgrade.
+override_dh_installsystemduser:
+	dh_installsystemduser --no-enable

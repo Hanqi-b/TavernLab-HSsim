@@ -1,0 +1,219 @@
+/* The Codex panel follows the lobby's warm metal palette and stays quiet until
+   a Codex-backed match is selected. */
+.codex-connection-panel {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  border: 1px solid rgb(128 202 255 / 38%);
+  border-radius: 12px;
+  padding: 14px;
+  background:
+    linear-gradient(180deg, rgb(21 38 57 / 68%), rgb(10 18 31 / 78%)),
+    rgb(10 15 26 / 62%);
+  box-shadow: inset 0 1px rgb(201 230 255 / 12%);
+}
+
+.codex-connection-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.codex-connection-heading h3 {
+  margin: 3px 0 0;
+  color: #d5edff;
+  font-size: 1.05rem;
+}
+
+.codex-connection-heading .eyebrow {
+  margin: 0;
+  color: #8fc8ef;
+}
+
+.codex-connection-badge {
+  min-height: 1.55em;
+  border: 1px solid rgb(201 230 255 / 35%);
+  border-radius: 999px;
+  padding: 3px 8px;
+  color: #c5e7ff;
+  font-size: .7rem;
+  font-weight: 800;
+  letter-spacing: .03em;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.codex-connection-panel[data-state="connected"] .codex-connection-badge {
+  border-color: rgb(120 219 116 / 58%);
+  color: #b8f2b6;
+}
+
+.codex-connection-panel[data-state="pending"] .codex-connection-badge {
+  border-color: rgb(244 186 89 / 62%);
+  color: #ffe0a4;
+}
+
+.codex-connection-panel[data-state="missing"] .codex-connection-badge,
+.codex-connection-panel[data-state="error"] .codex-connection-badge,
+.codex-connection-panel[data-state="auth"] .codex-connection-badge,
+.codex-connection-panel[data-state="proxy"] .codex-connection-badge,
+.codex-connection-panel[data-state="network"] .codex-connection-badge {
+  border-color: rgb(226 107 87 / 58%);
+  color: #ffc5b8;
+}
+
+.codex-connection-status {
+  min-height: 1.4em;
+  color: #e6f4ff;
+  font-size: .84rem;
+  line-height: 1.45;
+}
+
+.codex-connection-error {
+  margin: 0;
+  border-left: 3px solid #e26b57;
+  padding: 7px 9px;
+  background: rgb(91 30 30 / 35%);
+  color: #ffc5b8;
+  font-size: .78rem;
+  line-height: 1.45;
+}
+
+.codex-connection-account {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 12px;
+  border: 1px solid rgb(120 219 116 / 28%);
+  border-radius: 8px;
+  padding: 7px 9px;
+  background: rgb(23 62 34 / 24%);
+  color: #c9efc7;
+  font-size: .78rem;
+  line-height: 1.4;
+}
+
+.codex-connection-account span + span::before {
+  margin-right: 12px;
+  color: rgb(201 230 255 / 48%);
+  content: "·";
+}
+
+.codex-connection-missing,
+.codex-connection-login {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  color: var(--muted);
+  font-size: .78rem;
+  line-height: 1.45;
+}
+
+.codex-connection-missing a,
+.codex-connection-login a {
+  justify-self: start;
+  color: #b9e4ff;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.codex-connection-missing a:hover,
+.codex-connection-missing a:focus-visible,
+.codex-connection-login a:hover,
+.codex-connection-login a:focus-visible {
+  color: #fff1c8;
+}
+
+.codex-connection-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.codex-connection-actions button,
+.codex-connection-advanced button {
+  min-height: 44px;
+  padding-inline: 12px;
+}
+
+.codex-connection-actions button:disabled,
+.codex-connection-advanced button:disabled {
+  cursor: wait;
+  opacity: .55;
+}
+
+.codex-connection-advanced {
+  border-top: 1px solid rgb(201 230 255 / 16%);
+  padding-top: 11px;
+}
+
+.codex-connection-advanced summary {
+  width: fit-content;
+  cursor: pointer;
+  color: #c5e7ff;
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .04em;
+}
+
+.codex-connection-advanced summary:focus-visible {
+  outline: 3px solid rgb(128 202 255 / 28%);
+  outline-offset: 3px;
+}
+
+.codex-connection-advanced > .field-hint {
+  margin-top: 9px;
+}
+
+.codex-connection-field {
+  display: grid;
+  gap: 6px;
+  margin-top: 11px;
+}
+
+.codex-connection-field label {
+  color: #c5e7ff;
+  font-size: .76rem;
+  font-weight: 800;
+}
+
+.codex-connection-field input {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid rgb(128 202 255 / 48%);
+  border-radius: 8px;
+  padding: 0 11px;
+  background: rgb(8 14 26 / 88%);
+  color: var(--text);
+  font: inherit;
+  font-size: .88rem;
+}
+
+.codex-connection-field input::placeholder {
+  color: #8f9aa8;
+}
+
+.codex-connection-field input:focus {
+  border-color: #b9e4ff;
+  outline: 3px solid rgb(128 202 255 / 22%);
+  outline-offset: 2px;
+}
+
+@media (max-width: 520px) {
+  .codex-connection-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .codex-connection-actions button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .codex-connection-panel * {
+    scroll-behavior: auto;
+    transition-duration: .01ms !important;
+  }
+}

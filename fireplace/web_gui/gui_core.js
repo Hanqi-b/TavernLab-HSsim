@@ -62,7 +62,7 @@ export function createLobby({
   let surrenderReturnFocus = null;
   const preferredDeckId = requestedDeckId();
   const opponentStorageKey = "fireplace.opponent";
-  const opponentIds = new Set(["radical", "mcts", "codex"]);
+  const opponentIds = new Set(["mcts", "codex"]);
   const codexModelStorageKey = "fireplace.codexModel";
   const battleModeStorageKey = "fireplace.battleMode";
   const battleModes = new Set(["human", "codex_mcts", "codex_codex", "human_human"]);
@@ -305,7 +305,7 @@ export function createLobby({
 
   function validOpponent(value) {
     const candidate = String(value || "").trim();
-    return opponentIds.has(candidate) ? candidate : "radical";
+    return opponentIds.has(candidate) ? candidate : "mcts";
   }
 
   function validBattleMode(value) {
@@ -326,7 +326,10 @@ export function createLobby({
     if (select && select.value && select.dataset.userSelected === "true") {
       return validOpponent(select.value);
     }
-    return validOpponent(locale.readStored(opponentStorageKey, "radical"));
+    const stored = locale.readStored(opponentStorageKey, "mcts");
+    const selected = validOpponent(stored);
+    if (selected !== stored) locale.writeStored(opponentStorageKey, selected);
+    return selected;
   }
 
   function syncBattleModeSelection() {
@@ -377,7 +380,7 @@ export function createLobby({
     if (!select) return;
     const selected = opponentSelectionPreference();
     select.value = selected;
-    ["radical", "mcts", "codex"].forEach((kind) => {
+    ["mcts", "codex"].forEach((kind) => {
       const option = select.querySelector(`option[value="${kind}"]`);
       if (option) dom.setText(option, locale.tr(`lobby.${kind}`));
     });

@@ -531,7 +531,7 @@ export function createSync({
       : "";
     const selectedOpponent = typeof opponent === "string" && opponent.trim()
       ? opponent.trim()
-      : (document.getElementById("opponent-select")?.value || "radical");
+      : (document.getElementById("opponent-select")?.value || "mcts");
     const selectedBattleMode = document.getElementById("battle-mode-select")?.value || "human";
     const body = { nickname, locale: locale.locale };
     // A deck identifier is sent only when the user explicitly chose a saved deck.

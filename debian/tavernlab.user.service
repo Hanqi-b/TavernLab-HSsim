@@ -1,0 +1,13 @@
+[Unit]
+Description=TavernLab-HSsim local browser service
+
+[Service]
+Type=exec
+WorkingDirectory=%h
+ExecStart=/opt/venvs/tavernlab/bin/python -m fireplace.web_gui --host 127.0.0.1 --port 8765
+KillSignal=SIGINT
+TimeoutStopSec=5s
+Restart=no
+
+[Install]
+WantedBy=default.target

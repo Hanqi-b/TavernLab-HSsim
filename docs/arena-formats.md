@@ -5,6 +5,9 @@ historical format is `wild_2016_09_02`, with fixed sets
 `BASIC`, `EXPERT1`, `NAXX`, `GVG`, `BRM`, `TGT`, `LOE`, `OG`, and `KARA`.
 Its run limits are twelve wins or three losses.
 
+New browser Arena runs default to the 2016 historical format. Custom remains
+selectable, and existing custom saves keep their original format.
+
 During historical player drafting, each of the three candidates displays its
 original Lightforge score for the chosen hero class, using the same provider
 as AI drafting. The display retains values above 100 and source markers such

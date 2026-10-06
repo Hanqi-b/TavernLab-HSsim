@@ -264,7 +264,7 @@ const model = {
   imageGeneration: 0,
   account: null,
   legacyAvailable: false,
-  selectedFormatId: CUSTOM_FORMAT_ID,
+  selectedFormatId: HISTORICAL_FORMAT_ID,
 };
 
 function readLocale() {
@@ -412,7 +412,7 @@ function list(value) {
 
 function normalizeFormatId(value) {
   const id = text(value).trim();
-  return id === HISTORICAL_FORMAT_ID ? HISTORICAL_FORMAT_ID : CUSTOM_FORMAT_ID;
+  return id === CUSTOM_FORMAT_ID ? CUSTOM_FORMAT_ID : HISTORICAL_FORMAT_ID;
 }
 
 function formatId(state) {
@@ -445,6 +445,7 @@ function formatOptions(state) {
     if (!unique.some((candidate) => candidate.id === option.id)) unique.push(option);
   });
   if (!unique.length) {
+    unique.push({ id: HISTORICAL_FORMAT_ID, label: t("historicalFormat"), max_wins: 12, max_losses: 3 });
     unique.push({ id: CUSTOM_FORMAT_ID, label: t("customFormat"), max_wins: 7, max_losses: 3 });
   }
   return unique;
@@ -1204,7 +1205,7 @@ refs.stage.addEventListener("change", (event) => {
   if (event.target?.id !== "arena-format" || model.busy || currentMode() !== "setup") return;
   const selected = text(event.target.value).trim();
   const available = formatOptions(model.state).some((option) => option.id === selected);
-  model.selectedFormatId = available ? selected : CUSTOM_FORMAT_ID;
+  model.selectedFormatId = available ? selected : HISTORICAL_FORMAT_ID;
   render();
 });
 

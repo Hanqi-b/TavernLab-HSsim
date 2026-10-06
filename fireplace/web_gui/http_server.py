@@ -27,6 +27,7 @@ _STATIC_MIME_TYPES = {
     "account.html": "text/html; charset=utf-8",
     "history.html": "text/html; charset=utf-8",
     "app.js": "text/javascript; charset=utf-8",
+    "codex_connection.js": "text/javascript; charset=utf-8",
     "catalog_app.js": "text/javascript; charset=utf-8",
     "card_face.js": "text/javascript; charset=utf-8",
     "arena_app.js": "text/javascript; charset=utf-8",
@@ -49,6 +50,7 @@ _STATIC_MIME_TYPES = {
     "gui_decisions.js": "text/javascript; charset=utf-8",
     "gui_modal.js": "text/javascript; charset=utf-8",
     "style.css": "text/css; charset=utf-8",
+    "style-codex-connection.css": "text/css; charset=utf-8",
     "style-catalog.css": "text/css; charset=utf-8",
     "style-arena.css": "text/css; charset=utf-8",
     "style-collection.css": "text/css; charset=utf-8",
@@ -72,6 +74,14 @@ _STATIC_MIME_TYPES = {
 _MAX_REQUEST_BYTES = 1 << 20
 _SESSION_COOKIE = "fireplace_session"
 _SESSION_AGE = 7 * 24 * 60 * 60
+_CODEX_POST_ROUTES = {
+    "/api/codex/check": "check",
+    "/api/codex/login": "start_login",
+    "/api/codex/cancel": "cancel_login",
+    "/api/codex/logout": "logout",
+    "/api/codex/settings": "save_settings",
+    "/api/codex/test": "test_connection",
+}
 
 
 def _static_mime_type(name: str) -> str | None:
@@ -142,6 +152,7 @@ class WebGameHTTPServer(ThreadingHTTPServer):
         self.catalog_assets = catalog_assets if catalog_assets is not None else AssetService()
         self.bind_host = bind_host
         self.remote_access = not loopback_bind
+        self.codex_connection = None
         self.scheme = "https" if tls_cert is not None else "http"
         self.advertised_host = advertised[0]
         self._allowed_host_headers: set[str] = set()
@@ -212,9 +223,13 @@ class WebGameHTTPServer(ThreadingHTTPServer):
             super().server_close()
         finally:
             try:
-                self.catalog_assets.close()
+                if self.codex_connection is not None:
+                    self.codex_connection.close()
             finally:
-                self.web_game.close()
+                try:
+                    self.catalog_assets.close()
+                finally:
+                    self.web_game.close()
 
 
 def _json_bytes(payload: object) -> bytes:
@@ -481,6 +496,10 @@ class _RequestHandler(BaseHTTPRequestHandler):
         if self._reject_untrusted_request():
             return
         path = urlsplit(self.path).path
+        if path == "/api/codex/status":
+            if self._codex_access_allowed():
+                self._codex_request("status", {})
+            return
         if path == "/api/account/session" and self.account_games is not None:
             self._account_session()
             return
@@ -730,6 +749,63 @@ class _RequestHandler(BaseHTTPRequestHandler):
             return False
         return True
 
+    def _codex_access_allowed(self, *, mutation: bool = False) -> bool:
+        """Local OS account credentials are never managed from LAN clients."""
+        try:
+            local_peer = ipaddress.ip_address(self.client_address[0]).is_loopback
+        except ValueError:
+            local_peer = False
+        if self.server.remote_access or not local_peer:
+            self._send_json(int(HTTPStatus.FORBIDDEN), {
+                "error": "Codex connection settings are available only in the local browser",
+            })
+            return False
+        if mutation:
+            expected = "%s://%s" % (self.server.scheme, self._local_host())
+            if self.headers.get("Origin") != expected:
+                self._send_json(int(HTTPStatus.FORBIDDEN), {
+                    "error": "cross-origin request rejected",
+                })
+                return False
+        return self._require_account()
+
+    def _codex_request(self, method: str, payload: object) -> None:
+        from .codex_connection import get_codex_connection
+
+        if not isinstance(payload, dict):
+            self._send_json(int(HTTPStatus.BAD_REQUEST), {"error": "JSON object required"})
+            return
+        if method == "test_connection":
+            model = payload.get("model")
+            if model is not None and (
+                not isinstance(model, str) or len(model.strip()) > 128
+            ):
+                self._send_json(int(HTTPStatus.BAD_REQUEST), {"error": "invalid Codex model"})
+                return
+        try:
+            connection = self.server.codex_connection
+            if connection is None:
+                connection = get_codex_connection()
+                self.server.codex_connection = connection
+            if method == "save_settings":
+                response = connection.save_settings(payload)
+            elif method == "test_connection":
+                response = connection.test_connection(model=payload.get("model") or None)
+            else:
+                response = getattr(connection, method)()
+        except ValueError:
+            self._send_json(int(HTTPStatus.BAD_REQUEST), {
+                "error": "Invalid Codex settings; use an absolute executable path and an HTTP or HTTPS proxy URL",
+            })
+            return
+        except Exception:
+            # Never put child diagnostics or credential details in HTTP errors.
+            self._send_json(int(HTTPStatus.SERVICE_UNAVAILABLE), {
+                "error": "Codex connection failed; check the installed program, login and proxy settings",
+            })
+            return
+        self._send_json(int(HTTPStatus.OK), response)
+
     def _read_json(self) -> object:
         content_type = self.headers.get("Content-Type", "").split(";", 1)[0].strip().lower()
         if content_type != "application/json":
@@ -772,6 +848,13 @@ class _RequestHandler(BaseHTTPRequestHandler):
         if self._reject_untrusted_request():
             return
         path = urlsplit(self.path).path
+        if path in _CODEX_POST_ROUTES:
+            if not self._codex_access_allowed(mutation=True):
+                return
+            payload = self._read_json()
+            if payload is not _JSON_ERROR:
+                self._codex_request(_CODEX_POST_ROUTES[path], payload)
+            return
         account_routes = {
             "/api/account/register", "/api/account/login", "/api/account/logout",
             "/api/account/import-legacy",

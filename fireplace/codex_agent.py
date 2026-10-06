@@ -22,6 +22,12 @@ from .codex_transport import CodexTransport, CodexTransportError
 class CodexAgentError(RuntimeError):
     """A safe, actionable error raised when Codex cannot choose a move."""
 
+    def __init__(self, message: str, *, reason: str = "request") -> None:
+        super().__init__(message)
+        self.reason = reason if reason in {
+            "request", "timeout", "unavailable", "invalid_action"
+        } else "request"
+
 
 CARD_AGENT_INSTRUCTIONS = (
     "You are the decision service for a local card-game bot. "
@@ -493,7 +499,8 @@ class CodexAgent:
                 self._reset_transport_sync()
                 self._thread_id = None
                 raise CodexAgentError(
-                    "Codex took too long to choose an action; retry the decision or check local Codex login"
+                    "Codex took too long to choose an action; retry the decision or check local Codex login",
+                    reason="timeout",
                 ) from exc
             except CodexAgentError:
                 self._reset_transport_sync()
@@ -504,10 +511,12 @@ class CodexAgent:
                 self._thread_id = None
                 if time.monotonic() - started >= self.timeout:
                     raise CodexAgentError(
-                        "Codex took too long to choose an action; retry the decision or check local Codex login"
+                        "Codex took too long to choose an action; retry the decision or check local Codex login",
+                        reason="timeout",
                     ) from exc
                 raise CodexAgentError(
-                    "Codex app-server is unavailable; check local Codex login and retry"
+                    "Codex app-server is unavailable; check local Codex login and retry",
+                    reason="unavailable",
                 ) from exc
             except Exception as exc:
                 self._reset_transport_sync()
@@ -753,14 +762,14 @@ class CodexAgent:
         try:
             value = json.loads(text)
         except (TypeError, ValueError, json.JSONDecodeError) as exc:
-            raise CodexAgentError("Codex returned malformed action JSON; retry the decision") from exc
+            raise CodexAgentError("Codex returned malformed action JSON; retry the decision", reason="invalid_action") from exc
         if (
             not isinstance(value, dict)
             or set(value) != {"action_id"}
             or type(value.get("action_id")) is not int
             or not 0 <= value["action_id"] < action_count
         ):
-            raise CodexAgentError("Codex returned an invalid legal action index; retry the decision")
+            raise CodexAgentError("Codex returned an invalid legal action index; retry the decision", reason="invalid_action")
         return actions[value["action_id"]]
 
     def _reset_transport_sync(self) -> None:

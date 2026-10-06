@@ -1,19 +1,69 @@
 # Human and Codex battles
 
-The browser game uses the local Codex App Server as a card-playing controller. It sends the selected seat's filtered observation, visible historical card definitions, and current legal-action menu. Codex selects an action ID; the game engine revalidates and executes that action. The browser presents the same events and animations as other matches.
+Codex play is an optional controller. The TavernLab Debian package does not
+include Codex CLI, an App Server SDK, or a Codex runtime. When a player
+explicitly selects a Codex seat, the local game service calls the user's own
+Codex executable as an external process. It sends the selected seat's filtered
+observation, visible historical card definitions, and current legal-action
+menu. Codex selects an action ID; the game engine revalidates and executes that
+action. The browser presents the same events and animations as other matches.
+
+Normal startup, local AI/MCTS matches, and matches without a Codex seat do not
+inspect, contact, or start Codex. The passive status check is available only
+from the signed-in game's connection panel; it does not start a child process
+or contact the Codex service.
 
 ## Requirements
 
-- Activate the project's Python environment and run `python -m pip install -e .` to refresh dependencies after upgrading.
-- Install Codex CLI with App Server support. Development is verified against `codex-cli 0.159.2`.
-- Run `codex login` if needed. `codex login status` should show a valid local login. The game does not ask for or store your ChatGPT password or OAuth token.
-- Start the game with `python -m fireplace.web_gui`, then sign into a local game account.
+- Install TavernLab and sign in to a local game account as described in the
+  package [installation guide](../packaging/README.md).
+- Install Codex CLI yourself by following the [official Codex CLI
+  documentation](https://learn.chatgpt.com/docs/codex/cli). TavernLab never
+  downloads or installs the CLI, and does not bundle a CLI, SDK, or runtime.
+- If the local CLI has no account yet, run `codex login` in a terminal and
+  finish the official browser flow. Do not paste a ChatGPT password or OAuth
+  token into the game.
+- Start TavernLab normally. In the lobby, select a Codex seat to reveal the
+  connection panel, then click **Check CLI** to read the existing local CLI
+  login and **Test connection** to verify the selected model. The panel's
+  **Log in to local CLI account** action is an explicit way to start that same
+  CLI account flow when the check reports that no account is available.
 
 Using a ChatGPT login consumes the account's Codex allowance. Using an API-key login follows that authentication method's billing. A successful login check alone does not prove that a selected model is available; model access is verified when a decision completes.
 
+## Connect the optional external Codex
+
+The connection panel is shown after a Codex opponent or Codex spectator mode
+is selected. **Check CLI** looks for the executable and, in the default mode,
+reads the existing CLI login without starting a card match. **Test connection**
+makes an explicit authenticated request using the selected external
+executable. A missing executable or failed check leaves the ordinary lobby and
+local AI/MCTS controls usable.
+
+The game keeps its proxy and connection settings in a game state directory:
+`$XDG_STATE_HOME/fireplace/codex`, or `~/.local/state/fireplace/codex` when
+`XDG_STATE_HOME` is not set. The settings file is protected with `0600`
+permissions. By default, CLI authentication is read from `CODEX_HOME` when it
+is set, or from the normal `~/.codex` profile otherwise. TavernLab does not
+copy authentication files into the game state directory. In this shared mode,
+the panel's login and logout actions operate on that local CLI account, so
+logging out also logs the local CLI out.
+
+Set `TAVERNLAB_CODEX_HOME` before starting the service when a separate Codex
+authentication profile is required. An explicitly injected Codex home has the
+same isolated behavior. The game still keeps its proxy and settings in the
+game state directory, and the panel presents this mode as an independent
+profile; logging out then affects only that separate profile.
+
+The advanced panel fields accept an absolute executable path and an optional
+proxy. A proxy must be an unauthenticated `http://` or `https://` URL with
+only a host and optional port. Leave it blank to inherit the service's proxy
+environment. Usernames, passwords, paths, query strings, and fragments are
+rejected; keep proxy credentials out of the game settings.
+
 ## Human versus Codex
 
-Choose Codex as the opponent in the normal-battle lobby. The model field is optional: leave it empty to use the local Codex configuration, or enter a model available to your Codex account. Random and saved complete decks are supported. Arena keeps its MCTS opponent.
+Choose Codex as the opponent in the normal-battle lobby. The model field is optional: leave it empty to use the CLI default model, or enter a model available to your Codex account. Random and saved complete decks are supported. Arena keeps its MCTS opponent.
 
 Codex decisions run in the background. The match displays a thinking state while you can still inspect cards and surrender. A connection, model, protocol, or timeout failure pauses the opponent and exposes Retry. It does not silently replace Codex with a local policy. Resuming a saved match creates a fresh Codex session from the restored game state.
 
@@ -27,7 +77,7 @@ End observation abandons the match and returns to the lobby, keeping its history
 
 ## Codex versus Codex
 
-Choose Codex versus Codex and optionally select a model for each seat. Both seats have independent agents and App Server conversations, even when using the same model. Both use the server machine's local Codex authentication.
+Choose Codex versus Codex and optionally select a model for each seat. Both seats have independent agents and App Server conversations, even when using the same model. Both use the account connected in the game's Codex panel.
 
 The spectator controls work as above. Each controller receives its own visible hand, secrets, choices, and public opponent information. Retry replaces the failing seat's session while preserving the other controller. A restored match keeps both model settings and starts paused.
 
@@ -51,11 +101,22 @@ To serve HTTPS, additionally pass `--tls-cert /path/server.crt --tls-key /path/s
 
 ## Codex server configuration
 
-- `TAVERNLAB_CODEX_BINARY`: path to a Codex executable when it is not on `PATH`.
-- `TAVERNLAB_CODEX_MODEL`: optional default model.
+- `CODEX_HOME`: optional normal Codex CLI authentication profile. When it is
+  unset, the CLI uses `~/.codex`.
+- `TAVERNLAB_CODEX_HOME`: optional separate Codex authentication profile for
+  the game. It does not move the game's proxy or settings state, which still
+  defaults to `$XDG_STATE_HOME/fireplace/codex`.
+- `TAVERNLAB_CODEX_BINARY`: path to an externally installed Codex executable
+  when it is not on `PATH`. The same value can be set in the connection panel.
+- `TAVERNLAB_CODEX_MODEL`: optional model override; when unset, the CLI default
+  model is used.
 - `TAVERNLAB_CODEX_TIMEOUT`: decision timeout in seconds; default 90.
 
-Only the model selection and timeout enter game archives. Credentials and Codex conversations are not included in downloadable game logs. Card-playing sessions disable unrelated coding, browser, plugin, connector, and search tools; they use the provided seat observation rather than reading the live game or another player's data.
+Only the model selection and timeout enter game archives. Credentials and Codex
+conversations are not included in downloadable game logs. Card-playing
+sessions disable unrelated coding, browser, plugin, connector, and search
+tools; they use the provided seat observation rather than reading the live game
+or another player's data.
 
 Replay validation remains strict. The recorded replay signature must match the current signature in every field except `source_sha256`; the source digest must be equal, or must be one of the two explicit, reviewed predecessor-to-current pairs maintained in [replay_compatibility.py](../fireplace/replay_compatibility.py). Python, dependency, schema, and other nested metadata are never relaxed, and a Git commit ID alone does not establish compatibility. Recovery replays setup and every accepted action, checks each action context, then verifies the normalized state and exact RNG checkpoint. Only after the complete prefix and checkpoints validate is an accepted old signature replaced in the restored in-memory log. Personal normal/Arena archives save that migration before their controller continues; shared room restore defers persistence until the next accepted action. Unknown differences and any action, state, or RNG divergence remain rejected, leaving the original archive unchanged. Command-line replay is read-only: it checks the final result and normalized state, plus the exact RNG when a checkpoint is present; early completed logs may lack that checkpoint. The storage boundary and full archive rules are documented in [game-archives.md](game-archives.md).
 
@@ -63,6 +124,7 @@ An older archive whose live RNG was already advanced by the former `powered_up` 
 
 ## References
 
+- [Codex CLI](https://learn.chatgpt.com/docs/codex/cli)
 - [Codex App Server](https://learn.chatgpt.com/docs/app-server)
 - [Codex authentication](https://learn.chatgpt.com/docs/auth)
 - [Codex configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference)

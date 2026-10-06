@@ -1,0 +1,13 @@
+# Runtime dependency closure for Ubuntu 22.04 / Python 3.10.
+#
+# hearthstone==9.21.1 depends on requests.  The remaining requests
+# dependencies are listed explicitly so the build never freezes unrelated
+# packages from a developer virtualenv.
+certifi==2026.7.22
+charset-normalizer==3.5.1
+hearthstone==9.21.1
+hearthstone-data==251952.1
+idna==3.20
+requests==2.34.2
+tomli==2.4.1
+urllib3==2.8.0

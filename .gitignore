@@ -10,3 +10,14 @@ venv
 .env
 .coverage
 .idea
+
+# Debian/Docker package build outputs.
+dist/
+*.deb
+*.buildinfo
+*.changes
+debian/.debhelper/
+debian/tavernlab/
+debian/files
+debian/*.substvars
+debian/*.debhelper.log

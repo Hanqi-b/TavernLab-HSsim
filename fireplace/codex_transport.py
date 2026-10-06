@@ -48,7 +48,8 @@ def resolve_codex_binary(value: str | os.PathLike[str] | None = None) -> str:
     """Resolve the executable without invoking a shell.
 
     An explicit value wins, followed by the task-local environment override,
-    ``PATH``, and finally the ChatGPT desktop bundle location.
+    a user-local ``~/.local/bin/codex``, ``PATH``, and finally the ChatGPT
+    desktop location.  No bundled runtime is downloaded or imported.
     """
 
     candidate = value
@@ -58,20 +59,35 @@ def resolve_codex_binary(value: str | os.PathLike[str] | None = None) -> str:
         candidate = os.fspath(candidate)
         resolved = shutil.which(candidate)
         return resolved or candidate
+    local_candidate = Path.home() / ".local" / "bin" / "codex"
+    if local_candidate.is_file() and os.access(local_candidate, os.X_OK):
+        return str(local_candidate)
     resolved = shutil.which("codex")
     if resolved:
         return resolved
     return DEFAULT_CODEX_BINARY
 
 
-def _config_path() -> Path:
-    configured_home = os.environ.get("CODEX_HOME")
+def _config_path(env: Mapping[str, str] | None = None) -> Path:
+    """Return the config path for the effective child environment.
+
+    ``CodexTransport`` may be given a private ``CODEX_HOME``.  Looking at the
+    parent process environment here would accidentally enumerate MCP servers
+    from the user's regular Codex profile before the child is started.
+    """
+
+    effective_env = os.environ if env is None else env
+    configured_home = effective_env.get("CODEX_HOME")
     if configured_home:
         return Path(configured_home) / "config.toml"
     return Path.home() / ".codex" / "config.toml"
 
 
-def _mcp_server_names(path: Path | None = None) -> tuple[str, ...]:
+def _mcp_server_names(
+    path: Path | None = None,
+    *,
+    env: Mapping[str, str] | None = None,
+) -> tuple[str, ...]:
     """Find all MCP server names without printing any config values.
 
     Parsing the whole TOML document is intentional: a line-oriented table
@@ -80,7 +96,7 @@ def _mcp_server_names(path: Path | None = None) -> tuple[str, ...]:
     access.
     """
 
-    source = _config_path() if path is None else path
+    source = _config_path(env) if path is None else path
     if not source.exists():
         return ()
     try:
@@ -167,7 +183,12 @@ def _feature_config() -> dict[str, Any]:
     }
 
 
-def _build_command(binary: str, extra_args: tuple[str, ...]) -> list[str]:
+def _build_command(
+    binary: str,
+    extra_args: tuple[str, ...],
+    *,
+    env: Mapping[str, str] | None = None,
+) -> list[str]:
     command = [binary, "app-server", "--listen", "stdio://"]
     for key, value in _feature_config()["features"].items():
         command.extend(("-c", f"features.{key}={str(value).lower()}"))
@@ -176,7 +197,7 @@ def _build_command(binary: str, extra_args: tuple[str, ...]) -> list[str]:
     # Keep this override independent of the user's model/provider/network or
     # inherited local authentication.  It only removes MCP server access.
     command.extend(("-c", "mcp_servers={}"))
-    for name in _mcp_server_names():
+    for name in _mcp_server_names(env=env):
         command.extend(("-c", f"mcp_servers.{_toml_key(name)}.enabled=false"))
     command.extend(extra_args)
     return command
@@ -271,11 +292,11 @@ class CodexTransport:
                 old_process, old_threads, old_grouped, old_group_id
             )
 
-            cwd = self._make_cwd()
-            command = _build_command(self.binary, self._extra_args)
             child_env = os.environ.copy()
             if self._env is not None:
                 child_env.update(self._env)
+            cwd = self._make_cwd()
+            command = _build_command(self.binary, self._extra_args, env=child_env)
             process_kwargs = {
                 "cwd": cwd,
                 "env": child_env,

@@ -15,10 +15,12 @@
     <link rel="stylesheet" href="style-support.css">
     <link rel="stylesheet" href="style-responsive.css">
     <link rel="stylesheet" href="style-catalog.css">
+    <link rel="stylesheet" href="style-codex-connection.css">
     <script src="action_model.js" defer></script>
     <script src="i18n.js" defer></script>
     <script src="status_view.js" defer></script>
     <script src="modifier_view.js" defer></script>
+    <script type="module" src="codex_connection.js"></script>
     <script type="module" src="app.js"></script>
   </head>
   <body>
@@ -94,8 +96,8 @@
                 <legend id="battle-mode-label">对战模式</legend>
                   <select id="battle-mode-select" name="battle_mode" data-testid="battle-mode-select" aria-describedby="battle-mode-hint">
                     <option value="human" data-testid="battle-mode-human">真人对战 AI</option>
-                    <option value="codex_mcts" data-testid="battle-mode-codex-mcts">Codex vs MCTS（观战）</option>
-                    <option value="codex_codex" data-testid="battle-mode-codex-codex">Codex vs Codex（观战）</option>
+                    <option value="codex_mcts" data-testid="battle-mode-codex-mcts">观战模式 / Codex vs MCTS</option>
+                    <option value="codex_codex" data-testid="battle-mode-codex-codex">观战模式 / Codex vs Codex</option>
                     <option value="human_human" data-testid="battle-mode-human-human">真人 vs 真人（房间）</option>
                   </select>
                 <p class="field-hint" id="battle-mode-hint">你可以操作一方，并选择对手策略。</p>
@@ -104,28 +106,73 @@
                 <legend id="opponent-label">对手 AI</legend>
                 <div class="opponent-choice" id="opponent-choice">
                   <select id="opponent-select" name="opponent" data-testid="opponent-select" aria-labelledby="opponent-label" aria-describedby="opponent-hint">
-                    <option value="radical" data-testid="opponent-radical">激进策略</option>
                     <option value="mcts" data-testid="opponent-mcts">MCTS策略</option>
                     <option value="codex" data-testid="opponent-codex">Codex</option>
                   </select>
                   <p class="field-hint" id="opponent-hint">按牌组权重安排出牌，并计算有利的攻击组合。</p>
                   <div class="codex-model-field" id="codex-model-field" hidden>
                     <label for="codex-model-input" id="codex-model-label">Codex 模型（可选）</label>
-                    <input id="codex-model-input" name="codex_model" type="text" maxlength="120" autocomplete="off" spellcheck="false" placeholder="留空使用当前 Codex 默认模型" aria-describedby="codex-model-hint">
-                    <p class="field-hint" id="codex-model-hint">使用当前已登录的本机 Codex，无需填写 API key。</p>
+                    <input id="codex-model-input" name="codex_model" type="text" maxlength="120" autocomplete="off" spellcheck="false" placeholder="留空使用 CLI 默认模型" aria-describedby="codex-model-hint">
+                    <p class="field-hint" id="codex-model-hint">使用连接面板中的本机 CLI 账号，无需填写 API key。</p>
                   </div>
                 </div>
               </fieldset>
               <div class="codex-model-field" id="codex-self-model-field" hidden>
                 <label for="codex-self-model-input" id="codex-self-model-label">Codex 模型（可选）</label>
-                <input id="codex-self-model-input" name="codex_self_model" type="text" maxlength="120" autocomplete="off" spellcheck="false" placeholder="留空使用当前 Codex 默认模型" aria-describedby="codex-self-model-hint">
-                <p class="field-hint" id="codex-self-model-hint">使用当前已登录的本机 Codex，无需填写 API key。</p>
+                <input id="codex-self-model-input" name="codex_self_model" type="text" maxlength="120" autocomplete="off" spellcheck="false" placeholder="留空使用 CLI 默认模型" aria-describedby="codex-self-model-hint">
+                <p class="field-hint" id="codex-self-model-hint">使用连接面板中的本机 CLI 账号，无需填写 API key。</p>
               </div>
               <div class="codex-model-field" id="codex-opponent-model-field" hidden>
                 <label for="codex-opponent-model-input" id="codex-opponent-model-label">对手 Codex 模型（可选）</label>
-                <input id="codex-opponent-model-input" name="codex_model" type="text" maxlength="120" autocomplete="off" spellcheck="false" placeholder="留空使用当前 Codex 默认模型" aria-describedby="codex-opponent-model-hint">
-                <p class="field-hint" id="codex-opponent-model-hint">第二席使用当前已登录的本机 Codex，无需填写 API key。</p>
+                <input id="codex-opponent-model-input" name="codex_model" type="text" maxlength="120" autocomplete="off" spellcheck="false" placeholder="留空使用 CLI 默认模型" aria-describedby="codex-opponent-model-hint">
+                <p class="field-hint" id="codex-opponent-model-hint">第二席使用连接面板中的本机 CLI 账号，无需填写 API key。</p>
               </div>
+              <section class="codex-connection-panel" id="codex-connection-panel" data-testid="codex-connection" aria-labelledby="codex-connection-title" hidden>
+                <div class="codex-connection-heading">
+                  <div>
+                    <p class="eyebrow" id="codex-connection-eyebrow">CODEX / LOCAL CLI</p>
+                    <h3 id="codex-connection-title">连接本机 Codex</h3>
+                  </div>
+                  <span class="codex-connection-badge" id="codex-connection-badge" aria-hidden="true"></span>
+                </div>
+                <p class="field-hint" id="codex-connection-description">使用你自己安装的 Codex CLI 和已有 CLI 账号。默认读取本机 CLI 的登录状态；“登录本机 CLI 账号”会写入同一个 CLI 账号，“退出本机 CLI 账号”会使本机 CLI 退出登录。此页面不会下载或安装 CLI。</p>
+                <div class="codex-connection-status" id="codex-connection-status" data-testid="codex-status" role="status" aria-live="polite" aria-atomic="true"></div>
+                <p class="codex-connection-error" id="codex-connection-error" data-testid="codex-error" role="alert" hidden></p>
+                <div class="codex-connection-account" id="codex-connection-account" data-testid="codex-account" hidden>
+                  <span id="codex-connection-account-email"></span>
+                  <span id="codex-connection-account-plan"></span>
+                </div>
+                <p class="codex-connection-missing" id="codex-connection-missing" hidden>
+                  <span id="codex-connection-missing-copy">请先自行安装 Codex CLI，然后返回这里重新检查。</span>
+                  <a id="codex-connection-docs-link" data-testid="codex-docs-link" href="https://learn.chatgpt.com/docs/codex/cli" target="_blank" rel="noopener noreferrer">打开官方 Codex CLI 文档</a>
+                </p>
+                <p class="codex-connection-login" id="codex-connection-login" hidden>
+                  <span id="codex-connection-login-copy">如果登录页没有自动打开，请继续使用官方登录页面：</span>
+                  <a id="codex-connection-login-link" data-testid="codex-login-link" href="https://auth.openai.com/" target="_blank" rel="noopener noreferrer">继续官方登录</a>
+                </p>
+                <div class="codex-connection-actions" id="codex-connection-actions">
+                  <button class="secondary-button" id="codex-check-button" type="button" data-testid="codex-check">检查 CLI</button>
+                  <button class="primary-button" id="codex-connect-button" type="button" data-testid="codex-login">登录本机 CLI 账号</button>
+                  <button class="secondary-button" id="codex-cancel-button" type="button" data-testid="codex-cancel" hidden>取消登录</button>
+                  <button class="secondary-button" id="codex-logout-button" type="button" data-testid="codex-logout" hidden>退出本机 CLI 账号</button>
+                  <button class="secondary-button" id="codex-test-button" type="button" data-testid="codex-test">测试连接</button>
+                </div>
+                <details class="codex-connection-advanced" id="codex-connection-advanced" data-testid="codex-advanced">
+                  <summary id="codex-connection-advanced-label">高级设置</summary>
+                  <p class="field-hint" id="codex-connection-advanced-hint">通常无需修改。代理只能填写未携带账号或令牌的 HTTP(S) 地址。</p>
+                  <div class="codex-connection-field">
+                    <label for="codex-binary-path" id="codex-binary-path-label">Codex CLI 路径</label>
+                    <input id="codex-binary-path" type="text" data-testid="codex-binary-path" autocomplete="off" spellcheck="false" placeholder="留空：自动查找" aria-describedby="codex-binary-path-hint">
+                    <p class="field-hint" id="codex-binary-path-hint">填写绝对路径；留空使用系统自动查找。</p>
+                  </div>
+                  <div class="codex-connection-field">
+                    <label for="codex-proxy-url" id="codex-proxy-url-label">Codex 代理地址</label>
+                    <input id="codex-proxy-url" type="url" data-testid="codex-proxy-url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="留空：继承环境设置" aria-describedby="codex-proxy-url-hint">
+                    <p class="field-hint" id="codex-proxy-url-hint">只能使用 http:// 或 https://，且不能包含用户名或密码。</p>
+                  </div>
+                  <button class="secondary-button" id="codex-settings-button" type="button" data-testid="codex-settings">保存高级设置</button>
+                </details>
+              </section>
               <section class="room-panel" id="room-controls" data-testid="room-controls" aria-labelledby="room-controls-title" hidden>
                 <div class="room-panel-heading">
                   <div>

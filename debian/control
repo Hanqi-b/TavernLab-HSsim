@@ -1,0 +1,30 @@
+Source: tavernlab
+Section: games
+Priority: optional
+Maintainer: Hanqi-b <hanqi-b@users.noreply.github.com>
+Build-Depends:
+ debhelper-compat (= 13),
+ dh-virtualenv (>= 1.2.2),
+ python3.10,
+ python3.10-dev,
+ python3.10-venv
+Standards-Version: 4.6.0
+Rules-Requires-Root: no
+Homepage: https://github.com/Hanqi-b/TavernLab-HSsim
+
+Package: tavernlab
+Architecture: any
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends},
+ python3 (>= 3.10),
+ python3 (<< 3.11),
+ systemd,
+ dbus-user-session,
+ xdg-utils
+Recommends:
+ libnotify-bin
+Description: local Hearthstone simulator and AI experimentation platform
+ TavernLab-HSsim is a local Hearthstone simulator and AI experimentation
+ platform.  It includes the browser interface, historical card data, arena
+ modes, local accounts, and search agents.

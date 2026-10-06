@@ -64,7 +64,7 @@ def _command(base, path, state, **fields):
 
 def _draft_ready(base):
     status, state = request(base, "/api/arena/start", {
-        "nickname": "Retiring tester", "locale": "zhCN", "set_ids": SETS,
+        "nickname": "Retiring tester", "locale": "zhCN", "set_ids": SETS, "format_id": "custom_v1",
     })
     assert status == 200 and state["mode"] == "hero"
     status, state = _command(base, "/api/arena/hero", state, hero_id=state["hero_offer"][0]["id"])
@@ -101,14 +101,14 @@ def test_arena_http_draft_to_real_battle_and_record(arena_http):
     status, invalid = request(
         base,
         "/api/arena/start",
-        {"nickname": "Tester", "locale": "zhCN", "set_ids": ["GVG"]},
+        {"nickname": "Tester", "locale": "zhCN", "set_ids": ["GVG"], "format_id": "custom_v1"},
     )
     assert status == 400 and invalid["mode"] == "setup"
 
     status, state = request(
         base,
         "/api/arena/start",
-        {"nickname": "Tester", "locale": "zhCN", "set_ids": SETS},
+        {"nickname": "Tester", "locale": "zhCN", "set_ids": SETS, "format_id": "custom_v1"},
     )
     assert status == 200 and state["mode"] == "hero"
     assert len(state["hero_offer"]) == 3
@@ -250,7 +250,7 @@ def test_arena_retire_requires_ready_cas_rejects_active_match_and_allows_restart
     assert (retired["wins"], retired["losses"]) == (0, 1)
 
     status, fresh = request(base, "/api/arena/start", {
-        "nickname": "Fresh run", "locale": "zhCN", "set_ids": SETS,
+        "nickname": "Fresh run", "locale": "zhCN", "set_ids": SETS, "format_id": "custom_v1",
     })
     assert status == 200 and fresh["mode"] == "hero"
     assert fresh["run_id"] != retired["run_id"]
@@ -297,7 +297,7 @@ def test_second_server_returns_conflict_and_recovers_after_owner_closes(arena_ht
         status, state = request(
             base,
             "/api/arena/start",
-            {"nickname": "Tester", "locale": "zhCN", "set_ids": SETS},
+            {"nickname": "Tester", "locale": "zhCN", "set_ids": SETS, "format_id": "custom_v1"},
         )
         assert status == 409 and "error" in state
         first_app.close()
@@ -317,7 +317,7 @@ def test_second_server_returns_conflict_and_recovers_after_owner_closes(arena_ht
 def test_arena_http_budget_boundaries(arena_http, sets, status_code):
     _, base = arena_http
     status, state = request(base, "/api/arena/start", {
-        "nickname": "Tester", "locale": "zhCN", "set_ids": sets,
+        "nickname": "Tester", "locale": "zhCN", "set_ids": sets, "format_id": "custom_v1",
     })
     assert status == status_code
     if status == 200:

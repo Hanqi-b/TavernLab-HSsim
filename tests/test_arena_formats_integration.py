@@ -14,6 +14,31 @@ from fireplace.web_gui.server import WebGameManager
 WILD = "wild_2016_09_02"
 
 
+def test_new_arena_defaults_to_historical_without_migrating_custom_run(tmp_path):
+    store = ArenaStore(tmp_path / "arena.json")
+    service = ArenaService(store=store)
+    try:
+        setup = service.state()
+        assert setup["format_id"] == WILD
+        assert (setup["max_wins"], setup["max_losses"]) == (12, 3)
+        assert setup["formats"][0]["id"] == WILD
+        started = service.start({"nickname": "Tester", "locale": "zhCN"}, seed=17)
+        assert started["format_id"] == WILD and started["mode"] == "hero"
+    finally:
+        service.close()
+
+    custom_store = ArenaStore(tmp_path / "custom.json")
+    custom = ArenaRun.create(["GVG", "TGT", "OG", "GANGS", "UNGORO", "NAXX"], "Tester", "zhCN", seed=17)
+    custom_store.save(custom)
+    restored = ArenaService(store=custom_store)
+    try:
+        assert restored.state()["format_id"] == "custom_v1"
+        assert restored.state()["max_wins"] == 7
+        assert restored.run.to_dict() == custom.to_dict()
+    finally:
+        restored.close()
+
+
 def ready(seed=17):
     run = ArenaRun.create([], "History tester", "zhCN", seed=seed, format_id=WILD)
     run.choose_hero(run.hero_choices[0])

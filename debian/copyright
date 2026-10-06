@@ -1,0 +1,19 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: TavernLab-HSsim
+Upstream-Contact: Hanqi-b <hanqi-b@users.noreply.github.com>
+Source: https://github.com/Hanqi-b/TavernLab-HSsim
+
+Files: *
+Copyright: 2014-2026 HearthSim contributors and TavernLab-HSsim contributors
+License: AGPL-3+
+
+Files: debian/* packaging/*
+Copyright: 2026 Hanqi-b
+License: AGPL-3+
+
+License: AGPL-3+
+ The TavernLab-HSsim source is licensed under the GNU Affero General Public
+ License, version 3 or (at your option) any later version.  The complete
+ license text is shipped as /usr/share/doc/tavernlab/LICENSE.
+ .
+ The source distribution also contains the complete license text in LICENSE.

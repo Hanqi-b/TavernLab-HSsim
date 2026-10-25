@@ -28,8 +28,16 @@ jobs:
           python -m pip install -e . pytest
       - name: Run Python tests
         env:
-          PYTHONPATH: tests:.
           PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
         run: python -m pytest -q tests
       - name: Build wheel
         run: python -m pip wheel --no-deps --wheel-dir dist .
+      - name: Smoke test installed wheel without setuptools
+        working-directory: ${{ runner.temp }}
+        run: |
+          python -m venv --without-pip fireplace-wheel
+          python -m pip --python fireplace-wheel/bin/python install "$GITHUB_WORKSPACE"/dist/*.whl
+          fireplace-wheel/bin/python -I -c 'from importlib.metadata import version; import fireplace; assert fireplace.__version__ == version("fireplace")'
+          fireplace-wheel/bin/python -I -m fireplace.web_gui --help
+          fireplace-wheel/bin/tavernlab-web --help
+          fireplace-wheel/bin/fireplace-web --help

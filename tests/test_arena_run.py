@@ -126,7 +126,10 @@ def test_arena_service_retire_rejects_stale_or_wrong_run_without_mutation(tmp_pa
 def test_arena_service_retire_only_allows_ready_stage(tmp_path: Path):
     service = ArenaService(store=ArenaStore(tmp_path / "retire-stages.json"))
     try:
-        state = service.start({"set_ids": SETS, "nickname": "Tester", "locale": "zhCN"}, seed=17)
+        state = service.start({
+            "format_id": "custom_v1", "set_ids": SETS,
+            "nickname": "Tester", "locale": "zhCN",
+        }, seed=17)
         with pytest.raises(WebLifecycleError) as error:
             service.retire({"run_id": state["run_id"], "revision": state["revision"]})
         assert error.value.status_code == 409 and error.value.snapshot["mode"] == "hero"
@@ -207,7 +210,10 @@ def test_failed_save_does_not_advance_in_memory_run(tmp_path: Path):
     store = FailingStore(tmp_path / "arena.json")
     service = ArenaService(store=store)
     try:
-        service.start({"set_ids": SETS, "nickname": "Tester", "locale": "zhCN"}, seed=17)
+        service.start({
+            "format_id": "custom_v1", "set_ids": SETS,
+            "nickname": "Tester", "locale": "zhCN",
+        }, seed=17)
         before = service.run.to_dict()
         store.fail = True
         with pytest.raises(OSError, match="disk unavailable"):

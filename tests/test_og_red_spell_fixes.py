@@ -78,10 +78,11 @@ def test_mana_burn_direct_cast_reduces_next_turn_mana_without_crashing():
     assert game.player2.mana == 10
 
 
-def test_yogg_saron_handles_seeded_mana_burn_from_two_prior_spells():
+def test_yogg_saron_handles_mana_burn_from_two_prior_spells(monkeypatch):
     game = prepare_empty_game(CardClass.MAGE, CardClass.MAGE)
     game.player1.is_standard = game.player2.is_standard = False
-    game.random.seed(1341)
+    spells = iter(("BT_753", "CS2_023"))
+    monkeypatch.setattr(neutral_legendary, "RandomSpell", lambda: RandomID(next(spells)))
     game.player1.give(MOONFIRE).play(target=game.player2.hero)
     game.player1.give(THE_COIN).play()
     assert sum(card.type == CardType.SPELL for card in game.player1.cards_played_this_game) == 2
@@ -94,7 +95,9 @@ def test_yogg_saron_handles_seeded_mana_burn_from_two_prior_spells():
     assert yogg.zone == Zone.PLAY
     assert len(capture.spells) == 2
     assert all(source is yogg and spell.type == CardType.SPELL for source, spell in capture.spells)
-    assert any(spell.id == "BT_753" for _, spell in capture.spells)
+    assert [spell.id for _, spell in capture.spells] == ["BT_753", "CS2_023"]
+    game.end_turn()
+    assert game.player2.mana == 8
 
 
 def test_yogg_saron_with_no_prior_spells_casts_nothing():

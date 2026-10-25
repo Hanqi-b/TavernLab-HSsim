@@ -137,7 +137,8 @@ def test_two_accounts_cannot_read_or_start_each_others_decks_and_matches(tmp_pat
         assert bob.request("/api/state")[0] == 200
 
 
-def test_arena_run_is_scoped_to_account(tmp_path):
+@pytest.mark.parametrize("format_id", ["custom_v1", "wild_2016_09_02"])
+def test_arena_run_is_scoped_to_account(tmp_path, format_id):
     with account_server(tmp_path) as base:
         alice = Browser(base)
         bob = Browser(base)
@@ -145,17 +146,23 @@ def test_arena_run_is_scoped_to_account(tmp_path):
         bob.register("Bob")
         status, state = alice.request("/api/arena/state")
         assert status == 200 and state["mode"] == "setup"
-        selected = [option["id"] for option in state["pack_options"]["large"][:5]]
-        selected += [state["pack_options"]["small"][0]["id"]]
+        selected = []
+        if format_id == "custom_v1":
+            selected = [option["id"] for option in state["pack_options"]["large"][:5]]
+            selected += [state["pack_options"]["small"][0]["id"]]
         status, started = alice.request("/api/arena/start", {
             "nickname": "Alice", "locale": "zhCN", "set_ids": selected,
+            "format_id": format_id,
         })
         assert status == 200 and started["mode"] == "hero"
+        assert started["format_id"] == format_id
         assert bob.request("/api/arena/state")[1]["mode"] == "setup"
         status, bob_started = bob.request("/api/arena/start", {
             "nickname": "Bob", "locale": "zhCN", "set_ids": selected,
+            "format_id": format_id,
         })
         assert status == 200 and bob_started["mode"] == "hero"
+        assert bob_started["format_id"] == format_id
         assert bob_started["run_id"] != started["run_id"]
 
 

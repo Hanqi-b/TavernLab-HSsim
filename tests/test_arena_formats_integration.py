@@ -195,6 +195,13 @@ def test_historical_preflight_reports_unavailable_current_card_id(monkeypatch):
     from fireplace.arena.formats import HistoricalFormatError, historical_profile
     if not cards.db.initialized:
         cards.db.initialize()
-    monkeypatch.delitem(cards.db, "CS2_029")
-    with pytest.raises(HistoricalFormatError, match="absent.*CS2_029"):
-        historical_profile()
+    original_db = cards.db
+    original_order = tuple(original_db)
+    # Restoring a deleted dict key would change later seeded random draws.
+    with monkeypatch.context() as isolated:
+        isolated.setattr(cards, "db", copy.copy(original_db))
+        del cards.db["CS2_029"]
+        with pytest.raises(HistoricalFormatError, match="absent.*CS2_029"):
+            historical_profile()
+    assert cards.db is original_db
+    assert tuple(cards.db) == original_order

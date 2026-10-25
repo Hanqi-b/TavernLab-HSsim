@@ -154,24 +154,57 @@ def test_sch_427_lightning_bloom_gives_temporary_mana_and_overload():
     assert player.temp_mana == 0
 
 
-def test_sch_507_instructor_fireheart_repeats_when_the_discovered_spell_is_played():
-    _, player, opponent = ready()
+@pytest.fixture
+def fireheart_options(monkeypatch):
+    import fireplace.utils
+
+    option_ids = ("CS2_027", "CS2_025", "CS2_023")
+
+    def choose_options(source, _weights, card_sets, count):
+        pool = {card_id for card_set in card_sets for card_id in card_set}
+        assert set(option_ids).issubset(pool)
+        assert count == 3
+        return [source.controller.card(card_id, source=source) for card_id in option_ids]
+
+    monkeypatch.setattr(fireplace.utils, "weighted_card_choice", choose_options)
+
+
+def test_sch_507_instructor_fireheart_discovers_collectible_class_spells_costing_at_least_one():
+    _, player, _ = ready()
     player.give("SCH_507").play()
-    choice = next(card for card in player.choice.cards if not card.requires_target())
+
+    assert player.choice and len(player.choice.cards) == 3
+    assert len({card.id for card in player.choice.cards}) == 3
+    assert all(
+        card.type == CardType.SPELL
+        and card.data.collectible
+        and 1 <= card.cost <= 10
+        and any(cls in card.classes for cls in (CardClass.MAGE, CardClass.NEUTRAL))
+        for card in player.choice.cards
+    )
+
+
+def test_sch_507_instructor_fireheart_repeats_when_the_discovered_spell_is_played(fireheart_options):
+    _, player, _ = ready()
+    player.give("SCH_507").play()
+    choice = player.choice.cards[0]
     player.choice.choose(choice)
+    player.give("CS2_025").play()
+    assert player.choice is None
     choice.play()
     assert player.choice and all(card.cost >= 1 for card in player.choice.cards)
 
 
-def test_sch_507_multiple_firehearts_keep_independent_pending_spells():
+def test_sch_507_multiple_firehearts_keep_independent_pending_spells(fireheart_options):
     _, player, _ = ready()
     player.max_mana = 10
     first = player.give("SCH_507").play()
-    first_spell = next(card for card in player.choice.cards if not card.requires_target())
+    first_spell = player.choice.cards[0]
     player.choice.choose(first_spell)
     second = player.give("SCH_507").play()
-    second_spell = next(card for card in player.choice.cards if not card.requires_target())
+    second_spell = player.choice.cards[0]
     player.choice.choose(second_spell)
+    assert first_spell.id == second_spell.id and first_spell is not second_spell
 
     first_spell.play()
     assert player.choice

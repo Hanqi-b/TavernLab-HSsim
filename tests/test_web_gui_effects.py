@@ -32,6 +32,7 @@ def effect_game():
         GameSession(Game((human, opponent), seed=7), {}),
         human,
         PassAgent(),
+        locale="enUS",
     )
     yield app, human, opponent
     app.close()
